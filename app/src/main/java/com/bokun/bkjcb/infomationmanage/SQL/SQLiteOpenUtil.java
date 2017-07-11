@@ -5,7 +5,8 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
+
+import com.bokun.bkjcb.infomationmanage.Utils.Constants;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -19,9 +20,9 @@ import java.io.OutputStream;
 public class SQLiteOpenUtil extends SQLiteOpenHelper {
 
     //The Android's default system path of your application database.
-    private static String DB_PATH = "/data/data/com.bokun.bkjcb.infomationmanage/databases/";
+    private static String DB_PATH = Constants.DATABASE_PATH;
 
-    private static String DB_NAME = "User.db";
+    private static String DB_NAME = "GasAddressbook.db";
 
     private SQLiteDatabase myDataBase;
 
@@ -69,16 +70,16 @@ public class SQLiteOpenUtil extends SQLiteOpenHelper {
         SQLiteDatabase checkDB = null;
 
         try {
-            String DB = myContext.getDatabasePath("User.db").getPath();
-            Log.i("deng", DB);
             String myPath = DB_PATH + DB_NAME;
             checkDB = SQLiteDatabase.openDatabase(myPath, null, SQLiteDatabase.OPEN_READONLY);
 
         } catch (SQLiteException e) {
 
             //database does't exist yet.
-            e.printStackTrace();
+            return false;
 
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
         if (checkDB != null) {
@@ -97,10 +98,8 @@ public class SQLiteOpenUtil extends SQLiteOpenHelper {
      */
     private void copyDataBase() {
         try {
-            Log.i("deng", "copy");
             //Open your local db as the input stream
             InputStream myInput = myContext.getAssets().open(DB_NAME);
-            Log.i("deng", myInput.available() + "");
             // Path to the just created empty db
             String outFileName = DB_PATH + DB_NAME;
 
