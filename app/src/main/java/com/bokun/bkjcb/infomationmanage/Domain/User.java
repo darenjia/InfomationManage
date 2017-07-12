@@ -15,6 +15,8 @@ public class User implements Serializable, Comparable<User> {
     private String password;
     private String tel;
     private int flag;
+    private Unit unit;
+    private Level level;
 
     private String pinyin; // 姓名对应的拼音
     private String firstLetter; // 拼音的首字母
@@ -78,6 +80,22 @@ public class User implements Serializable, Comparable<User> {
 
     public String getFirstLetter() {
         return firstLetter;
+    }
+
+    public Unit getUnit() {
+        return unit;
+    }
+
+    public void setUnit(Unit unit) {
+        this.unit = unit;
+    }
+
+    public Level getLevel() {
+        return level;
+    }
+
+    public void setLevel(Level level) {
+        this.level = level;
     }
 
     @Override

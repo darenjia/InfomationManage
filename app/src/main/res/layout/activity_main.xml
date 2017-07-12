@@ -19,15 +19,48 @@
         <org.angmarch.views.NiceSpinner
             android:id="@+id/spinner_two"
             android:layout_width="0dp"
-            android:layout_height="50dp"
+            android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:maxLength="5"
             android:visibility="gone" />
 
         <org.angmarch.views.NiceSpinner
             android:id="@+id/spinner_three"
             android:layout_width="0dp"
-            android:layout_height="50dp"
+            android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:maxLength="5"
+            android:visibility="gone" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/spinner_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:visibility="gone">
+
+        <org.angmarch.views.NiceSpinner
+            android:id="@+id/spinner_four"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:maxLength="5" />
+
+        <org.angmarch.views.NiceSpinner
+            android:id="@+id/spinner_five"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:maxLength="5"
+            android:visibility="gone" />
+
+        <org.angmarch.views.NiceSpinner
+            android:id="@+id/spinner_six"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:maxLength="5"
             android:visibility="gone" />
     </LinearLayout>
 
