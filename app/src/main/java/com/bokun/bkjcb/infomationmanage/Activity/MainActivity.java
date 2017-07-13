@@ -1,8 +1,21 @@
 package com.bokun.bkjcb.infomationmanage.Activity;
 
+import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
+import android.os.Build;
+import android.support.v4.app.ActivityCompat;
+import android.support.v7.app.AlertDialog;
+import android.text.Editable;
+import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
+import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 
@@ -11,6 +24,7 @@ import com.bokun.bkjcb.infomationmanage.Domain.User;
 import com.bokun.bkjcb.infomationmanage.R;
 import com.bokun.bkjcb.infomationmanage.SQL.DBManager;
 import com.bokun.bkjcb.infomationmanage.Utils.L;
+import com.bokun.bkjcb.infomationmanage.View.AlertView;
 import com.bokun.bkjcb.infomationmanage.View.SideBar;
 
 import org.angmarch.views.NiceSpinner;
@@ -20,7 +34,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-public class MainActivity extends BaseActivity implements AdapterView.OnItemClickListener, AdapterView.OnItemSelectedListener {
+public class MainActivity extends BaseActivity implements AdapterView.OnItemClickListener, AdapterView.OnItemSelectedListener, View.OnClickListener {
 
     private SideBar sideBar;
     private ListView listView;
@@ -34,6 +48,10 @@ public class MainActivity extends BaseActivity implements AdapterView.OnItemClic
     private int position2;
     private int position3;
     private int position4;
+    private ImageView searchButton, cancelButton;
+    private EditText editText;
+    private String keyWord;
+    private SortAdapter adapter;
 
     @Override
     protected void setView() {
@@ -51,6 +69,9 @@ public class MainActivity extends BaseActivity implements AdapterView.OnItemClic
         sp_4 = (NiceSpinner) findViewById(R.id.spinner_four);
         sp_5 = (NiceSpinner) findViewById(R.id.spinner_five);
         sp_6 = (NiceSpinner) findViewById(R.id.spinner_six);
+        searchButton = (ImageView) findViewById(R.id.image_search);
+        cancelButton = (ImageView) findViewById(R.id.clearSearch);
+        editText = (EditText) findViewById(R.id.edit_search);
     }
 
     @Override
@@ -73,17 +94,44 @@ public class MainActivity extends BaseActivity implements AdapterView.OnItemClic
         sp_4.setOnItemSelectedListener(this);
         sp_5.setOnItemSelectedListener(this);
         sp_6.setOnItemSelectedListener(this);
+        editText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                keyWord = editable.toString().trim();
+                L.i(keyWord);
+                if (TextUtils.isEmpty(keyWord)) {
+                    adapter.initData();
+                } else {
+                    cancelButton.setImageResource(R.mipmap.ic_close);
+                    searchButton.setVisibility(View.VISIBLE);
+                    adapter.getFilter().filter(keyWord);
+                }
+            }
+        });
+        searchButton.setOnClickListener(this);
+        cancelButton.setOnClickListener(this);
     }
 
     @Override
     protected void loadData() {
         users = DBManager.newInstance(this).queryAllUser();
         Collections.sort(users);
-        SortAdapter adapter = new SortAdapter(this, users);
+        adapter = new SortAdapter(this, users);
         listView.setAdapter(adapter);
         list1 = new ArrayList<>(Arrays.asList("全部", "管理单位", "企业单位"));
         list2 = new ArrayList<>(Arrays.asList("全部", "市级", "区级"));
         sp_1.attachDataSource(list1);
+        listView.setTextFilterEnabled(true);
     }
 
     @Override
@@ -93,16 +141,24 @@ public class MainActivity extends BaseActivity implements AdapterView.OnItemClic
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-        User user = users.get(i);
-        /*intent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + user.getTel()));
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                requestPermissions(new String[]{Manifest.permission.CALL_PHONE}, 0);
+        final User user = users.get(i);
+        View.OnClickListener listener = new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                intent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + user.getTel()));
+                if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        requestPermissions(new String[]{Manifest.permission.CALL_PHONE}, 0);
+                    }
+                    return;
+                }
+                startActivity(intent);
             }
-            return;
-        }
-        startActivity(intent);*/
-        L.i(user.toString());
+        };
+        View alertView = new AlertView().build(user, this, listener);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setView(alertView);
+        builder.show();
     }
 
     @Override
@@ -158,6 +214,7 @@ public class MainActivity extends BaseActivity implements AdapterView.OnItemClic
                     }
                     sp_2.requestLayout();
                 }
+                adapter.filtUser(0, i);
                 break;
             case R.id.spinner_two:
                 position1 = sp_1.getSelectedIndex();
@@ -184,6 +241,7 @@ public class MainActivity extends BaseActivity implements AdapterView.OnItemClic
                         spinnerLayout.setVisibility(View.GONE);
                     }
                 }
+                adapter.filtUser(1, i);
                 break;
             case R.id.spinner_three:
                 position2 = sp_2.getSelectedIndex();
@@ -217,6 +275,7 @@ public class MainActivity extends BaseActivity implements AdapterView.OnItemClic
                     //选择企业单位之后做筛选
                     spinnerLayout.setVisibility(View.GONE);
                 }
+                adapter.filtUser(2, i);
                 break;
             case R.id.spinner_four:
                 position3 = sp_3.getSelectedIndex();
@@ -235,6 +294,7 @@ public class MainActivity extends BaseActivity implements AdapterView.OnItemClic
                 } else {
                     //市级单位筛选
                 }
+                adapter.filtUser(3, i);
                 break;
             case R.id.spinner_five:
                 position4 = sp_4.getSelectedIndex();
@@ -245,6 +305,7 @@ public class MainActivity extends BaseActivity implements AdapterView.OnItemClic
                     sp_6.attachDataSource(getSpinnerData(position3, position4, i));
                     sp_6.requestLayout();
                 }
+                adapter.filtUser(4, i);
                 break;
             case R.id.spinner_six:
                 if (i == 0) {
@@ -252,6 +313,7 @@ public class MainActivity extends BaseActivity implements AdapterView.OnItemClic
                 } else {
                     //做筛选
                 }
+                adapter.filtUser(5, i);
                 break;
         }
     }
@@ -259,5 +321,22 @@ public class MainActivity extends BaseActivity implements AdapterView.OnItemClic
     @Override
     public void onNothingSelected(AdapterView<?> adapterView) {
 
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.image_search:
+                ((InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE)).showSoftInput(editText, InputMethodManager.HIDE_NOT_ALWAYS);
+                break;
+            case R.id.clearSearch:
+                if (!TextUtils.isEmpty(editText.getText().toString().trim())) {
+                    adapter.initData();
+                    cancelButton.setImageResource(R.mipmap.ic_search);
+                    searchButton.setVisibility(View.GONE);
+                    editText.setText("");
+                }
+                break;
+        }
     }
 }

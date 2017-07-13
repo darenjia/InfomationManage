@@ -108,4 +108,9 @@ public class User implements Serializable, Comparable<User> {
             return pinyin.compareToIgnoreCase(another.getPinyin());
         }
     }
+
+    @Override
+    public String toString() {
+        return this.userName + this.tel + this.level.getDepartmentName() + this.unit.getQuXian() + this.unit.getAddress();
+    }
 }

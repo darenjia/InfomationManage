@@ -4,8 +4,6 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.content.Intent;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -19,10 +17,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.bokun.bkjcb.infomationmanage.Domain.User;
 import com.bokun.bkjcb.infomationmanage.R;
-import com.bokun.bkjcb.infomationmanage.SQL.SQLUtil;
-import com.bokun.bkjcb.infomationmanage.Utils.L;
-import com.bokun.bkjcb.infomationmanage.Utils.T;
+import com.bokun.bkjcb.infomationmanage.SQL.DBManager;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -39,16 +36,6 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         // Set up the login form.
-
-
-        SQLiteDatabase db = SQLUtil.newInstance(this).getDatabase();
-        Cursor cursor = db.query("User", null, "id = ?", new String[]{"1"}, null, null, null);
-        String username = null;
-        while (cursor.moveToNext()) {
-            username = cursor.getString(2);
-        }
-        L.i(username);
-        T.showShort(this, username);
 
         mEmailView = (EditText) findViewById(R.id.username);
 
@@ -74,6 +61,7 @@ public class LoginActivity extends AppCompatActivity {
 
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
+
     }
 
     private void attemptLogin() {
@@ -187,20 +175,20 @@ public class LoginActivity extends AppCompatActivity {
 
         @Override
         protected Boolean doInBackground(Void... params) {
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+            User user = DBManager.newInstance(LoginActivity.this).queryUserByLoginName(mEmail);
+            if (user.getPassword().equals(mPassword)) {
+                return true;
             }
-            return true;
+            return false;
         }
 
         @Override
-        protected void onPostExecute(final Boolean success) {
+        protected void onPostExecute(Boolean success) {
             mAuthTask = null;
             showProgress(false);
-
             if (success) {
+                toMainActivity();
+                finish();
             } else {
                 mPasswordView.setError(getString(R.string.error_incorrect_password));
                 mPasswordView.requestFocus();
@@ -212,6 +200,11 @@ public class LoginActivity extends AppCompatActivity {
             mAuthTask = null;
             showProgress(false);
         }
+    }
+
+    private void toMainActivity() {
+        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+        startActivity(intent);
     }
 }
 

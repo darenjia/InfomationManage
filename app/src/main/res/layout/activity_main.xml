@@ -106,7 +106,7 @@
                     android:paddingStart="12dp" />
 
                 <ImageView
-                    android:id="@+id/image_search_back"
+                    android:id="@+id/image_search"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
                     android:background="?android:attr/selectableItemBackground"
