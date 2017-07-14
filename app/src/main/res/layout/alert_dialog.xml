@@ -19,13 +19,13 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:text="13924481442"
-        android:textSize="18sp" />
+        android:textSize="20sp" />
 
     <TableLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingLeft="20dp"
-        android:paddingTop="10dp">
+        android:paddingTop="5dp">
 
         <TableRow android:padding="5dp">
 
@@ -33,7 +33,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:text="区县"
+                android:text="区      县"
                 android:textSize="15sp" />
 
             <TextView
@@ -50,7 +50,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:text="部门地址"
+                android:text="部      门"
                 android:textSize="15sp" />
 
             <TextView
@@ -60,14 +60,6 @@
                 android:paddingLeft="10dp"
                 android:textSize="15sp" />
         </TableRow>
-
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="单位信息"
-            android:textSize="16sp" />
 
         <TableRow android:padding="5dp">
 
@@ -142,8 +134,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:background="@color/colorAccent"
-        android:padding="10dp">
+        android:background="@color/colorAccent">
 
         <ImageView
             android:id="@+id/call"

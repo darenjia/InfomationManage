@@ -11,19 +11,21 @@ import android.support.v7.app.AlertDialog;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.bokun.bkjcb.infomationmanage.Adapter.SortAdapter;
 import com.bokun.bkjcb.infomationmanage.Domain.User;
 import com.bokun.bkjcb.infomationmanage.R;
 import com.bokun.bkjcb.infomationmanage.SQL.DBManager;
-import com.bokun.bkjcb.infomationmanage.Utils.L;
 import com.bokun.bkjcb.infomationmanage.View.AlertView;
 import com.bokun.bkjcb.infomationmanage.View.SideBar;
 
@@ -43,7 +45,7 @@ public class MainActivity extends BaseActivity implements AdapterView.OnItemClic
     private NiceSpinner sp_1, sp_2, sp_3, sp_4, sp_5, sp_6;
     private List<String> list;
     private ArrayList<String> list1, list2;
-    private LinearLayout spinnerLayout;
+    private LinearLayout spinnerLayout, spLayout;
     private int position1;
     private int position2;
     private int position3;
@@ -63,6 +65,7 @@ public class MainActivity extends BaseActivity implements AdapterView.OnItemClic
         sideBar = (SideBar) findViewById(R.id.side_bar);
         listView = (ListView) findViewById(R.id.listView);
         spinnerLayout = (LinearLayout) findViewById(R.id.spinner_layout);
+        spLayout = (LinearLayout) findViewById(R.id.sp_layout);
         sp_1 = (NiceSpinner) findViewById(R.id.spinner_one);
         sp_2 = (NiceSpinner) findViewById(R.id.spinner_two);
         sp_3 = (NiceSpinner) findViewById(R.id.spinner_three);
@@ -102,24 +105,39 @@ public class MainActivity extends BaseActivity implements AdapterView.OnItemClic
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-                keyWord = editable.toString().trim();
-                L.i(keyWord);
+                keyWord = charSequence.toString().trim();
+//                L.i(keyWord);
                 if (TextUtils.isEmpty(keyWord)) {
                     adapter.initData();
+                    cancelButton.setImageResource(R.mipmap.ic_search);
+                    searchButton.setVisibility(View.GONE);
                 } else {
+                    if (i1 == 1) {
+                        adapter.repaceData();
+                    }
                     cancelButton.setImageResource(R.mipmap.ic_close);
                     searchButton.setVisibility(View.VISIBLE);
                     adapter.getFilter().filter(keyWord);
                 }
             }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
         });
         searchButton.setOnClickListener(this);
         cancelButton.setOnClickListener(this);
+        editText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
+                if (id == EditorInfo.IME_ACTION_SEARCH || id == EditorInfo.IME_NULL) {
+                    ((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE)).hideSoftInputFromWindow(editText.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+                    return true;
+                }
+                return false;
+            }
+        });
     }
 
     @Override
@@ -141,7 +159,7 @@ public class MainActivity extends BaseActivity implements AdapterView.OnItemClic
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-        final User user = users.get(i);
+        final User user = adapter.getData().get(i);
         View.OnClickListener listener = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -229,7 +247,6 @@ public class MainActivity extends BaseActivity implements AdapterView.OnItemClic
                         sp_3.requestLayout();
                     } else {
                         sp_3.setVisibility(View.GONE);
-                        spinnerLayout.setVisibility(View.GONE);
                     }
                 } else if (position1 == 2) {
                     if (i != 0) {
@@ -238,9 +255,9 @@ public class MainActivity extends BaseActivity implements AdapterView.OnItemClic
                         sp_3.requestLayout();
                     } else {
                         sp_3.setVisibility(View.GONE);
-                        spinnerLayout.setVisibility(View.GONE);
                     }
                 }
+                spinnerLayout.setVisibility(View.GONE);
                 adapter.filtUser(1, i);
                 break;
             case R.id.spinner_three:
@@ -298,12 +315,15 @@ public class MainActivity extends BaseActivity implements AdapterView.OnItemClic
                 break;
             case R.id.spinner_five:
                 position4 = sp_4.getSelectedIndex();
-                if (i == 0) {
-                    sp_6.setVisibility(View.GONE);
+                if (position4 == 3) {
+                    if (i == 0) {
+                        sp_6.setVisibility(View.GONE);
+                    } else {
+                        sp_6.setVisibility(View.VISIBLE);
+                        sp_6.attachDataSource(getSpinnerData(position3, position4, i));
+                        sp_6.requestLayout();
+                    }
                 } else {
-                    sp_6.setVisibility(View.VISIBLE);
-                    sp_6.attachDataSource(getSpinnerData(position3, position4, i));
-                    sp_6.requestLayout();
                 }
                 adapter.filtUser(4, i);
                 break;
@@ -327,7 +347,7 @@ public class MainActivity extends BaseActivity implements AdapterView.OnItemClic
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.image_search:
-                ((InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE)).showSoftInput(editText, InputMethodManager.HIDE_NOT_ALWAYS);
+                ((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE)).hideSoftInputFromWindow(editText.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
                 break;
             case R.id.clearSearch:
                 if (!TextUtils.isEmpty(editText.getText().toString().trim())) {

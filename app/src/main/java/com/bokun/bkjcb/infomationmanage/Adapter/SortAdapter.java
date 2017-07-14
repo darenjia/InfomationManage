@@ -149,6 +149,16 @@ public class SortAdapter extends BaseAdapter implements Filterable {
         notifyDataSetChanged();
     }
 
+    public void repaceData() {
+        if (list.size() == 0) {
+            list = parentList;
+        }
+    }
+
+    public List<User> getData() {
+        return list;
+    }
+
     public void filtUser(int spinnerId, int selectedId) {
         switch (spinnerId) {
             case 0://单位选择
