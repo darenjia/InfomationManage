@@ -200,6 +200,9 @@ public class LoginActivity extends AppCompatActivity {
         if (checkBox.isChecked()) {
             SPUtils.put(LoginActivity.this, "UserName", mEmailView.getText().toString());
             SPUtils.put(LoginActivity.this, "Password", mPasswordView.getText().toString());
+        } else {
+            SPUtils.put(LoginActivity.this, "UserName", "");
+            SPUtils.put(LoginActivity.this, "Password", "");
         }
     }
 }

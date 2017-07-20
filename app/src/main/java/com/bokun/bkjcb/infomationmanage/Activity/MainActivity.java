@@ -4,14 +4,18 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Build;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
@@ -28,6 +32,8 @@ import com.bokun.bkjcb.infomationmanage.R;
 import com.bokun.bkjcb.infomationmanage.SQL.DBManager;
 import com.bokun.bkjcb.infomationmanage.View.AlertView;
 import com.bokun.bkjcb.infomationmanage.View.SideBar;
+import com.getkeepsafe.taptargetview.TapTarget;
+import com.getkeepsafe.taptargetview.TapTargetView;
 
 import org.angmarch.views.NiceSpinner;
 
@@ -54,6 +60,7 @@ public class MainActivity extends BaseActivity implements AdapterView.OnItemClic
     private EditText editText;
     private String keyWord;
     private SortAdapter adapter;
+    private Toolbar toolbar;
 
     @Override
     protected void setView() {
@@ -62,6 +69,7 @@ public class MainActivity extends BaseActivity implements AdapterView.OnItemClic
 
     @Override
     protected void initView() {
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
         sideBar = (SideBar) findViewById(R.id.side_bar);
         listView = (ListView) findViewById(R.id.listView);
         spinnerLayout = (LinearLayout) findViewById(R.id.spinner_layout);
@@ -75,6 +83,7 @@ public class MainActivity extends BaseActivity implements AdapterView.OnItemClic
         searchButton = (ImageView) findViewById(R.id.image_search);
         cancelButton = (ImageView) findViewById(R.id.clearSearch);
         editText = (EditText) findViewById(R.id.edit_search);
+        setSupportActionBar(toolbar);
     }
 
     @Override
@@ -150,6 +159,7 @@ public class MainActivity extends BaseActivity implements AdapterView.OnItemClic
         list2 = new ArrayList<>(Arrays.asList("全部", "市级", "区级"));
         sp_1.attachDataSource(list1);
         listView.setTextFilterEnabled(true);
+        showHelp();
     }
 
     @Override
@@ -358,5 +368,56 @@ public class MainActivity extends BaseActivity implements AdapterView.OnItemClic
                 }
                 break;
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.help) {
+            showHelp();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void showHelp() {
+       /* new MaterialShowcaseView.Builder(this)
+                .setTarget(sp_1)
+                .setDismissText("GOT IT")
+                .setContentText("This is some amazing feature you should know about")
+                .setDelay(200) // optional but starting animations immediately in onCreate can make them choppy
+                .singleUse("1") // provide a unique ID used to ensure it is only shown once
+                .show();*/
+
+        TapTargetView.showFor(this,                 // `this` is an Activity
+                TapTarget.forView(findViewById(R.id.spinner_one), "This is a target", "We have the best targets, believe me")
+                        // All options below are optional
+                        .outerCircleColor(R.color.colorAccent)      // Specify a color for the outer circle
+                        .outerCircleAlpha(0.96f)            // Specify the alpha amount for the outer circle
+                        .targetCircleColor(R.color.white)   // Specify a color for the target circle
+                        .titleTextSize(20)                  // Specify the size (in sp) of the title text
+                        .titleTextColor(R.color.white)      // Specify the color of the title text
+                        .descriptionTextSize(10)            // Specify the size (in sp) of the description text
+                        .descriptionTextColor(R.color.colorPrimary)  // Specify the color of the description text
+                        .textColor(R.color.colorPrimary)            // Specify a color for both the title and description text
+                        .textTypeface(Typeface.SANS_SERIF)  // Specify a typeface for the text
+                        .dimColor(R.color.black)            // If set, will dim behind the view with 30% opacity of the given color
+                        .drawShadow(true)                   // Whether to draw a drop shadow or not
+                        .cancelable(false)                  // Whether tapping outside the outer circle dismisses the view
+                        .tintTarget(true)                   // Whether to tint the target view's color
+                        .transparentTarget(false)           // Specify whether the target is transparent (displays the content underneath)
+                        .icon(getResources().getDrawable(R.drawable.arrow))                     // Specify a custom drawable to draw as the target
+                        .targetRadius(60),                  // Specify the target radius (in dp)
+                new TapTargetView.Listener() {          // The listener can listen for regular clicks, long clicks or cancels
+                    @Override
+                    public void onTargetClick(TapTargetView view) {
+                        super.onTargetClick(view);      // This call is optional
+                    }
+                });
     }
 }

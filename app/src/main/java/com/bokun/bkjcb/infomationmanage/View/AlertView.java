@@ -20,15 +20,15 @@ public class AlertView {
         View view = LayoutInflater.from(context).inflate(R.layout.alert_dialog, null);
         if (holder == null) {
             holder = new ViewHolder();
-            holder.name = view.findViewById(R.id.name);
-            holder.tel = view.findViewById(R.id.phoneNumber);
-            holder.quXian = view.findViewById(R.id.quXian);
-            holder.department = view.findViewById(R.id.department);
-            holder.address = view.findViewById(R.id.unit_address);
-            holder.phone = view.findViewById(R.id.unit_phone);
-            holder.fax = view.findViewById(R.id.unit_fax);
-            holder.zipCode = view.findViewById(R.id.unit_zipcode);
-            holder.callBtn = view.findViewById(R.id.call);
+            holder.name = (TextView) view.findViewById(R.id.name);
+            holder.tel = (TextView) view.findViewById(R.id.phoneNumber);
+            holder.quXian = (TextView) view.findViewById(R.id.quXian);
+            holder.department = (TextView) view.findViewById(R.id.department);
+            holder.address = (TextView) view.findViewById(R.id.unit_address);
+            holder.phone = (TextView) view.findViewById(R.id.unit_phone);
+            holder.fax = (TextView) view.findViewById(R.id.unit_fax);
+            holder.zipCode = (TextView) view.findViewById(R.id.unit_zipcode);
+            holder.callBtn = (ImageView) view.findViewById(R.id.call);
         }
         holder.name.setText(user.getUserName());
         holder.tel.setText(user.getTel());
