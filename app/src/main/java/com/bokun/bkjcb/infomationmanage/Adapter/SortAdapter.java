@@ -18,7 +18,7 @@ import java.util.List;
 
 public class SortAdapter extends BaseAdapter implements Filterable {
 
-    private List<User> list = null;
+    protected List<User> list = null;
     private List<User> list1 = new ArrayList<>();
     private List<User> list2 = new ArrayList<>();
     private List<User> list3 = new ArrayList<>();
@@ -26,8 +26,8 @@ public class SortAdapter extends BaseAdapter implements Filterable {
     private List<User> list5 = new ArrayList<>();
     private List<User> list6 = new ArrayList<>();
     private List<User> parentList = new ArrayList<>();
-    private Context mContext;
-    private MyFilter mFilter;
+    protected Context mContext;
+    protected MyFilter mFilter;
     private int position1, position2, position3, position4;
 
     public SortAdapter(Context mContext, List<User> list) {

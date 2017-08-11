@@ -17,6 +17,7 @@ public class User implements Serializable, Comparable<User> {
     private int flag;
     private Unit unit;
     private Level level;
+    private String unitName;
 
     private String pinyin; // 姓名对应的拼音
     private String firstLetter; // 拼音的首字母
@@ -98,6 +99,14 @@ public class User implements Serializable, Comparable<User> {
         this.level = level;
     }
 
+    public String getUnitName() {
+        return unitName;
+    }
+
+    public void setUnitName(String unitName) {
+        this.unitName = unitName;
+    }
+
     @Override
     public int compareTo(User another) {
         if (firstLetter.equals("#") && !another.getFirstLetter().equals("#")) {
@@ -112,5 +121,17 @@ public class User implements Serializable, Comparable<User> {
     @Override
     public String toString() {
         return this.userName + this.tel + this.level.getDepartmentName() + this.unit.getQuXian() + this.unit.getAddress();
+    }
+
+    public void changePinying(int flag) {
+        if (flag == 0) {
+            pinyin = Cn2Spell.getPinYin(userName); // 根据姓名称获取拼音
+        } else {
+            pinyin = Cn2Spell.getPinYin(unitName); // 根据单位名称获取拼音
+        }
+        firstLetter = pinyin.substring(0, 1).toUpperCase(); // 获取单位名称首字母并转成大写
+        if (!firstLetter.matches("[A-Z]")) { // 如果不在A-Z中则默认为“#”
+            firstLetter = "#";
+        }
     }
 }

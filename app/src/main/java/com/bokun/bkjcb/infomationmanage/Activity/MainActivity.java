@@ -4,11 +4,11 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Build;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
-import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -19,21 +19,22 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.bokun.bkjcb.infomationmanage.Adapter.AnotherSortAdapter;
 import com.bokun.bkjcb.infomationmanage.Adapter.SortAdapter;
 import com.bokun.bkjcb.infomationmanage.Domain.User;
 import com.bokun.bkjcb.infomationmanage.R;
 import com.bokun.bkjcb.infomationmanage.SQL.DBManager;
-import com.bokun.bkjcb.infomationmanage.View.AlertView;
+import com.bokun.bkjcb.infomationmanage.Utils.SPUtils;
 import com.bokun.bkjcb.infomationmanage.View.SideBar;
-import com.getkeepsafe.taptargetview.TapTarget;
-import com.getkeepsafe.taptargetview.TapTargetView;
 
 import org.angmarch.views.NiceSpinner;
 
@@ -41,6 +42,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Random;
+
+import me.shaohui.bottomdialog.BottomDialog;
+import zhy.com.highlight.HighLight;
+import zhy.com.highlight.interfaces.HighLightInterface;
+import zhy.com.highlight.position.OnBottomPosCallback;
+import zhy.com.highlight.shape.RectLightShape;
+import zhy.com.highlight.view.HightLightView;
 
 public class MainActivity extends BaseActivity implements AdapterView.OnItemClickListener, AdapterView.OnItemSelectedListener, View.OnClickListener {
 
@@ -60,7 +69,12 @@ public class MainActivity extends BaseActivity implements AdapterView.OnItemClic
     private EditText editText;
     private String keyWord;
     private SortAdapter adapter;
+    private SortAdapter adapterByName;
+    private AnotherSortAdapter anotherAdapter;
     private Toolbar toolbar;
+    private HighLight mHightLight;
+    private CardView cardView;
+    private LinearLayout condition_layout;
 
     @Override
     protected void setView() {
@@ -83,9 +97,12 @@ public class MainActivity extends BaseActivity implements AdapterView.OnItemClic
         searchButton = (ImageView) findViewById(R.id.image_search);
         cancelButton = (ImageView) findViewById(R.id.clearSearch);
         editText = (EditText) findViewById(R.id.edit_search);
+        cardView = (CardView) findViewById(R.id.card_search);
+        condition_layout = (LinearLayout) findViewById(R.id.condition_layout);
         setSupportActionBar(toolbar);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void setListener() {
         sideBar.setOnStrSelectCallBack(new SideBar.ISideBarSelectCallBack() {
@@ -147,13 +164,29 @@ public class MainActivity extends BaseActivity implements AdapterView.OnItemClic
                 return false;
             }
         });
+        listView.setOnScrollListener(new AbsListView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+
+            }
+
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+//                if (firstVisibleItem >= 1) {
+//                    condition_layout.setVisibility(View.GONE);
+//                } else {
+//                    condition_layout.setVisibility(View.VISIBLE);
+//                }
+            }
+        });
     }
 
     @Override
     protected void loadData() {
         users = DBManager.newInstance(this).queryAllUser();
         Collections.sort(users);
-        adapter = new SortAdapter(this, users);
+        adapterByName = new SortAdapter(this, users);
+        adapter = adapterByName;
         listView.setAdapter(adapter);
         list1 = new ArrayList<>(Arrays.asList("全部", "管理单位", "企业单位"));
         list2 = new ArrayList<>(Arrays.asList("全部", "市级", "区级"));
@@ -170,6 +203,43 @@ public class MainActivity extends BaseActivity implements AdapterView.OnItemClic
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
         final User user = adapter.getData().get(i);
+
+     /*   View alertView = new AlertView().build(user, this, listener);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setView(alertView);
+        builder.show();*/
+        BottomDialog.create(getSupportFragmentManager())
+                .setViewListener(new BottomDialog.ViewListener() {
+                    @Override
+                    public void bindView(View v) {
+                        initDialogView(v, user);
+                    }
+                })
+                .setLayoutRes(R.layout.alert_dialog)
+                .setDimAmount(0.5f)
+                .setTag("BottomDialog")
+                .show();
+    }
+
+    private void initDialogView(View view, final User user) {
+
+        TextView name = (TextView) view.findViewById(R.id.name);
+        TextView tel = (TextView) view.findViewById(R.id.phoneNumber);
+        TextView quXian = (TextView) view.findViewById(R.id.quXian);
+        TextView department = (TextView) view.findViewById(R.id.department);
+        TextView address = (TextView) view.findViewById(R.id.unit_address);
+        TextView phone = (TextView) view.findViewById(R.id.unit_phone);
+        TextView fax = (TextView) view.findViewById(R.id.unit_fax);
+        TextView zipCode = (TextView) view.findViewById(R.id.unit_zipcode);
+        ImageView callBtn = (ImageView) view.findViewById(R.id.call);
+        name.setText(user.getUserName());
+        tel.setText(user.getTel());
+        quXian.setText(user.getUnit().getQuXian());
+        department.setText(user.getLevel().getDepartmentName());
+        address.setText(user.getUnit().getAddress());
+        phone.setText(user.getUnit().getTel());
+        fax.setText(user.getUnit().getFax());
+        zipCode.setText(user.getUnit().getZipCode());
         View.OnClickListener listener = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -183,10 +253,7 @@ public class MainActivity extends BaseActivity implements AdapterView.OnItemClic
                 startActivity(intent);
             }
         };
-        View alertView = new AlertView().build(user, this, listener);
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setView(alertView);
-        builder.show();
+        callBtn.setOnClickListener(listener);
     }
 
     @Override
@@ -380,44 +447,89 @@ public class MainActivity extends BaseActivity implements AdapterView.OnItemClic
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.help) {
             showHelp();
-            return true;
+        } else if (item.getItemId() == R.id.byName) {
+            //按姓氏分组
+            changePinying(0);
+        } else if (item.getItemId() == R.id.byUnit) {
+            //按单位分组
+            changePinying(1);
         }
-        return super.onOptionsItemSelected(item);
+        return true;
+    }
+
+    private void changePinying(int flag) {
+        String[] names = {"海光", "中信", "崇明", "恒申"};
+        Random random = new Random();
+        if (flag == 0) {
+            adapter = adapterByName;
+        } else {
+            List<User> users = adapter.getData();
+            for (User user : users) {
+                user.setUnitName(names[random.nextInt(4)]);
+                user.changePinying(flag);
+            }
+            Collections.sort(users);
+            if (anotherAdapter == null) {
+                anotherAdapter = new AnotherSortAdapter(this, users);
+            }
+            adapter = anotherAdapter;
+        }
+        listView.setAdapter(adapter);
+//        adapter.notifyDataSetChanged();
     }
 
     private void showHelp() {
-       /* new MaterialShowcaseView.Builder(this)
-                .setTarget(sp_1)
-                .setDismissText("GOT IT")
-                .setContentText("This is some amazing feature you should know about")
-                .setDelay(200) // optional but starting animations immediately in onCreate can make them choppy
-                .singleUse("1") // provide a unique ID used to ensure it is only shown once
-                .show();*/
-
-        TapTargetView.showFor(this,                 // `this` is an Activity
-                TapTarget.forView(findViewById(R.id.spinner_one), "This is a target", "We have the best targets, believe me")
-                        // All options below are optional
-                        .outerCircleColor(R.color.colorAccent)      // Specify a color for the outer circle
-                        .outerCircleAlpha(0.96f)            // Specify the alpha amount for the outer circle
-                        .targetCircleColor(R.color.white)   // Specify a color for the target circle
-                        .titleTextSize(20)                  // Specify the size (in sp) of the title text
-                        .titleTextColor(R.color.white)      // Specify the color of the title text
-                        .descriptionTextSize(10)            // Specify the size (in sp) of the description text
-                        .descriptionTextColor(R.color.colorPrimary)  // Specify the color of the description text
-                        .textColor(R.color.colorPrimary)            // Specify a color for both the title and description text
-                        .textTypeface(Typeface.SANS_SERIF)  // Specify a typeface for the text
-                        .dimColor(R.color.black)            // If set, will dim behind the view with 30% opacity of the given color
-                        .drawShadow(true)                   // Whether to draw a drop shadow or not
-                        .cancelable(false)                  // Whether tapping outside the outer circle dismisses the view
-                        .tintTarget(true)                   // Whether to tint the target view's color
-                        .transparentTarget(false)           // Specify whether the target is transparent (displays the content underneath)
-                        .icon(getResources().getDrawable(R.drawable.arrow))                     // Specify a custom drawable to draw as the target
-                        .targetRadius(60),                  // Specify the target radius (in dp)
-                new TapTargetView.Listener() {          // The listener can listen for regular clicks, long clicks or cancels
+// targetView 目标按钮 tipView添加的提示布局 可以直接找到'我知道了'按钮添加监听事件等处理
+        mHightLight = new HighLight(MainActivity.this)//
+                .autoRemove(false)//设置背景点击高亮布局自动移除为false 默认为true
+//                .intercept(false)//设置拦截属性为false 高亮布局不影响后面布局的滑动效果
+                .intercept(true)//拦截属性默认为true 使下方ClickCallback生效
+                .enableNext()//开启next模式并通过show方法显示 然后通过调用next()方法切换到下一个提示布局，直到移除自身
+                .anchor(findViewById(R.id.container))//如果是Activity上增加引导层，不需要设置anchor
+                .addHighLight(R.id.spinner_one, R.layout.info_known_1, new OnBottomPosCallback(45), new RectLightShape(0, 0, 15, 0, 0))//矩形去除圆角
+                .addHighLight(R.id.edit_search, R.layout.info_known, new OnBottomPosCallback(45), new RectLightShape(0, 0, 15, 0, 0))//矩形去除圆角
+//                .addHighLight(R.id.help, R.layout.info_known, new OnBottomPosCallback(45), new RectLightShape(0, 0, 15, 0, 0))//矩形去除圆角
+                .setOnRemoveCallback(new HighLightInterface.OnRemoveCallback() {//监听移除回调
                     @Override
-                    public void onTargetClick(TapTargetView view) {
-                        super.onTargetClick(view);      // This call is optional
+                    public void onRemove() {
+                        SPUtils.put(MainActivity.this, "isFirst", false);
+                    }
+                })
+                .setOnShowCallback(new HighLightInterface.OnShowCallback() {//监听显示回调
+                    @Override
+                    public void onShow(HightLightView hightLightView) {
+                        Toast.makeText(MainActivity.this, "The HightLight view has been shown", Toast.LENGTH_SHORT).show();
+                    }
+                }).setOnNextCallback(new HighLightInterface.OnNextCallback() {
+                    @Override
+                    public void onNext(HightLightView hightLightView, View targetView, View tipView) {
+                        // targetView 目标按钮 tipView添加的提示布局 可以直接找到'我知道了'按钮添加监听事件等处理
+                        tipView.findViewById(R.id.iv_known).setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                if (mHightLight.isShowing() && mHightLight.isNext())//如果开启next模式
+                                {
+                                    mHightLight.next();
+                                } else {
+                                    mHightLight.remove();
+                                }
+                            }
+                        });
                     }
                 });
+        mHightLight.show();
+    }
+
+    private void isShowHelp() {
+        boolean isFirst = (boolean) SPUtils.get(this, "isFirst", true);
+        if (isFirst) {
+            showHelp();
+        }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        isShowHelp();
     }
 }
