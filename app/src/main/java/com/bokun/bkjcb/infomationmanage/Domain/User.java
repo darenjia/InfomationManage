@@ -14,6 +14,7 @@ public class User implements Serializable, Comparable<User> {
     private String loginName;
     private String password;
     private String tel;
+    private String phoneNumber;
     private int flag;
     private Unit unit;
     private Level level;
@@ -21,6 +22,7 @@ public class User implements Serializable, Comparable<User> {
 
     private String pinyin; // 姓名对应的拼音
     private String firstLetter; // 拼音的首字母
+//    private String Tag;//标签
 
     public int getUnitId() {
         return unitId;
@@ -36,12 +38,18 @@ public class User implements Serializable, Comparable<User> {
 
     public void setUserName(String userName) {
         this.userName = userName;
-        pinyin = Cn2Spell.getPinYin(userName); // 根据姓名获取拼音
-        firstLetter = pinyin.substring(0, 1).toUpperCase(); // 获取拼音首字母并转成大写
-        if (!firstLetter.matches("[A-Z]")) { // 如果不在A-Z中则默认为“#”
-            firstLetter = "#";
-        }
     }
+
+//    public String getTag() {
+//        if (Tag == null) {
+//            return firstLetter.toUpperCase();
+//        }
+//        return Tag;
+//    }
+//
+//    public void setTag(String tag) {
+//        Tag = tag;
+//    }
 
     public String getLoginName() {
         return loginName;
@@ -61,6 +69,14 @@ public class User implements Serializable, Comparable<User> {
 
     public String getTel() {
         return tel;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
     }
 
     public void setTel(String tel) {
@@ -105,6 +121,11 @@ public class User implements Serializable, Comparable<User> {
 
     public void setUnitName(String unitName) {
         this.unitName = unitName;
+        pinyin = Cn2Spell.getPinYin(unitName); // 根据姓名获取拼音
+        firstLetter = pinyin.substring(0, 1).toUpperCase(); // 获取拼音首字母并转成大写
+        if (!firstLetter.matches("[A-Z]")) { // 如果不在A-Z中则默认为“#”
+            firstLetter = "#";
+        }
     }
 
     @Override
@@ -120,18 +141,18 @@ public class User implements Serializable, Comparable<User> {
 
     @Override
     public String toString() {
-        return this.userName + this.tel + this.level.getDepartmentName() + this.unit.getQuXian() + this.unit.getAddress();
+        return this.userName + this.tel + Cn2Spell.getPinYin(userName) + this.phoneNumber;
     }
 
-    public void changePinying(int flag) {
-        if (flag == 0) {
-            pinyin = Cn2Spell.getPinYin(userName); // 根据姓名称获取拼音
-        } else {
-            pinyin = Cn2Spell.getPinYin(unitName); // 根据单位名称获取拼音
-        }
-        firstLetter = pinyin.substring(0, 1).toUpperCase(); // 获取单位名称首字母并转成大写
-        if (!firstLetter.matches("[A-Z]")) { // 如果不在A-Z中则默认为“#”
-            firstLetter = "#";
-        }
-    }
+//    public void changePinying(int flag) {
+//        if (flag == 0) {
+//            pinyin = Cn2Spell.getPinYin(userName); // 根据姓名称获取拼音
+//        } else {
+//            pinyin = Cn2Spell.getPinYin(unitName); // 根据单位名称获取拼音
+//        }
+//        firstLetter = pinyin.substring(0, 1).toUpperCase(); // 获取单位名称首字母并转成大写
+//        if (!firstLetter.matches("[A-Z]")) { // 如果不在A-Z中则默认为“#”
+//            firstLetter = "#";
+//        }
+//    }
 }

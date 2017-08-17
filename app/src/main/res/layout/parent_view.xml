@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/click"
+    android:layout_width="match_parent"
+    android:layout_height="48dp"
+    android:background="?selectableItemBackground">
+
+    <com.github.zagum.expandicon.ExpandIconView
+        android:id="@+id/expand_icon"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_gravity="center_vertical"
+        android:layout_marginLeft="16dp"
+        app:eiv_animationDuration="300"
+        app:eiv_color="#000"
+        app:eiv_colorLess="@color/colorPrimary"
+        app:eiv_colorMore="@color/colorAccent"
+        app:eiv_roundedCorners="false"
+        app:eiv_switchColor="true" />
+
+
+    <TextView
+        android:id="@+id/catalog"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginEnd="40dp"
+        android:layout_marginStart="40dp"
+        android:padding="10dp"
+        android:textColor="#454545"
+        android:textSize="20sp" />
+
+    <TextView
+        android:id="@+id/num"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginEnd="16dp"
+        android:gravity="end|center"
+        android:text="12"
+        android:textColor="@color/colorAccent"
+        android:textSize="16sp" />
+</FrameLayout>

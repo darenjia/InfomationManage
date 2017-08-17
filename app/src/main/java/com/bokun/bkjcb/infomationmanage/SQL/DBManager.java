@@ -59,9 +59,11 @@ public class DBManager {
             user.setLoginName(cursor.getString(cursor.getColumnIndex("LoginName")));
             user.setPassword(cursor.getString(cursor.getColumnIndex("Password")));
             user.setTel(cursor.getString(cursor.getColumnIndex("TEL")));
+            user.setPhoneNumber(cursor.getString(cursor.getColumnIndex("U_Tel")));
             user.setFlag(cursor.getInt(cursor.getColumnIndex("Flag")));
             user.setUnit(queryUnit(user.getUnitId()));
             user.setLevel(queryLevel(user.getUnit().getLevelId()));
+            user.setUnitName(user.getLevel().getDepartmentName());
             users.add(user);
         }
         return users;

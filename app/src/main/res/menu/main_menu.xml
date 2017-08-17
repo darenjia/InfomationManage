@@ -6,15 +6,4 @@
         android:icon="@android:drawable/ic_menu_help"
         android:title="help"
         app:showAsAction="always" />
-    <group
-        android:id="@+id/change"
-        android:title="布局"
-        app:showAsAction="collapseActionView">
-        <item
-            android:id="@+id/byName"
-            android:title="按姓氏分组" />
-        <item
-            android:id="@+id/byUnit"
-            android:title="按单位分组" />
-    </group>
 </menu>

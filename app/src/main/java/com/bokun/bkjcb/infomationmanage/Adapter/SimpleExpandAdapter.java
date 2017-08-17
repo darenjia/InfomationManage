@@ -5,18 +5,23 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
+import android.widget.BaseExpandableListAdapter;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.TextView;
 
 import com.bokun.bkjcb.infomationmanage.Domain.User;
 import com.bokun.bkjcb.infomationmanage.R;
+import com.bokun.bkjcb.infomationmanage.Utils.Cn2Spell;
+import com.github.zagum.expandicon.ExpandIconView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
-public class SortAdapter extends BaseAdapter implements Filterable {
+import cn.carbs.android.avatarimageview.library.AvatarImageView;
+
+public class SimpleExpandAdapter extends BaseExpandableListAdapter implements Filterable {
 
     protected List<User> list = null;
     private List<User> list1 = new ArrayList<>();
@@ -26,60 +31,40 @@ public class SortAdapter extends BaseAdapter implements Filterable {
     private List<User> list5 = new ArrayList<>();
     private List<User> list6 = new ArrayList<>();
     private List<User> parentList = new ArrayList<>();
+    private List<String> unitName;
+    private List<List<User>> users;
     protected Context mContext;
     protected MyFilter mFilter;
     private int position1, position2, position3, position4;
+    private boolean flag = false;
 
-    public SortAdapter(Context mContext, List<User> list) {
+    public SimpleExpandAdapter(Context mContext, List<User> list) {
         this.mContext = mContext;
         this.list = list;
         this.list1.addAll(list);
         this.parentList.addAll(list);
+        initUserData(list);
     }
 
-    public int getCount() {
-        return this.list.size();
-    }
-
-    public Object getItem(int position) {
-        return list.get(position);
-    }
-
-    public long getItemId(int position) {
-        return position;
-    }
-
-    public View getView(final int position, View view, ViewGroup arg2) {
-        ViewHolder viewHolder;
-        final User user = list.get(position);
-        if (view == null) {
-            viewHolder = new ViewHolder();
-            view = LayoutInflater.from(mContext).inflate(R.layout.item, null);
-            viewHolder.name = (TextView) view.findViewById(R.id.name);
-            viewHolder.catalog = (TextView) view.findViewById(R.id.catalog);
-            viewHolder.quXian = (TextView) view.findViewById(R.id.quXian);
-            viewHolder.departmentName = (TextView) view.findViewById(R.id.departmentName);
-            view.setTag(viewHolder);
-        } else {
-            viewHolder = (ViewHolder) view.getTag();
+    private void initUserData(List<User> list_p) {
+        users = new ArrayList<>();
+        unitName = new ArrayList<>();
+        List<User> userList = null;
+        for (User u : list_p) {
+            if (!unitName.contains(u.getUnitName())) {
+                unitName.add(u.getUnitName());
+                if (userList != null) {
+                    users.add(userList);
+                }
+                userList = new ArrayList<>();
+                userList.add(u);
+            } else {
+                if (userList != null) {
+                    userList.add(u);
+                }
+            }
         }
-
-        //根据position获取首字母作为目录catalog
-        String catalog = list.get(position).getFirstLetter();
-
-        //如果当前位置等于该分类首字母的Char的位置 ，则认为是第一次出现
-        if (position == getPositionForSection(catalog)) {
-            viewHolder.catalog.setVisibility(View.VISIBLE);
-//            viewHolder.catalog.setText(user.getTag());
-        } else {
-            viewHolder.catalog.setVisibility(View.GONE);
-        }
-
-        viewHolder.name.setText(this.list.get(position).getUserName());
-        viewHolder.quXian.setText(this.list.get(position).getUnit().getQuXian());
-        viewHolder.departmentName.setText(this.list.get(position).getLevel().getDepartmentName());
-        return view;
-
+        users.add(userList);
     }
 
     @Override
@@ -90,39 +75,102 @@ public class SortAdapter extends BaseAdapter implements Filterable {
         return mFilter;
     }
 
-    final static class ViewHolder {
-        TextView catalog;
-        TextView name;
-        TextView quXian;
-        TextView departmentName;
+    @Override
+    public int getGroupCount() {
+        return unitName == null ? 0 : unitName.size();
     }
 
-    /**
-     * 获取catalog首次出现位置
-     */
-    public int getPositionForSection(String catalog) {
-        for (int i = 0; i < getCount(); i++) {
-            String sortStr = list.get(i).getFirstLetter();
-            if (catalog.equalsIgnoreCase(sortStr)) {
-                return i;
-            }
+    @Override
+    public int getChildrenCount(int groupPosition) {
+        return users == null ? 0 : users.get(groupPosition).size();
+    }
+
+    @Override
+    public Object getGroup(int groupPosition) {
+        return unitName == null ? null : unitName.get(groupPosition);
+    }
+
+    @Override
+    public Object getChild(int groupPosition, int childPosition) {
+        return users == null ? null : users.get(groupPosition).get(childPosition);
+    }
+
+    @Override
+    public long getGroupId(int groupPosition) {
+        return groupPosition;
+    }
+
+    @Override
+    public long getChildId(int groupPosition, int childPosition) {
+        return childPosition;
+    }
+
+    @Override
+    public boolean hasStableIds() {
+        return false;
+    }
+
+    @Override
+    public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
+        View view = LayoutInflater.from(mContext).inflate(R.layout.parent_view, null);
+        TextView name_view = (TextView) view.findViewById(R.id.catalog);
+        TextView num = (TextView) view.findViewById(R.id.num);
+        ExpandIconView icon = (ExpandIconView) view.findViewById(R.id.expand_icon);
+        name_view.setText(unitName.get(groupPosition));
+        num.setText(String.valueOf(users.get(groupPosition).size()));
+        if (isExpanded) {
+            icon.setState(ExpandIconView.LESS, false);
+        } else {
+            icon.setState(ExpandIconView.MORE, false);
         }
-        return -1;
+        return view;
+    }
+
+    @Override
+    public View getChildView(int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
+        View view = LayoutInflater.from(mContext).inflate(R.layout.child_view, null);
+//        SuperTextView tv = (SuperTextView) view.findViewById(R.id.info_tv);
+        TextView tv = (TextView) view.findViewById(R.id.info_tv);
+        TextView bm = (TextView) view.findViewById(R.id.info_dz);
+        TextView qx = (TextView) view.findViewById(R.id.info_qx);
+        AvatarImageView iv = (AvatarImageView) view.findViewById(R.id.item_avatar);
+        User user = users.get(groupPosition).get(childPosition);
+//        tv.setCenterString(users.get(groupPosition).get(childPosition).getUserName());
+        tv.setText(user.getUserName());
+        iv.setTextAndColor(tv.getText().toString().substring(0, 1), getColor(mContext));
+        qx.setText(user.getUnit().getQuXian());
+        bm.setText(user.getLevel().getDepartmentName());
+        return view;
+    }
+
+    @Override
+    public boolean isChildSelectable(int groupPosition, int childPosition) {
+        return true;
     }
 
     class MyFilter extends Filter {
 
         @Override
         protected FilterResults performFiltering(CharSequence charSequence) {
+            String[] key = charSequence.toString().split(",", 2);
             FilterResults result = new FilterResults();
             List<User> users;
-            if (TextUtils.isEmpty(charSequence)) {//当过滤的关键字为空的时候，我们则显示所有的数据
+            if (TextUtils.isEmpty(key[1])) {//当过滤的关键字为空的时候，我们则显示所有的数据
                 users = list;
             } else {//否则把符合条件的数据对象添加到集合中
                 users = new ArrayList<>();
-                for (User user : list) {
-                    if (user.toString().contains(charSequence.toString().toLowerCase())) {
-                        users.add(user);
+                if (!Boolean.parseBoolean(key[0])) {
+                    for (User user : list) {
+                        if (user.toString().contains(key[1].toLowerCase())) {
+                            users.add(user);
+                        }
+                    }
+                } else {
+                    for (User user : list) {
+                        String s = user.getUnitName() + Cn2Spell.getPinYin(user.getUnitName());
+                        if (s.contains(key[1].toLowerCase())) {
+                            users.add(user);
+                        }
                     }
                 }
             }
@@ -140,12 +188,14 @@ public class SortAdapter extends BaseAdapter implements Filterable {
             } else {
                 notifyDataSetInvalidated();//通知数据失效
             }*/
+            initUserData(list);
             notifyDataSetChanged();
         }
     }
 
     public void initData() {
         list = parentList;
+        initUserData(list);
         notifyDataSetChanged();
     }
 
@@ -224,6 +274,7 @@ public class SortAdapter extends BaseAdapter implements Filterable {
         }
         parentList.clear();
         parentList.addAll(list);
+        initUserData(list);
         notifyDataSetChanged();
     }
 
@@ -322,6 +373,16 @@ public class SortAdapter extends BaseAdapter implements Filterable {
             }
         }
         return users;
+    }
+
+    public User getUser(int group, int child) {
+        return users.get(group).get(child);
+    }
+
+    public static int getColor(Context context) {
+        Random random = new Random();
+        int[] colors = {R.color.colorPrimary, R.color.red, R.color.yellow,R.color.green, R.color.colorAccent};
+        return context.getResources().getColor(colors[random.nextInt(4)]);
     }
 
 }

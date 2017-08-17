@@ -8,15 +8,19 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Filter;
 import android.widget.Filterable;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 
+import com.allen.library.SuperTextView;
 import com.bokun.bkjcb.infomationmanage.Domain.User;
 import com.bokun.bkjcb.infomationmanage.R;
+import com.bokun.bkjcb.infomationmanage.Utils.L;
+import com.github.zagum.expandicon.ExpandIconView;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class SortAdapter extends BaseAdapter implements Filterable {
+public class ExpandAdapter extends BaseAdapter implements Filterable {
 
     protected List<User> list = null;
     private List<User> list1 = new ArrayList<>();
@@ -29,8 +33,9 @@ public class SortAdapter extends BaseAdapter implements Filterable {
     protected Context mContext;
     protected MyFilter mFilter;
     private int position1, position2, position3, position4;
+    private boolean flag = false;
 
-    public SortAdapter(Context mContext, List<User> list) {
+    public ExpandAdapter(Context mContext, List<User> list) {
         this.mContext = mContext;
         this.list = list;
         this.list1.addAll(list);
@@ -54,30 +59,48 @@ public class SortAdapter extends BaseAdapter implements Filterable {
         final User user = list.get(position);
         if (view == null) {
             viewHolder = new ViewHolder();
-            view = LayoutInflater.from(mContext).inflate(R.layout.item, null);
-            viewHolder.name = (TextView) view.findViewById(R.id.name);
+            view = LayoutInflater.from(mContext).inflate(R.layout.item_other, null);
+            viewHolder.tv = (SuperTextView) view.findViewById(R.id.info_tv);
             viewHolder.catalog = (TextView) view.findViewById(R.id.catalog);
-            viewHolder.quXian = (TextView) view.findViewById(R.id.quXian);
-            viewHolder.departmentName = (TextView) view.findViewById(R.id.departmentName);
+            viewHolder.layout = (FrameLayout) view.findViewById(R.id.click);
+            viewHolder.icon = (ExpandIconView) view.findViewById(R.id.expand_icon);
             view.setTag(viewHolder);
         } else {
             viewHolder = (ViewHolder) view.getTag();
         }
 
-        //根据position获取首字母作为目录catalog
-        String catalog = list.get(position).getFirstLetter();
+        //根据position获取单位catalog
+        String catalog = list.get(position).getUnitName();
 
         //如果当前位置等于该分类首字母的Char的位置 ，则认为是第一次出现
         if (position == getPositionForSection(catalog)) {
-            viewHolder.catalog.setVisibility(View.VISIBLE);
-//            viewHolder.catalog.setText(user.getTag());
+            viewHolder.layout.setVisibility(View.VISIBLE);
+            viewHolder.catalog.setText(user.getUnitName());
         } else {
-            viewHolder.catalog.setVisibility(View.GONE);
+            viewHolder.layout.setVisibility(View.GONE);
         }
+        if (flag) {
+            viewHolder.tv.setVisibility(View.GONE);
+            viewHolder.icon.setState(ExpandIconView.MORE, false);
+        } else {
+            viewHolder.icon.setState(ExpandIconView.LESS, false);
+            viewHolder.tv.setVisibility(View.VISIBLE);
+            viewHolder.tv.setCenterString(this.list.get(position).getUserName());
+        }
+        final View finalView = view;
+        viewHolder.layout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                L.i("'dianji");
+                if (flag) {
+                    flag = false;
+                } else {
+                    flag = true;
+                }
+                finalView.invalidate();
+            }
+        });
 
-        viewHolder.name.setText(this.list.get(position).getUserName());
-        viewHolder.quXian.setText(this.list.get(position).getUnit().getQuXian());
-        viewHolder.departmentName.setText(this.list.get(position).getLevel().getDepartmentName());
         return view;
 
     }
@@ -92,9 +115,9 @@ public class SortAdapter extends BaseAdapter implements Filterable {
 
     final static class ViewHolder {
         TextView catalog;
-        TextView name;
-        TextView quXian;
-        TextView departmentName;
+        SuperTextView tv;
+        FrameLayout layout;
+        ExpandIconView icon;
     }
 
     /**
@@ -102,7 +125,7 @@ public class SortAdapter extends BaseAdapter implements Filterable {
      */
     public int getPositionForSection(String catalog) {
         for (int i = 0; i < getCount(); i++) {
-            String sortStr = list.get(i).getFirstLetter();
+            String sortStr = list.get(i).getUnitName();
             if (catalog.equalsIgnoreCase(sortStr)) {
                 return i;
             }

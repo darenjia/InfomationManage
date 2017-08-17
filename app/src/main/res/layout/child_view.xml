@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <cn.carbs.android.avatarimageview.library.AvatarImageView
+        android:id="@+id/item_avatar"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_gravity="center"
+        android:padding="10dp" />
+
+    <TextView
+        android:id="@+id/info_tv"
+        android:layout_width="100dp"
+        android:layout_height="60dp"
+        android:layout_toEndOf="@id/item_avatar"
+        android:gravity="center"
+        android:text="游坦之"
+        android:textColor="@color/colorAccent"
+        android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/info_dz"
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
+        android:layout_below="@+id/info_qx"
+        android:layout_marginLeft="10dp"
+        android:layout_toEndOf="@+id/info_tv"
+        android:gravity="bottom"
+        android:text="城投办事处" />
+
+    <TextView
+        android:id="@+id/info_qx"
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
+        android:layout_marginLeft="10dp"
+        android:layout_toEndOf="@id/info_tv"
+        android:gravity="bottom"
+        android:text="金山区" />
+</RelativeLayout>
