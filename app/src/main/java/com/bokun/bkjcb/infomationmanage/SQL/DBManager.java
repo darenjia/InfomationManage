@@ -50,8 +50,44 @@ public class DBManager {
 
     public ArrayList<User> queryAllUser() {
         User user = null;
+        Unit unit = null;
+        Level level = null;
         ArrayList<User> users = new ArrayList<>();
-        cursor = database.rawQuery("select * from User", null);
+        cursor = database.rawQuery("SELECT " +
+                        "a.id," +
+                        "a.Unitid," +
+                        "a.UserName," +
+                        "a.LoginName," +
+                        "a.Password," +
+                        "a.U_Tel," +
+                        "a.TEL," +
+                        "a.Role_A," +
+                        "a.Role_B," +
+                        "a.Role_C," +
+                        "a.Role_D," +
+                        "a.Flag," +
+                        "a.Duty," +
+                        "b.Address," +
+                        "b.id," +
+                        "b.Fax," +
+                        "b.Quxian," +
+                        "b.LevelID," +
+                        "b.Tel as Number," +
+                        "b.Zipcode," +
+                        "c.NewName," +
+                        "d.id," +
+                        "d.DepartmentName," +
+                        "d.Level," +
+                        "d.Kind1," +
+                        "d.Kind2," +
+                        "d.Kind3 " +
+                        "FROM " +
+                        "User a " +
+                        "LEFT JOIN Unit b ON a.Unitid = b.id " +
+                        "LEFT JOIN z_Quxian c ON c.id = b.Quxian " +
+                        "LEFT JOIN z_Level d ON b.LevelID = d.id " +
+                        "ORDER BY d.DepartmentName COLLATE LOCALIZED ASC"
+                , null);
         while (cursor.moveToNext()) {
             user = new User();
             user.setUnitId(cursor.getInt(cursor.getColumnIndex("Unitid")));
@@ -61,9 +97,27 @@ public class DBManager {
             user.setTel(cursor.getString(cursor.getColumnIndex("TEL")));
             user.setPhoneNumber(cursor.getString(cursor.getColumnIndex("U_Tel")));
             user.setFlag(cursor.getInt(cursor.getColumnIndex("Flag")));
-            user.setUnit(queryUnit(user.getUnitId()));
-            user.setLevel(queryLevel(user.getUnit().getLevelId()));
-            user.setUnitName(user.getLevel().getDepartmentName());
+            user.setDuty(cursor.getString(cursor.getColumnIndex("Duty")));
+            user.setRole_a(cursor.getInt(cursor.getColumnIndex("Role_A")));
+            user.setRole_b(cursor.getInt(cursor.getColumnIndex("Role_B")));
+            user.setRole_c(cursor.getInt(cursor.getColumnIndex("Role_C")));
+            user.setRole_d(cursor.getInt(cursor.getColumnIndex("Role_D")));
+
+            user.setQuXian(cursor.getString(cursor.getColumnIndex("NewName")));
+            user.setAddress(cursor.getString(cursor.getColumnIndex("Address")));
+            user.setFax(cursor.getString(cursor.getColumnIndex("Fax")));
+            user.setTel_U(cursor.getString(cursor.getColumnIndex("Number")));
+            user.setZipCode(cursor.getString(cursor.getColumnIndex("Zipcode")));
+            user.setLevelId(cursor.getInt(cursor.getColumnIndex("LevelID")));
+
+            user.setQuxin(cursor.getInt(cursor.getColumnIndex("Quxian")));
+            user.setDepartmentName(cursor.getString(cursor.getColumnIndex("DepartmentName")));
+            user.setLevel(cursor.getInt(cursor.getColumnIndex("Level")));
+            user.setKind1(cursor.getInt(cursor.getColumnIndex("Kind1")));
+            user.setKind2(cursor.getInt(cursor.getColumnIndex("Kind2")));
+            user.setKind3(cursor.getInt(cursor.getColumnIndex("Kind3")));
+//            L.i(user.getUserName());
+            user.setUnitName(user.getDepartmentName());
             users.add(user);
         }
         return users;

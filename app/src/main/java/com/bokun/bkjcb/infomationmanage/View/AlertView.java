@@ -30,7 +30,7 @@ public class AlertView {
             holder.zipCode = (TextView) view.findViewById(R.id.unit_zipcode);
             holder.callBtn = (ImageView) view.findViewById(R.id.call);
         }
-        holder.name.setText(user.getUserName());
+      /*  holder.name.setText(user.getUserName());
         holder.tel.setText(user.getTel());
         holder.quXian.setText(user.getUnit().getQuXian());
         holder.department.setText(user.getLevel().getDepartmentName());
@@ -38,7 +38,7 @@ public class AlertView {
         holder.phone.setText(user.getUnit().getTel());
         holder.fax.setText(user.getUnit().getFax());
         holder.zipCode.setText(user.getUnit().getZipCode());
-        holder.callBtn.setOnClickListener(listener);
+        holder.callBtn.setOnClickListener(listener);*/
         return view;
     }
 

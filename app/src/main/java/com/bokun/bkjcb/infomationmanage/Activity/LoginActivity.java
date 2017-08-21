@@ -89,11 +89,11 @@ public class LoginActivity extends AppCompatActivity {
         View focusView = null;
 
         // Check for a valid password, if the user entered one.
-        if (TextUtils.isEmpty(password)) {
+        /*if (TextUtils.isEmpty(password)) {
             mPasswordView.setError(getString(R.string.error_invalid_password));
             focusView = mPasswordView;
             cancel = true;
-        }
+        }*/
 
         // Check for a valid email address.
         if (TextUtils.isEmpty(email)) {
@@ -148,24 +148,25 @@ public class LoginActivity extends AppCompatActivity {
             if (user == null) {
                 return -1;
             }
-            if (user.getPassword().equals(mPassword)) {
+           /* if (user.getPassword().equals(mPassword)) {
                 return 1;
-            }
-            return 0;
+            }*/
+            return 1;
         }
 
         @Override
         protected void onPostExecute(Integer success) {
             mAuthTask = null;
-            hiddenProgress();
             if (success == 1) {
                 remberInfo();
                 toMainActivity();
                 finish();
             } else if (success == 0) {
+                hiddenProgress();
                 mPasswordView.setError(getString(R.string.error_incorrect_password));
                 mPasswordView.requestFocus();
             } else {
+                hiddenProgress();
                 mEmailView.setError(getString(R.string.error_field_required));
                 mEmailView.requestFocus();
             }
@@ -204,6 +205,12 @@ public class LoginActivity extends AppCompatActivity {
             SPUtils.put(LoginActivity.this, "UserName", "");
             SPUtils.put(LoginActivity.this, "Password", "");
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        hiddenProgress();
     }
 }
 

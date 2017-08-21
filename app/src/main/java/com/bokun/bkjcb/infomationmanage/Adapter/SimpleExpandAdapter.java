@@ -6,16 +6,20 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
+import android.widget.ExpandableListView;
 import android.widget.Filter;
 import android.widget.Filterable;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bokun.bkjcb.infomationmanage.Domain.User;
 import com.bokun.bkjcb.infomationmanage.R;
 import com.bokun.bkjcb.infomationmanage.Utils.Cn2Spell;
+import com.bokun.bkjcb.infomationmanage.Utils.L;
 import com.github.zagum.expandicon.ExpandIconView;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
@@ -37,6 +41,7 @@ public class SimpleExpandAdapter extends BaseExpandableListAdapter implements Fi
     protected MyFilter mFilter;
     private int position1, position2, position3, position4;
     private boolean flag = false;
+    private ExpandableListView listView;
 
     public SimpleExpandAdapter(Context mContext, List<User> list) {
         this.mContext = mContext;
@@ -54,6 +59,7 @@ public class SimpleExpandAdapter extends BaseExpandableListAdapter implements Fi
             if (!unitName.contains(u.getUnitName())) {
                 unitName.add(u.getUnitName());
                 if (userList != null) {
+                    Collections.sort(userList);
                     users.add(userList);
                 }
                 userList = new ArrayList<>();
@@ -64,7 +70,10 @@ public class SimpleExpandAdapter extends BaseExpandableListAdapter implements Fi
                 }
             }
         }
-        users.add(userList);
+        if (userList != null) {
+            Collections.sort(userList);
+            users.add(userList);
+        }
     }
 
     @Override
@@ -133,13 +142,29 @@ public class SimpleExpandAdapter extends BaseExpandableListAdapter implements Fi
         TextView tv = (TextView) view.findViewById(R.id.info_tv);
         TextView bm = (TextView) view.findViewById(R.id.info_dz);
         TextView qx = (TextView) view.findViewById(R.id.info_qx);
+        ImageView role_a = (ImageView) view.findViewById(R.id.class_a);
+        ImageView role_b = (ImageView) view.findViewById(R.id.class_b);
+        ImageView role_c = (ImageView) view.findViewById(R.id.class_c);
+        ImageView role_d = (ImageView) view.findViewById(R.id.class_d);
         AvatarImageView iv = (AvatarImageView) view.findViewById(R.id.item_avatar);
         User user = users.get(groupPosition).get(childPosition);
 //        tv.setCenterString(users.get(groupPosition).get(childPosition).getUserName());
         tv.setText(user.getUserName());
         iv.setTextAndColor(tv.getText().toString().substring(0, 1), getColor(mContext));
-        qx.setText(user.getUnit().getQuXian());
-        bm.setText(user.getLevel().getDepartmentName());
+        qx.setText(user.getQuXian());
+        bm.setText(user.getDuty());
+        if (user.getRole_a() != 0) {
+            role_a.setVisibility(View.VISIBLE);
+        }
+        if (user.getRole_b() != 0) {
+            role_b.setVisibility(View.VISIBLE);
+        }
+        if (user.getRole_c() != 0) {
+            role_c.setVisibility(View.VISIBLE);
+        }
+        if (user.getRole_d() != 0) {
+            role_d.setVisibility(View.VISIBLE);
+        }
         return view;
     }
 
@@ -154,9 +179,9 @@ public class SimpleExpandAdapter extends BaseExpandableListAdapter implements Fi
         protected FilterResults performFiltering(CharSequence charSequence) {
             String[] key = charSequence.toString().split(",", 2);
             FilterResults result = new FilterResults();
-            List<User> users;
+            List<User> users = null;
             if (TextUtils.isEmpty(key[1])) {//当过滤的关键字为空的时候，我们则显示所有的数据
-                users = list;
+                users = parentList;
             } else {//否则把符合条件的数据对象添加到集合中
                 users = new ArrayList<>();
                 if (!Boolean.parseBoolean(key[0])) {
@@ -182,6 +207,7 @@ public class SimpleExpandAdapter extends BaseExpandableListAdapter implements Fi
 
         @Override
         protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
+            L.i(charSequence.toString());
             list = (List<User>) filterResults.values;
            /* if (filterResults.count > 0) {
                 notifyDataSetChanged();//通知数据发生了改变
@@ -190,6 +216,7 @@ public class SimpleExpandAdapter extends BaseExpandableListAdapter implements Fi
             }*/
             initUserData(list);
             notifyDataSetChanged();
+//            openOrClose();
         }
     }
 
@@ -197,12 +224,25 @@ public class SimpleExpandAdapter extends BaseExpandableListAdapter implements Fi
         list = parentList;
         initUserData(list);
         notifyDataSetChanged();
+//        openOrClose();
     }
 
     public void repaceData() {
-        if (list.size() == 0) {
-            list = parentList;
-        }
+       /* if (list.size() == 0) {
+        }*/
+        list = parentList;
+    }
+
+    public int getUnitListCount() {
+        return unitName.size();
+    }
+
+    public ExpandableListView getListView() {
+        return listView;
+    }
+
+    public void setListView(ExpandableListView listView) {
+        this.listView = listView;
     }
 
     public List<User> getData() {
@@ -276,17 +316,18 @@ public class SimpleExpandAdapter extends BaseExpandableListAdapter implements Fi
         parentList.addAll(list);
         initUserData(list);
         notifyDataSetChanged();
+        openOrClose();
     }
 
     private List<User> getList(int id) {
         ArrayList<User> users = new ArrayList<>();
         for (User user : list1) {
             if (id == 1) {
-                if (user.getLevel().getLevel() == 0 || user.getLevel().getLevel() == 1) {
+                if (user.getLevel() == 0 || user.getLevel() == 1) {
                     users.add(user);
                 }
             } else {
-                if (user.getLevel().getLevel() == 2) {
+                if (user.getLevel() == 2) {
                     users.add(user);
                 }
             }
@@ -299,17 +340,17 @@ public class SimpleExpandAdapter extends BaseExpandableListAdapter implements Fi
         for (User user : list2) {
             if (position1 == 1) {
                 if (id == 1) {
-                    if (user.getLevel().getLevel() == 0) {
+                    if (user.getLevel() == 0) {
                         users.add(user);
                     }
                 } else {
-                    if (user.getLevel().getLevel() == 1) {
+                    if (user.getLevel() == 1) {
                         users.add(user);
                     }
                 }
 
             } else {
-                if (user.getLevel().getKind1() == id) {
+                if (user.getKind1() == id) {
                     users.add(user);
                 }
             }
@@ -321,16 +362,16 @@ public class SimpleExpandAdapter extends BaseExpandableListAdapter implements Fi
         ArrayList<User> users = new ArrayList<>();
         for (User user : list3) {
             if (position1 == 2) {
-                if (user.getLevel().getKind2() == id) {
+                if (user.getKind2() == id) {
                     users.add(user);
                 }
             } else {
                 if (position2 == 1) {
-                    if (user.getLevel().getKind1() == id) {
+                    if (user.getKind1() == id) {
                         users.add(user);
                     }
                 } else {
-                    if (user.getLevel().getQuxin() == id) {
+                    if (user.getQuxin() == id) {
                         users.add(user);
                     }
                 }
@@ -343,11 +384,11 @@ public class SimpleExpandAdapter extends BaseExpandableListAdapter implements Fi
         ArrayList<User> users = new ArrayList<>();
         for (User user : list4) {
             if (position2 == 1) {//选择市级
-                if (user.getLevel().getKind2() == id) {
+                if (user.getKind2() == id) {
                     users.add(user);
                 }
             } else {
-                if (user.getLevel().getKind1() == id) {
+                if (user.getKind1() == id) {
                     users.add(user);
                 }
             }
@@ -358,7 +399,7 @@ public class SimpleExpandAdapter extends BaseExpandableListAdapter implements Fi
     private List<User> getFifthList(int id) {
         ArrayList<User> users = new ArrayList<>();
         for (User user : list5) {
-            if (user.getLevel().getKind2() == id) {
+            if (user.getKind2() == id) {
                 users.add(user);
             }
         }
@@ -368,7 +409,7 @@ public class SimpleExpandAdapter extends BaseExpandableListAdapter implements Fi
     private List<User> getSixthList(int id) {
         ArrayList<User> users = new ArrayList<>();
         for (User user : list6) {
-            if (user.getLevel().getKind3() == id) {
+            if (user.getKind3() == id) {
                 users.add(user);
             }
         }
@@ -381,8 +422,17 @@ public class SimpleExpandAdapter extends BaseExpandableListAdapter implements Fi
 
     public static int getColor(Context context) {
         Random random = new Random();
-        int[] colors = {R.color.colorPrimary, R.color.red, R.color.yellow,R.color.green, R.color.colorAccent};
+        int[] colors = {R.color.colorPrimary, R.color.red, R.color.green, R.color.colorAccent};
         return context.getResources().getColor(colors[random.nextInt(4)]);
     }
 
+    private void openOrClose() {
+        if (getUnitListCount() == 1) {
+            listView.expandGroup(0);
+        } else if (getUnitListCount() > 1) {
+            for (int i = 0; i < getUnitListCount(); i++) {
+                listView.collapseGroup(i);
+            }
+        }
+    }
 }

@@ -1,21 +1,8 @@
 package com.bokun.bkjcb.infomationmanage.Adapter;
 
-import android.content.Context;
-import android.text.TextUtils;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.BaseAdapter;
-import android.widget.Filter;
-import android.widget.Filterable;
-import android.widget.TextView;
+public class SortAdapter{}
 
-import com.bokun.bkjcb.infomationmanage.Domain.User;
-import com.bokun.bkjcb.infomationmanage.R;
-
-import java.util.ArrayList;
-import java.util.List;
-
+/*
 public class SortAdapter extends BaseAdapter implements Filterable {
 
     protected List<User> list = null;
@@ -97,9 +84,11 @@ public class SortAdapter extends BaseAdapter implements Filterable {
         TextView departmentName;
     }
 
-    /**
+    */
+/**
      * 获取catalog首次出现位置
-     */
+     *//*
+
     public int getPositionForSection(String catalog) {
         for (int i = 0; i < getCount(); i++) {
             String sortStr = list.get(i).getFirstLetter();
@@ -135,11 +124,13 @@ public class SortAdapter extends BaseAdapter implements Filterable {
         @Override
         protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
             list = (List<User>) filterResults.values;
-           /* if (filterResults.count > 0) {
+           */
+/* if (filterResults.count > 0) {
                 notifyDataSetChanged();//通知数据发生了改变
             } else {
                 notifyDataSetInvalidated();//通知数据失效
-            }*/
+            }*//*
+
             notifyDataSetChanged();
         }
     }
@@ -324,4 +315,4 @@ public class SortAdapter extends BaseAdapter implements Filterable {
         return users;
     }
 
-}
+}*/

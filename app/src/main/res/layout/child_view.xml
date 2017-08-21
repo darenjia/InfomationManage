@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="60dp">
 
     <cn.carbs.android.avatarimageview.library.AvatarImageView
         android:id="@+id/item_avatar"
@@ -27,7 +27,7 @@
         android:layout_below="@+id/info_qx"
         android:layout_marginLeft="10dp"
         android:layout_toEndOf="@+id/info_tv"
-        android:gravity="bottom"
+        android:gravity="center_vertical"
         android:text="城投办事处" />
 
     <TextView
@@ -38,4 +38,45 @@
         android:layout_toEndOf="@id/info_tv"
         android:gravity="bottom"
         android:text="金山区" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_alignParentEnd="true"
+        android:visibility="visible">
+
+        <ImageView
+            android:id="@+id/class_a"
+            android:layout_width="30dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:padding="2dp"
+            android:src="@drawable/wjx"
+            android:visibility="gone" />
+
+        <ImageView
+            android:id="@+id/class_b"
+            android:layout_width="30dp"
+            android:layout_height="match_parent"
+            android:padding="2dp"
+            android:src="@drawable/sjx"
+            android:visibility="gone" />
+
+        <ImageView
+            android:id="@+id/class_c"
+            android:layout_width="30dp"
+            android:layout_height="match_parent"
+            android:padding="2dp"
+            android:src="@drawable/lx"
+            android:visibility="gone" />
+
+        <ImageView
+            android:id="@+id/class_d"
+            android:layout_width="30dp"
+            android:layout_height="match_parent"
+            android:padding="2dp"
+            android:src="@drawable/yq"
+            android:visibility="gone" />
+
+    </LinearLayout>
 </RelativeLayout>

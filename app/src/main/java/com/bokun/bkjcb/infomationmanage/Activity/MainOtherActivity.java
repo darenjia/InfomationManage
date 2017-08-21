@@ -5,7 +5,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
+import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
@@ -36,13 +38,13 @@ import com.bokun.bkjcb.infomationmanage.Adapter.SimpleExpandAdapter;
 import com.bokun.bkjcb.infomationmanage.Domain.User;
 import com.bokun.bkjcb.infomationmanage.R;
 import com.bokun.bkjcb.infomationmanage.SQL.DBManager;
+import com.bokun.bkjcb.infomationmanage.Utils.L;
 import com.bokun.bkjcb.infomationmanage.Utils.SPUtils;
 
 import org.angmarch.views.NiceSpinner;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import cn.carbs.android.avatarimageview.library.AvatarImageView;
@@ -137,7 +139,7 @@ public class MainOtherActivity extends BaseActivity implements ExpandableListVie
                     cancelButton.setImageResource(R.mipmap.ic_search);
                     searchButton.setVisibility(View.GONE);
                 } else {
-                    if (i1 == 1) {
+                    if (i1 == 1 && i2 == 0) {
                         adapter.repaceData();
                     }
                     cancelButton.setImageResource(R.mipmap.ic_close);
@@ -211,14 +213,9 @@ public class MainOtherActivity extends BaseActivity implements ExpandableListVie
 
     @Override
     protected void loadData() {
-        users = DBManager.newInstance(this).queryAllUser();
-//        listView.setAdapter(adapter);
-        initUnit();
-        list1 = new ArrayList<>(Arrays.asList("全部", "管理单位", "企业单位"));
-        list2 = new ArrayList<>(Arrays.asList("全部", "市级", "区级"));
-        sp_1.attachDataSource(list1);
-        listView.setTextFilterEnabled(true);
-        showHelp();
+        new LoadDataTask().execute();
+
+//        showHelp();
     }
 
     @Override
@@ -237,6 +234,7 @@ public class MainOtherActivity extends BaseActivity implements ExpandableListVie
         SuperTextView tel2 = (SuperTextView) view.findViewById(R.id.phoneNumber2);
         SuperTextView quxian = (SuperTextView) view.findViewById(R.id.quxian);
         SuperTextView department = (SuperTextView) view.findViewById(R.id.bumen);
+        SuperTextView zhiwu = (SuperTextView) view.findViewById(R.id.zhiwu);
         SuperTextView unit_address = (SuperTextView) view.findViewById(R.id.dizhi_danwei);
         SuperTextView unit_phone = (SuperTextView) view.findViewById(R.id.dianha_danwei);
         SuperTextView unit_fax = (SuperTextView) view.findViewById(R.id.chuanzhen_danwei);
@@ -244,6 +242,7 @@ public class MainOtherActivity extends BaseActivity implements ExpandableListVie
         ImageView close = (ImageView) view.findViewById(R.id.close);
         String s1 = user.getTel();
         String s2 = user.getPhoneNumber();
+        String s3 = user.getTel_U();
         if (!TextUtils.isEmpty(s1) && !TextUtils.isEmpty(s2)) {
             tel2.setVisibility(View.VISIBLE);
             tel1.setLeftBottomString(s1);
@@ -256,22 +255,30 @@ public class MainOtherActivity extends BaseActivity implements ExpandableListVie
             }
         }
 
-        department.setRightBottomString(user.getLevel().getDepartmentName());
-        unit_address.setRightBottomString(user.getUnit().getAddress());
-        if (!TextUtils.isEmpty(user.getUnit().getQuXian())) {
-            quxian.setRightBottomString(user.getUnit().getQuXian());
+        department.setRightBottomString(user.getDepartmentName());
+        unit_address.setRightBottomString(user.getAddress());
+        if (!TextUtils.isEmpty(user.getDuty())) {
+            zhiwu.setRightBottomString(user.getDuty());
+            zhiwu.setVisibility(View.VISIBLE);
+        }
+        if (!TextUtils.isEmpty(user.getQuXian())) {
+            quxian.setRightBottomString(user.getQuXian());
             quxian.setVisibility(View.VISIBLE);
         }
-        if (!TextUtils.isEmpty(user.getUnit().getTel())) {
-            unit_phone.setRightBottomString(user.getUnit().getTel());
+        if (!TextUtils.isEmpty(s3)) {
+            String[] numbers = s3.split("、");
+            if (numbers.length > 1) {
+                unit_phone.setCenterBottomString(numbers[1]);
+            }
+            unit_phone.setRightBottomString(numbers[0]);
             unit_phone.setVisibility(View.VISIBLE);
         }
-        if (!TextUtils.isEmpty(user.getUnit().getFax())) {
-            unit_fax.setRightBottomString(user.getUnit().getFax());
+        if (!TextUtils.isEmpty(user.getFax())) {
+            unit_fax.setRightBottomString(user.getFax());
             unit_fax.setVisibility(View.VISIBLE);
         }
-        if (!TextUtils.isEmpty(user.getUnit().getZipCode())) {
-            unit_zipcode.setRightBottomString(user.getUnit().getZipCode());
+        if (!TextUtils.isEmpty(user.getZipCode())) {
+            unit_zipcode.setRightBottomString(user.getZipCode());
             unit_zipcode.setVisibility(View.VISIBLE);
         }
         View.OnClickListener listener = new View.OnClickListener() {
@@ -299,6 +306,11 @@ public class MainOtherActivity extends BaseActivity implements ExpandableListVie
     }
 
     private void actionCall(String number) {
+        if (number.trim().length() == 11) {
+            number = "+86" + number;
+        } else {
+            number = "021" + number;
+        }
         intent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + number));
         if (ActivityCompat.checkSelfPermission(MainOtherActivity.this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -312,8 +324,10 @@ public class MainOtherActivity extends BaseActivity implements ExpandableListVie
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] paramArrayOfInt) {
         if (requestCode == 0) {
-            if (!verifyPermissions(paramArrayOfInt)) {
+            if (verifyPermissions(paramArrayOfInt)) {
                 startActivity(intent);
+            } else {
+                showMissingPermissionDialog();
             }
         }
     }
@@ -547,13 +561,6 @@ public class MainOtherActivity extends BaseActivity implements ExpandableListVie
         return true;
     }
 
-    private void initUnit() {
-        Collections.sort(users);
-        adapter = new SimpleExpandAdapter(this, users);
-        listView.setAdapter(adapter);
-//        adapter.notifyDataSetChanged();
-    }
-
     private void showHelp() {
 // targetView 目标按钮 tipView添加的提示布局 可以直接找到'我知道了'按钮添加监听事件等处理
         mHightLight = new HighLight(MainOtherActivity.this)//
@@ -572,12 +579,7 @@ public class MainOtherActivity extends BaseActivity implements ExpandableListVie
                         SPUtils.put(MainOtherActivity.this, "isFirst", false);
                     }
                 })
-                .setOnShowCallback(new HighLightInterface.OnShowCallback() {//监听显示回调
-                    @Override
-                    public void onShow(HightLightView hightLightView) {
-                        Toast.makeText(MainOtherActivity.this, "The HightLight view has been shown", Toast.LENGTH_SHORT).show();
-                    }
-                }).setOnNextCallback(new HighLightInterface.OnNextCallback() {
+                .setOnNextCallback(new HighLightInterface.OnNextCallback() {
                     @Override
                     public void onNext(HightLightView hightLightView, View targetView, View tipView) {
                         // targetView 目标按钮 tipView添加的提示布局 可以直接找到'我知道了'按钮添加监听事件等处理
@@ -607,7 +609,6 @@ public class MainOtherActivity extends BaseActivity implements ExpandableListVie
     @Override
     protected void onStart() {
         super.onStart();
-        isShowHelp();
     }
 
     private Animation show() {
@@ -668,4 +669,81 @@ public class MainOtherActivity extends BaseActivity implements ExpandableListVie
         bottomDialog.show();
         return true;
     }
+
+    class LoadDataTask extends AsyncTask {
+
+        @Override
+        protected Object doInBackground(Object[] objects) {
+            users = DBManager.newInstance(MainOtherActivity.this).queryAllUser();
+//            Collections.sort(users);
+            adapter = new SimpleExpandAdapter(MainOtherActivity.this, users);
+            adapter.setListView(listView);
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Object o) {
+            super.onPostExecute(o);
+            listView.setAdapter(adapter);
+            list1 = new ArrayList<>(Arrays.asList("全部", "管理单位", "企业单位"));
+            list2 = new ArrayList<>(Arrays.asList("全部", "市级", "区级"));
+            sp_1.attachDataSource(list1);
+            listView.setTextFilterEnabled(true);
+            isShowHelp();
+        }
+    }
+
+    /**
+     * 显示提示信息
+     *
+     * @since 2.5.0
+     */
+    private void showMissingPermissionDialog() {
+       /* AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("提示");
+        builder.setMessage("当前应用缺少拨号权限。\\n\\n请点击\\\"设置\\\"-\\\"权限\\\"-打开所需权限。");
+
+        // 拒绝, 退出应用
+        builder.setNegativeButton("取消",
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        finish();
+                    }
+                });
+
+        builder.setPositiveButton("设置",
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        startAppSettings();
+                    }
+                });
+
+        builder.setCancelable(false);
+
+        builder.show();*/
+        L.i("没有权限");
+       /* bottomDialog.dismiss();
+        Snackbar.make(listView, "没有拨号权限，无法拨打电话", 3).setAction("设置", new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startAppSettings();
+            }
+        }).show();*/
+        Toast.makeText(this,"没有拨号权限，无法拨打电话",Toast.LENGTH_SHORT).show();
+    }
+
+    /**
+     * 启动应用的设置
+     *
+     * @since 2.5.0
+     */
+    private void startAppSettings() {
+        Intent intent = new Intent(
+                Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+        intent.setData(Uri.parse("package:" + getPackageName()));
+        startActivity(intent);
+    }
+
 }

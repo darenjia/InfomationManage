@@ -16,10 +16,13 @@ import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v4.view.animation.LinearOutSlowInInterpolator;
 import android.support.v7.widget.AppCompatTextView;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
@@ -69,6 +72,7 @@ public class NiceSpinner extends AppCompatTextView {
     int arrowDrawableResId;
 
     private SpinnerTextFormatter spinnerTextFormatter = new SimpleSpinnerTextFormatter();
+    private int screenHeight;
 
     public NiceSpinner(Context context) {
         super(context);
@@ -130,6 +134,12 @@ public class NiceSpinner extends AppCompatTextView {
 
     private void init(Context context, AttributeSet attrs) {
         Resources resources = getResources();
+
+        DisplayMetrics dm = new DisplayMetrics();
+        WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+        windowManager.getDefaultDisplay().getMetrics(dm);
+        screenHeight = dm.heightPixels;
+
         TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.NiceSpinner);
         int defaultPadding = resources.getDimensionPixelSize(R.dimen.one_and_a_half_grid_unit);
 
@@ -308,7 +318,14 @@ public class NiceSpinner extends AppCompatTextView {
         listView.measure(widthMeasureSpec, heightMeasureSpec);
         popupWindow.setWidth(View.MeasureSpec.getSize(widthMeasureSpec));
 //        popupWindow.setHeight(listView.getMeasuredHeight() - getMeasuredHeight() - dropDownListPaddingBottom);
-        popupWindow.setHeight(listView.getMeasuredHeight() - dropDownListPaddingBottom);
+        int[] location2 = new int[2];
+        this.getLocationOnScreen(location2);
+        Log.i("Deng", "" + location2[1] + "屏幕高度：" + screenHeight + listView.getMeasuredHeight());
+        if (listView.getMeasuredHeight() + getMeasuredHeight() + location2[1] + dropDownListPaddingBottom < screenHeight) {
+            popupWindow.setHeight(listView.getMeasuredHeight() - dropDownListPaddingBottom);
+        } else {
+            popupWindow.setHeight(screenHeight - location2[1] - getMeasuredHeight() - dropDownListPaddingBottom);
+        }
     }
 
     @Override

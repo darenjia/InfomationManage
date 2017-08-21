@@ -28,6 +28,8 @@ public class SQLiteOpenUtil extends SQLiteOpenHelper {
 
     private final Context myContext;
 
+    private static boolean mainTmpDirSet = false;
+
     /**
      * Constructor
      * Takes and keeps a reference of the passed context in order to access to the application assets and resources.
@@ -123,6 +125,18 @@ public class SQLiteOpenUtil extends SQLiteOpenHelper {
         }
 
     }
+
+    /*@Override
+    public SQLiteDatabase getReadableDatabase() {
+        if (!mainTmpDirSet) {
+            boolean rs = new File("/data/data/com.bokun.bkjcb.infomationmanage/databases/main").mkdir();
+            L.i(rs + "");
+            super.getReadableDatabase().execSQL("PRAGMA temp_store_directory='/data/data/com.bokun.bkjcb.infomationmanage/databases/main'");
+            mainTmpDirSet = true;
+            return super.getReadableDatabase();
+        }
+        return super.getReadableDatabase();
+    }*/
 
     public SQLiteDatabase openDataBase() throws SQLException {
 

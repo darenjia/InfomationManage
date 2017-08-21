@@ -4,6 +4,7 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 
 import java.io.IOException;
+import java.util.Locale;
 
 /**
  * Created by DengShuai on 2017/7/10.
@@ -30,6 +31,7 @@ public class SQLUtil {
         try {
             util.createDataBase();
             database = util.openDataBase();
+            database.setLocale(Locale.CHINESE);
         } catch (IOException e) {
             e.printStackTrace();
         }
