@@ -22,6 +22,8 @@ import com.bokun.bkjcb.infomationmanage.R;
 import com.bokun.bkjcb.infomationmanage.SQL.DBManager;
 import com.bokun.bkjcb.infomationmanage.Utils.SPUtils;
 
+import qiu.niorgai.StatusBarCompat;
+
 public class LoginActivity extends AppCompatActivity {
 
     private UserLoginTask mAuthTask = null;
@@ -37,8 +39,9 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        StatusBarCompat.setStatusBarColor(this, getResources().getColor(R.color.colorPrimary));
         // Set up the login form.
-        setTitle("登录");
+        setTitle(R.string.title_activity_main);
         mEmailView = (EditText) findViewById(R.id.username);
         checkBox = (CheckBox) findViewById(R.id.rem_btn);
         mPasswordView = (EditText) findViewById(R.id.password);

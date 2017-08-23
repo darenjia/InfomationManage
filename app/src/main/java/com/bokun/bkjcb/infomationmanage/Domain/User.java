@@ -203,6 +203,7 @@ public class User implements Serializable, Comparable<User> {
     private int kind1;
     private int kind2;
     private int kind3;
+    private String departmentNameA;
 
     public int getQuxin() {
         return quxin;
@@ -250,6 +251,14 @@ public class User implements Serializable, Comparable<User> {
 
     public void setKind3(int kind3) {
         this.kind3 = kind3;
+    }
+
+    public String getDepartmentNameA() {
+        return departmentNameA;
+    }
+
+    public void setDepartmentNameA(String departmentNameA) {
+        this.departmentNameA = departmentNameA;
     }
 
     private String quXian;

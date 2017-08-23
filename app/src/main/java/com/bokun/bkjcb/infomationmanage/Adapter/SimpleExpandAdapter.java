@@ -216,7 +216,7 @@ public class SimpleExpandAdapter extends BaseExpandableListAdapter implements Fi
             }*/
             initUserData(list);
             notifyDataSetChanged();
-//            openOrClose();
+            openOrClose();
         }
     }
 

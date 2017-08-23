@@ -1,6 +1,7 @@
 package com.bokun.bkjcb.infomationmanage.Activity;
 
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -50,6 +51,7 @@ import java.util.List;
 import cn.carbs.android.avatarimageview.library.AvatarImageView;
 import info.hoang8f.android.segmented.SegmentedGroup;
 import me.shaohui.bottomdialog.BottomDialog;
+import qiu.niorgai.StatusBarCompat;
 import zhy.com.highlight.HighLight;
 import zhy.com.highlight.interfaces.HighLightInterface;
 import zhy.com.highlight.position.OnBottomPosCallback;
@@ -84,10 +86,12 @@ public class MainOtherActivity extends BaseActivity implements ExpandableListVie
     private SegmentedGroup group;
     private boolean searchFlag = false;
     private BottomDialog bottomDialog;
+    private ProgressDialog dialog;
 
     @Override
     protected void setView() {
         setContentView(R.layout.activity_main_other);
+        StatusBarCompat.setStatusBarColor(this, getResources().getColor(R.color.colorPrimary));
     }
 
     @Override
@@ -110,6 +114,7 @@ public class MainOtherActivity extends BaseActivity implements ExpandableListVie
         condition = (CheckBox) findViewById(R.id.condition);
         builder = new StringBuilder("筛选条件:全部");
         group = (SegmentedGroup) findViewById(R.id.segmented);
+        toolbar.setTitle(R.string.title_activity_main);
         setSupportActionBar(toolbar);
         listView.setGroupIndicator(null);
     }
@@ -333,7 +338,8 @@ public class MainOtherActivity extends BaseActivity implements ExpandableListVie
     }
 
     private ArrayList<String> getSpinnerData(String leval) {
-        return leval != null ? DBManager.newInstance(this).queryAllUnitName(leval) : DBManager.newInstance(this).queryAllQuName();
+//        return leval != null ? DBManager.newInstance(this).queryAllUnitName(leval) : DBManager.newInstance(this).queryAllQuName();
+        return null;
     }
 
     private ArrayList<String> getSpinnerData(int quxian) {
@@ -673,6 +679,12 @@ public class MainOtherActivity extends BaseActivity implements ExpandableListVie
     class LoadDataTask extends AsyncTask {
 
         @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            createDialog().show();
+        }
+
+        @Override
         protected Object doInBackground(Object[] objects) {
             users = DBManager.newInstance(MainOtherActivity.this).queryAllUser();
 //            Collections.sort(users);
@@ -689,6 +701,7 @@ public class MainOtherActivity extends BaseActivity implements ExpandableListVie
             list2 = new ArrayList<>(Arrays.asList("全部", "市级", "区级"));
             sp_1.attachDataSource(list1);
             listView.setTextFilterEnabled(true);
+            dialog.dismiss();
             isShowHelp();
         }
     }
@@ -731,7 +744,7 @@ public class MainOtherActivity extends BaseActivity implements ExpandableListVie
                 startAppSettings();
             }
         }).show();*/
-        Toast.makeText(this,"没有拨号权限，无法拨打电话",Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "没有拨号权限，无法拨打电话", Toast.LENGTH_SHORT).show();
     }
 
     /**
@@ -744,6 +757,16 @@ public class MainOtherActivity extends BaseActivity implements ExpandableListVie
                 Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
         intent.setData(Uri.parse("package:" + getPackageName()));
         startActivity(intent);
+    }
+
+    private ProgressDialog createDialog() {
+        if (dialog == null) {
+            dialog = new ProgressDialog(this);
+            dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+
+            dialog.setMessage("请稍等");
+        }
+        return dialog;
     }
 
 }

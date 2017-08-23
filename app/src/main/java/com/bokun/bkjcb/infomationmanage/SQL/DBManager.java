@@ -80,13 +80,14 @@ public class DBManager {
                         "d.Level," +
                         "d.Kind1," +
                         "d.Kind2," +
-                        "d.Kind3 " +
+                        "d.Kind3, " +
+                        "d.DepartmentNameA " +
                         "FROM " +
                         "User a " +
                         "LEFT JOIN Unit b ON a.Unitid = b.id " +
                         "LEFT JOIN z_Quxian c ON c.id = b.Quxian " +
                         "LEFT JOIN z_Level d ON b.LevelID = d.id " +
-                        "ORDER BY d.DepartmentName COLLATE LOCALIZED ASC"
+                        "ORDER BY d.DepartmentNameA COLLATE LOCALIZED ASC"
                 , null);
         while (cursor.moveToNext()) {
             user = new User();
@@ -116,8 +117,9 @@ public class DBManager {
             user.setKind1(cursor.getInt(cursor.getColumnIndex("Kind1")));
             user.setKind2(cursor.getInt(cursor.getColumnIndex("Kind2")));
             user.setKind3(cursor.getInt(cursor.getColumnIndex("Kind3")));
+            user.setDepartmentNameA(cursor.getString(cursor.getColumnIndex("DepartmentNameA")));
 //            L.i(user.getUserName());
-            user.setUnitName(user.getDepartmentName());
+            user.setUnitName(user.getDepartmentNameA());
             users.add(user);
         }
         return users;
@@ -155,6 +157,49 @@ public class DBManager {
         return level;
     }
 
+    public ArrayList<Level> queryLevel(int level_l, int kind1, int kind2, int kind3, int quxianId) {
+        ArrayList<Level> levels = new ArrayList<>();
+        Level level = null;
+        ArrayList<String> para = new ArrayList<>();
+        StringBuilder sql = new StringBuilder("SELECT * FROM z_Level where level = ? ");
+        para.add(String.valueOf(level_l));
+        if (level_l == 1 && quxianId != -1) {
+            sql.append("and Quxian = ?");
+            para.add(String.valueOf(quxianId));
+        }
+
+        if (kind1 != -1) {
+            sql.append("and Kind1 = ? AND Kind2 IS NULL AND Kind3 IS NULL");
+            para.add(String.valueOf(kind1));
+        } else if (kind2 != -1) {
+            sql.append("and Kind1 = ? and Kind2 = ? AND Kind3 IS NULL");
+            para.add(String.valueOf(kind1));
+            para.add(String.valueOf(kind2));
+        } else if (kind3 != -1) {
+            sql.append("and Kind1 = ? and Kind2 = ? AND Kind3 IS NOT NULL");
+            para.add(String.valueOf(kind1));
+            para.add(String.valueOf(kind2));
+        } else {
+            sql.append("and Kind1 is NOT NULL AND Kind2 IS NULL AND Kind3 IS NULL");
+        }
+        String[] strings = new String[para.size()];
+        L.i(sql.toString());
+        Cursor cursor = database.rawQuery(sql.toString(), para.toArray(strings));
+        while (cursor.moveToNext()) {
+            level = new Level();
+            level.setQuxin(cursor.getInt(cursor.getColumnIndex("Quxian")));
+            level.setDepartmentName(cursor.getString(cursor.getColumnIndex("DepartmentName")));
+            level.setDepartmentNameA(cursor.getString(cursor.getColumnIndex("DepartmentNameA")));
+            level.setLevel(cursor.getInt(cursor.getColumnIndex("Level")));
+            level.setKind1(cursor.getInt(cursor.getColumnIndex("Kind1")));
+            level.setKind2(cursor.getInt(cursor.getColumnIndex("Kind2")));
+            level.setKind3(cursor.getInt(cursor.getColumnIndex("Kind3")));
+            levels.add(level);
+        }
+        L.i(levels.size());
+        return levels;
+    }
+
     public ArrayList<String> queryAllUnitName(String level) {
         ArrayList<String> list = new ArrayList<>();
         list.add("全部");
@@ -166,13 +211,16 @@ public class DBManager {
         return list;
     }
 
-    public ArrayList<String> queryAllQuName() {
-        ArrayList<String> list = new ArrayList<>();
-        list.add("全部");
+    public ArrayList<Level> queryAllQuName() {
+        ArrayList<Level> list = new ArrayList<>();
+        Level level = null;
         cursor = database.rawQuery("SELECT * FROM z_Quxian", null);
         while (cursor.moveToNext()) {
+            level = new Level();
             String name = cursor.getString(cursor.getColumnIndex("NewName"));
-            list.add(name);
+            level.setLevel(1);
+            level.setDepartmentNameA(name);
+            list.add(level);
         }
         return list;
     }

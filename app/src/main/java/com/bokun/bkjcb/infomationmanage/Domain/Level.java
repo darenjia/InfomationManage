@@ -7,6 +7,7 @@ package com.bokun.bkjcb.infomationmanage.Domain;
 public class Level {
     private int quxin;
     private String departmentName;
+    private String departmentNameA;
     private int level;
     private int kind1;
     private int kind2;
@@ -26,6 +27,14 @@ public class Level {
 
     public void setDepartmentName(String departmentName) {
         this.departmentName = departmentName;
+    }
+
+    public String getDepartmentNameA() {
+        return departmentNameA;
+    }
+
+    public void setDepartmentNameA(String departmentNameA) {
+        this.departmentNameA = departmentNameA;
     }
 
     public int getLevel() {
