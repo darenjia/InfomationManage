@@ -1,15 +1,19 @@
 package com.bokun.bkjcb.infomationmanage.SQL;
 
+import android.app.Activity;
+import android.app.Notification;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
+import com.bokun.bkjcb.infomationmanage.Domain.Emergency;
 import com.bokun.bkjcb.infomationmanage.Domain.Level;
 import com.bokun.bkjcb.infomationmanage.Domain.Unit;
 import com.bokun.bkjcb.infomationmanage.Domain.User;
 import com.bokun.bkjcb.infomationmanage.Utils.L;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  * Created by DengShuai on 2017/7/11.
@@ -164,15 +168,18 @@ public class DBManager {
         StringBuilder sql = new StringBuilder("SELECT * FROM z_Level where level = ? ");
         para.add(String.valueOf(level_l));
         if (level_l == 1 && quxianId != -1) {
-            sql.append("and Quxian = ?");
+            sql.append("and Quxian = ? ");
             para.add(String.valueOf(quxianId));
         }
 
         if (kind1 != -1) {
-            sql.append("and Kind1 = ? AND Kind2 IS NULL AND Kind3 IS NULL");
+            sql.append("and Kind1 = ? AND Kind2 IS NOT NULL AND Kind3 IS NULL");
             para.add(String.valueOf(kind1));
-        } else if (kind2 != -1) {
-            sql.append("and Kind1 = ? and Kind2 = ? AND Kind3 IS NULL");
+        } /*else if (kind2 == 0) {
+            sql.append("and Kind1 = ? and Kind2 IS NOT NULL AND Kind3 IS NULL");
+            para.add(String.valueOf(kind1));
+        }*/ else if (kind2 != -1) {
+            sql.append("and Kind1 = ? and Kind2 = ? AND Kind3 IS NOT NULL");
             para.add(String.valueOf(kind1));
             para.add(String.valueOf(kind2));
         } else if (kind3 != -1) {
@@ -183,7 +190,7 @@ public class DBManager {
             sql.append("and Kind1 is NOT NULL AND Kind2 IS NULL AND Kind3 IS NULL");
         }
         String[] strings = new String[para.size()];
-        L.i(sql.toString());
+//        L.i(sql.toString());
         Cursor cursor = database.rawQuery(sql.toString(), para.toArray(strings));
         while (cursor.moveToNext()) {
             level = new Level();
@@ -219,6 +226,7 @@ public class DBManager {
             level = new Level();
             String name = cursor.getString(cursor.getColumnIndex("NewName"));
             level.setLevel(1);
+            level.setQuxin(cursor.getInt(cursor.getColumnIndex("id")));
             level.setDepartmentNameA(name);
             list.add(level);
         }
@@ -280,4 +288,109 @@ public class DBManager {
         return list;
     }
 
+    public ArrayList<User> queryUser(Level level) {
+        ArrayList<User> users = new ArrayList<>();
+        User user = null;
+        StringBuilder builder = null;
+        builder = new StringBuilder("SELECT " +
+                "a.id," +
+                "a.Unitid," +
+                "a.UserName," +
+                "a.LoginName," +
+                "a.Password," +
+                "a.U_Tel," +
+                "a.TEL," +
+                "a.Role_A," +
+                "a.Role_B," +
+                "a.Role_C," +
+                "a.Role_D," +
+                "a.Flag," +
+                "a.Duty," +
+                "b.Address," +
+                "b.id," +
+                "b.Fax," +
+                "b.Quxian," +
+                "b.LevelID," +
+                "b.Tel as Number," +
+                "b.Zipcode," +
+                "c.NewName," +
+                "d.id," +
+                "d.DepartmentName," +
+                "d.Level," +
+                "d.Kind1," +
+                "d.Kind2," +
+                "d.Kind3, " +
+                "d.DepartmentNameA " +
+                "FROM " +
+                "User a " +
+                "LEFT JOIN Unit b ON a.Unitid = b.id " +
+                "LEFT JOIN z_Quxian c ON c.id = b.Quxian " +
+                "LEFT JOIN z_Level d ON b.LevelID = d.id " +
+                "where d.Level = ? ");
+        if (level.getLevel() == 1) {
+            builder.append(" and d.Quxian = " + level.getQuxin());
+        }
+        if (level.getKind1() != 0) {
+            builder.append(" and d.Kind1 = " + level.getKind1());
+        } else {
+            builder.append(" and d.kind1 IS Null ");
+        }
+        if (level.getKind2() != 0) {
+            builder.append(" and d.Kind2 = " + level.getKind2());
+        } else {
+            builder.append(" and d.Kind2 IS Null");
+        }
+        builder.append(" ORDER BY d.DepartmentNameA COLLATE LOCALIZED ASC");
+        cursor = database.rawQuery(builder.toString(), new String[]{String.valueOf(level.getLevel())});
+        while (cursor.moveToNext()) {
+            user = new User();
+            user.setUnitId(cursor.getInt(cursor.getColumnIndex("Unitid")));
+            user.setUserName(cursor.getString(cursor.getColumnIndex("UserName")));
+            user.setLoginName(cursor.getString(cursor.getColumnIndex("LoginName")));
+            user.setPassword(cursor.getString(cursor.getColumnIndex("Password")));
+            user.setTel(cursor.getString(cursor.getColumnIndex("TEL")));
+            user.setPhoneNumber(cursor.getString(cursor.getColumnIndex("U_Tel")));
+            user.setFlag(cursor.getInt(cursor.getColumnIndex("Flag")));
+            user.setDuty(cursor.getString(cursor.getColumnIndex("Duty")));
+            user.setRole_a(cursor.getInt(cursor.getColumnIndex("Role_A")));
+            user.setRole_b(cursor.getInt(cursor.getColumnIndex("Role_B")));
+            user.setRole_c(cursor.getInt(cursor.getColumnIndex("Role_C")));
+            user.setRole_d(cursor.getInt(cursor.getColumnIndex("Role_D")));
+
+            user.setQuXian(cursor.getString(cursor.getColumnIndex("NewName")));
+            user.setAddress(cursor.getString(cursor.getColumnIndex("Address")));
+            user.setFax(cursor.getString(cursor.getColumnIndex("Fax")));
+            user.setTel_U(cursor.getString(cursor.getColumnIndex("Number")));
+            user.setZipCode(cursor.getString(cursor.getColumnIndex("Zipcode")));
+            user.setLevelId(cursor.getInt(cursor.getColumnIndex("LevelID")));
+
+            user.setQuxin(cursor.getInt(cursor.getColumnIndex("Quxian")));
+            user.setDepartmentName(cursor.getString(cursor.getColumnIndex("DepartmentName")));
+            user.setLevel(cursor.getInt(cursor.getColumnIndex("Level")));
+            user.setKind1(cursor.getInt(cursor.getColumnIndex("Kind1")));
+            user.setKind2(cursor.getInt(cursor.getColumnIndex("Kind2")));
+            user.setKind3(cursor.getInt(cursor.getColumnIndex("Kind3")));
+            user.setDepartmentNameA(cursor.getString(cursor.getColumnIndex("DepartmentNameA")));
+            user.setUnitName(user.getDepartmentNameA());
+            users.add(user);
+        }
+        L.i("啥啥啥：" + users.size());
+        Collections.sort(users);
+        return users;
+    }
+
+    public ArrayList<Emergency> getAllEmergency() {
+        ArrayList<Emergency> list = new ArrayList<>();
+        Emergency emergency = null;
+        cursor = database.rawQuery("SELECT * FROM Emergency", null);
+        while (cursor.moveToNext()) {
+            emergency = new Emergency();
+            emergency.setTel(cursor.getString(cursor.getColumnIndex("Tel")));
+            emergency.setArea(cursor.getString(cursor.getColumnIndex("Area")));
+            emergency.setUnit(cursor.getString(cursor.getColumnIndex("Unit")));
+            emergency.setRemarks(cursor.getString(cursor.getColumnIndex("Remarks")));
+            list.add(emergency);
+        }
+        return list;
+    }
 }

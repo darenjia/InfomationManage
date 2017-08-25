@@ -6,7 +6,9 @@
     <color name="red">#be3a90</color>
     <color name="yellow">#bfdc69</color>
     <color name="green">#69dc95</color>
+    <color name="l_green">#7FFFD4</color>
 
     <color name="white">#ffffff</color>
+    <color name="y_white">#cecdca</color>
     <color name="black">#787878</color>
 </resources>

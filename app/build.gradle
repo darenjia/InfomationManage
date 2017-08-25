@@ -13,6 +13,10 @@ android {
     }
     buildTypes {
         release {
+           /* lintOptions{
+                checkReleaseBuilds false
+                abortOnError false
+            }*/
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
@@ -49,5 +53,6 @@ dependencies {
     compile 'com.google.android:flexbox:0.3.0'
     //    debugCompile 'com.squareup.leakcanary:leakcanary-android:1.5.2'
     //    releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.2'
-    compile project(':library')
+    compile 'co.lujun:androidtagview:1.1.4'
+//    compile project(path: ':adapterlibrary')
 }

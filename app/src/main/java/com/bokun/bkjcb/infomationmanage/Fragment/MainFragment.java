@@ -75,6 +75,9 @@ public class MainFragment extends BaseFragment implements View.OnClickListener {
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 keyWord = charSequence.toString().trim();
+                if (adapter == null) {
+                    return;
+                }
 //                L.i(keyWord);
                 if (TextUtils.isEmpty(keyWord)) {
                     adapter.initData();
@@ -124,8 +127,15 @@ public class MainFragment extends BaseFragment implements View.OnClickListener {
                 }
             }
         });
+        listView.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
+            @Override
+            public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
+                activity.showDetail(adapter.getUser(groupPosition,childPosition));
+                return false;
+            }
+        });
         if (adapter == null) {
-//            new LoadDataTask().execute();
+            new LoadDataTask().execute();
         }
     }
 
@@ -151,7 +161,7 @@ public class MainFragment extends BaseFragment implements View.OnClickListener {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            createDialog().show();
+//            createDialog().show();
         }
 
         @Override
@@ -168,7 +178,7 @@ public class MainFragment extends BaseFragment implements View.OnClickListener {
             super.onPostExecute(o);
             listView.setAdapter(adapter);
             listView.setTextFilterEnabled(true);
-            dialog.dismiss();
+//            dialog.dismiss();
         }
     }
 

@@ -1,1 +1,1 @@
-include ':app', ':nice-spinner', ':library'
+include ':app', ':nice-spinner', ':library', ':adapterlibrary'

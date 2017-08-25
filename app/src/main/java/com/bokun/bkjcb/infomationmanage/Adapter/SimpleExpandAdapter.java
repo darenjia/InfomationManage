@@ -148,7 +148,6 @@ public class SimpleExpandAdapter extends BaseExpandableListAdapter implements Fi
         ImageView role_d = (ImageView) view.findViewById(R.id.class_d);
         AvatarImageView iv = (AvatarImageView) view.findViewById(R.id.item_avatar);
         User user = users.get(groupPosition).get(childPosition);
-//        tv.setCenterString(users.get(groupPosition).get(childPosition).getUserName());
         tv.setText(user.getUserName());
         iv.setTextAndColor(tv.getText().toString().substring(0, 1), getColor(mContext));
         qx.setText(user.getQuXian());
