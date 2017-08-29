@@ -1,5 +1,6 @@
 package com.bokun.bkjcb.infomationmanage.Adapter;
 
+import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -19,6 +20,7 @@ import cn.carbs.android.avatarimageview.library.AvatarImageView;
  */
 
 public class MultiTypeAdapter extends SimpleRecAdapter<User, MultiTypeAdapter.MultiTypeViewHolder> {
+    int lastPosition = -1;
 
     public MultiTypeAdapter(Context context) {
         super(context);
@@ -79,6 +81,7 @@ public class MultiTypeAdapter extends SimpleRecAdapter<User, MultiTypeAdapter.Mu
                 getItemClick().onItemClick(position, user, 0);
             }
         });
+//        setAnimation(holder.itemView, position);
     }
 
     @Override
@@ -109,6 +112,16 @@ public class MultiTypeAdapter extends SimpleRecAdapter<User, MultiTypeAdapter.Mu
             role_d = (ImageView) itemView.findViewById(R.id.class_d);
             iv = (AvatarImageView) itemView.findViewById(R.id.item_avatar);
             layout = (RelativeLayout) itemView.findViewById(R.id.user_info);
+        }
+    }
+
+    private void setAnimation(View view, int position) {
+        if (position > lastPosition) {
+//            ObjectAnimator animation = ObjectAnimator.ofFloat(view, "alpha", 0, 1f);
+            ObjectAnimator animation = ObjectAnimator.ofFloat(view, "translationX", -view.getRootView().getWidth(), 0);
+            animation.setDuration(500);
+            animation.start();
+            lastPosition = position;
         }
     }
 }

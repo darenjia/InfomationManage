@@ -2,7 +2,9 @@
 <resources>
     <color name="colorPrimary">#6cbacc</color>
     <color name="colorPrimaryDark">#dfdfdf</color>
-    <color name="colorAccent">#1f7df1</color>
+    <color name="colorAccent">#6cbacc</color>
+    <color name="blue0">#1f7df1</color>
+    <color name="blue">#6eabf5</color>
     <color name="red">#be3a90</color>
     <color name="yellow">#bfdc69</color>
     <color name="green">#69dc95</color>
@@ -11,4 +13,6 @@
     <color name="white">#ffffff</color>
     <color name="y_white">#cecdca</color>
     <color name="black">#787878</color>
+    <color name="black_0">#605f5f</color>
+    <color name="black_1">#80b2b6</color>
 </resources>

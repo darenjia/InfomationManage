@@ -61,6 +61,7 @@
             android:layout_height="60dp"
             android:background="@color/white"
             app:sLeftBottomTextSize="24sp"
+            app:sLeftBottomTextColor="@color/black_0"
             app:sLeftBottomTextString="13924481442"
             app:sLeftIconMarginLeft="20dp"
             app:sRightIconRes="@drawable/ic_bohao" />
@@ -70,6 +71,7 @@
             android:layout_width="match_parent"
             android:layout_height="60dp"
             android:background="@color/white"
+            app:sLeftBottomTextColor="@color/black_0"
             android:visibility="gone"
             app:sLeftBottomTextSize="18sp"
             app:sLeftBottomTextString="13924481442"

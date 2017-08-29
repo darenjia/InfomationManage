@@ -15,7 +15,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
 import android.widget.Toast;
 
+import com.bokun.bkjcb.infomationmanage.Http.DefaultEvent;
 import com.bokun.bkjcb.infomationmanage.Utils.AppManager;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,6 +44,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        EventBus.getDefault().register(this);
         AppManager.getAppManager().addActivity(this);
         context = this;
         setView();
@@ -64,9 +70,16 @@ public abstract class BaseActivity extends AppCompatActivity {
     //获取数据
     protected abstract void loadData();
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessage(DefaultEvent event) {
+        handlerEvent(event);
+    }
+
+    protected abstract void handlerEvent(DefaultEvent event);
+
     @Override
     protected void onDestroy() {
-
+        EventBus.getDefault().unregister(this);
         AppManager.getAppManager().finishActivity(this);
         super.onDestroy();
     }

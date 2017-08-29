@@ -292,6 +292,9 @@ public class SecondFragment extends BaseFragment implements View.OnClickListener
                 setStrings(null);
                 break;
             case R.id.home_btn:
+                if (layer == 0) {
+                    return;
+                }
                 adapter.setData(getFirstData());
                 layer = 0;
                 layout.removeAllTags();

@@ -49,10 +49,14 @@ dependencies {
     compile('com.github.niorgai:StatusBarCompat:2.1.4', {
         exclude group: 'com.android.support'
     })
-    compile 'com.github.armcha:LuseenBottomNavigation:1.8.2'
     compile 'com.google.android:flexbox:0.3.0'
     //    debugCompile 'com.squareup.leakcanary:leakcanary-android:1.5.2'
     //    releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.2'
     compile 'co.lujun:androidtagview:1.1.4'
-//    compile project(path: ':adapterlibrary')
+    //    compile project(path: ':adapterlibrary')
+    compile project(':adapterlibrary')
+    compile 'com.github.pinguo-zhouwei:CustomPopwindow:2.1.1'
+    compile 'com.allenliu.badgeview:library:1.1.1'
+    compile 'org.greenrobot:eventbus:3.0.0'
+    compile files('libs/ksoap2-android-assembly-3.0.0-jar-with-dependencies .jar')
 }

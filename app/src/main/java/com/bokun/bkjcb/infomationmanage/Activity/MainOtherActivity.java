@@ -37,6 +37,7 @@ import android.widget.Toast;
 import com.allen.library.SuperTextView;
 import com.bokun.bkjcb.infomationmanage.Adapter.SimpleExpandAdapter;
 import com.bokun.bkjcb.infomationmanage.Domain.User;
+import com.bokun.bkjcb.infomationmanage.Http.DefaultEvent;
 import com.bokun.bkjcb.infomationmanage.R;
 import com.bokun.bkjcb.infomationmanage.SQL.DBManager;
 import com.bokun.bkjcb.infomationmanage.Utils.L;
@@ -221,6 +222,11 @@ public class MainOtherActivity extends BaseActivity implements ExpandableListVie
         new LoadDataTask().execute();
 
 //        showHelp();
+    }
+
+    @Override
+    protected void handlerEvent(DefaultEvent event) {
+
     }
 
     @Override

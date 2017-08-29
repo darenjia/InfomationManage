@@ -1,5 +1,6 @@
 package com.bokun.bkjcb.infomationmanage.Adapter;
 
+import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -60,6 +61,7 @@ public class ThirdRecAdapter extends SimpleRecAdapter<Emergency, ThirdRecAdapter
         } else {
             holder.tv.setCenterString("");
         }
+//        setAnimation(holder.tv, position);
     }
 
     public static class ThridViewHolder extends RecyclerView.ViewHolder {
@@ -70,4 +72,16 @@ public class ThirdRecAdapter extends SimpleRecAdapter<Emergency, ThirdRecAdapter
             tv = (SuperTextView) itemView.findViewById(R.id.third_content);
         }
     }
+
+    private int lastPosition = -1;
+
+    private void setAnimation(View view, int position) {
+        if (position > lastPosition) {
+            ObjectAnimator animation = ObjectAnimator.ofFloat(view, "translationX", -view.getRootView().getWidth(), 0);
+            animation.setDuration(300);
+            animation.start();
+            lastPosition = position;
+        }
+    }
+
 }

@@ -9,8 +9,9 @@
         android:id="@+id/third_content"
         android:layout_width="match_parent"
         android:layout_height="60dp"
-        app:sLeftTextSize="18sp"
+        app:sCenterTextColor="@color/black_1"
+        app:sLeftTextColor="@color/blue"
+        app:sLeftTextSize="20sp"
         app:sRightTextColor="@color/black"
-        app:sCenterTextColor="@color/colorAccent"
         app:sRightTextSize="16sp" />
 </LinearLayout>

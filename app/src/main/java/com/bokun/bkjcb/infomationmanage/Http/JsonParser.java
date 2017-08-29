@@ -6,6 +6,9 @@ package com.bokun.bkjcb.infomationmanage.Http;
  */
 
 public class JsonParser {
+    public Object parseJSON(String result, String s) {
+        return null;
+    }
 
    /* public static JsonResult parseJSON(String json) {
         JsonResult result = new JsonResult();
