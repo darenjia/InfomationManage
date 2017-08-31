@@ -15,4 +15,10 @@
     <color name="black">#787878</color>
     <color name="black_0">#605f5f</color>
     <color name="black_1">#80b2b6</color>
+    <color name="black_2">#000000</color>
+
+    <color name="random_1">#CCEAE7</color>
+    <color name="random_2">#FFFBD7</color>
+    <color name="random_3">#FFEACC</color>
+    <color name="random_4">#FDD9D6</color>
 </resources>

@@ -7,18 +7,22 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
+import android.widget.Button;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.allen.library.SuperTextView;
+import com.bokun.bkjcb.infomationmanage.Adapter.HistoryAdapter;
 import com.bokun.bkjcb.infomationmanage.Adapter.MultiTypeAdapter;
 import com.bokun.bkjcb.infomationmanage.Adapter.RecAdapter;
 import com.bokun.bkjcb.infomationmanage.Adapter.SimpleItemCallback;
 import com.bokun.bkjcb.infomationmanage.Adapter.TypeItemCallback;
+import com.bokun.bkjcb.infomationmanage.Domain.HistoryItem;
 import com.bokun.bkjcb.infomationmanage.Domain.Level;
 import com.bokun.bkjcb.infomationmanage.Domain.User;
 import com.bokun.bkjcb.infomationmanage.R;
 import com.bokun.bkjcb.infomationmanage.SQL.DBManager;
-import com.bokun.bkjcb.infomationmanage.Utils.L;
+import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.google.android.flexbox.FlexDirection;
 import com.google.android.flexbox.FlexboxLayoutManager;
 import com.google.android.flexbox.JustifyContent;
@@ -35,7 +39,12 @@ public class SecondFragment extends BaseFragment implements View.OnClickListener
     public static SecondFragment fragment;
     private RecyclerView recyclerView;
     private RecyclerView recycler_list;
+    private RecyclerView recycler_shiji;
+    private RecyclerView recycler_quji;
+    private RecyclerView recycler_history;
     private RecAdapter adapter;
+    private RecAdapter adapter_shiji;
+    private RecAdapter adapter_quji;
     private MultiTypeAdapter typeAdapter;
     private int flag = 0;
     private int flag1 = 0;
@@ -44,10 +53,15 @@ public class SecondFragment extends BaseFragment implements View.OnClickListener
     private Level flagLevel;
     private Level lastLevel;
     private int layer;
+    private int recyclerId = 0;
     private ArrayList<String> strings;
     private TagContainerLayout layout;
     private CardView result;
-    private SuperTextView header;
+    private CardView nav_card;
+    private CardView history_card;
+    private SuperTextView header, history;
+    private TextView title_qiye, title_shiji, title_quji;
+    private HistoryAdapter historyAdapter;
 
     public static SecondFragment newInstance() {
         if (fragment == null) {
@@ -60,29 +74,61 @@ public class SecondFragment extends BaseFragment implements View.OnClickListener
     protected View initView(LayoutInflater inflater, ViewGroup container) {
         View view = inflater.inflate(R.layout.fragment_two, null);
         recyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
+        recycler_history = (RecyclerView) view.findViewById(R.id.recycler_history);
+        recycler_shiji = (RecyclerView) view.findViewById(R.id.recycler_shiji);
+        recycler_quji = (RecyclerView) view.findViewById(R.id.recycler_quji);
         recycler_list = (RecyclerView) view.findViewById(R.id.recycler_list);
-        ImageView btn_return = (ImageView) view.findViewById(R.id.ret_btn);
+        Button btn_return = (Button) view.findViewById(R.id.ret_btn);
         header = (SuperTextView) view.findViewById(R.id.header);
-        ImageView btn_home = (ImageView) view.findViewById(R.id.home_btn);
+        history = (SuperTextView) view.findViewById(R.id.history_header);
+        Button btn_home = (Button) view.findViewById(R.id.home_btn);
         layout = (TagContainerLayout) view.findViewById(R.id.tag_layout);
         result = (CardView) view.findViewById(R.id.result);
+        nav_card = (CardView) view.findViewById(R.id.nav_card);
+        history_card = (CardView) view.findViewById(R.id.history_card);
+        title_qiye = (TextView) view.findViewById(R.id.title_qiye);
+        title_shiji = (TextView) view.findViewById(R.id.title_shiji);
+        title_quji = (TextView) view.findViewById(R.id.title_quji);
         strings = new ArrayList<>();
         layout.setTags(strings);
         btn_home.setOnClickListener(this);
         btn_return.setOnClickListener(this);
-        ArrayList<Level> list = getFirstData();
+
+        initRecyclerView();
+        return view;
+    }
+
+    private void initRecyclerView() {
         recycler_list.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
-        FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(getContext());
-        layoutManager.setFlexDirection(FlexDirection.ROW);
-        layoutManager.setJustifyContent(JustifyContent.FLEX_START);
-        recyclerView.setLayoutManager(layoutManager);
-        adapter = new RecAdapter(getContext(), list);
+        recycler_history.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
+
+        FlexboxLayoutManager layoutManager1 = new FlexboxLayoutManager(getContext());
+        layoutManager1.setFlexDirection(FlexDirection.ROW);
+        layoutManager1.setJustifyContent(JustifyContent.FLEX_START);
+
+        FlexboxLayoutManager layoutManager2 = new FlexboxLayoutManager(getContext());
+        layoutManager2.setFlexDirection(FlexDirection.ROW);
+        layoutManager2.setJustifyContent(JustifyContent.FLEX_START);
+
+        FlexboxLayoutManager layoutManager3 = new FlexboxLayoutManager(getContext());
+        layoutManager3.setFlexDirection(FlexDirection.ROW);
+        layoutManager3.setJustifyContent(JustifyContent.FLEX_START);
+
+        recyclerView.setLayoutManager(layoutManager1);
+        recycler_shiji.setLayoutManager(layoutManager2);
+        recycler_quji.setLayoutManager(layoutManager3);
+
+        adapter = new RecAdapter(getContext(), getData(2, -1, -1, -1, -1));
         typeAdapter = new MultiTypeAdapter(getContext());
+        adapter_shiji = new RecAdapter(getContext(), getData(0, -1, -1, -1, -1));
+        adapter_quji = new RecAdapter(getContext(), getData());
 
         recyclerView.setAdapter(adapter);
+        recycler_quji.setAdapter(adapter_quji);
+        recycler_shiji.setAdapter(adapter_shiji);
+
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recycler_list.setItemAnimator(new DefaultItemAnimator());
-        return view;
     }
 
     private ArrayList<Level> getFirstData() {
@@ -115,9 +161,12 @@ public class SecondFragment extends BaseFragment implements View.OnClickListener
         adapter.setItemClick(new SimpleItemCallback<Level, RecAdapter.MyViewHolder>() {
             @Override
             public void onItemClick(int position, Level model, int tag) {
+                setVisible(nav_card);
+                setGone(history_card, recycler_shiji, title_shiji, recycler_quji, title_quji);
                 lastLevel = flagLevel;
                 flagLevel = model;
-                switch (layer) {
+                recyclerId = 0;
+                /*switch (layer) {
                     case 0:
                         if (position == 0) {
                             adapter.setData(getSecondData());
@@ -186,29 +235,113 @@ public class SecondFragment extends BaseFragment implements View.OnClickListener
                         break;
                     case 5:
                         break;
+                }*/
+                switch (layer) {
+                    case 0:
+                        adapter.setData(getData(2, model.getKind1(), -1, -1, -1));
+                        layer = 1;
+                        break;
+                    case 1:
+                        typeAdapter.setData(getUserData(model));
+                        changeList(false, model.getDepartmentNameA(), recyclerView);
+                        layer = 2;
+                        break;
                 }
+                setStrings(model.getDepartmentNameA());
+            }
+        });
+        adapter_shiji.setItemClick(new SimpleItemCallback<Level, RecAdapter.MyViewHolder>() {
+            @Override
+            public void onItemClick(int position, Level model, int tag) {
+                recyclerId = 1;
+                setVisible(nav_card);
+                setGone(recyclerView, title_qiye, recycler_quji, title_quji, history_card);
+                lastLevel = flagLevel;
+                flagLevel = model;
+                switch (layer) {
+                    case 0:
+                        typeAdapter.setData(getUserData(model));
+                        adapter_shiji.setData(getData(0, model.getKind1(), -1, -1, -1));
+                        changeList(true, model.getDepartmentNameA(), recycler_shiji);
+                        layer = 1;
+                        break;
+                    case 1:
+                        typeAdapter.setData(getUserData(model));
+                        changeList(false, model.getDepartmentNameA(), recycler_shiji);
+                        layer = 2;
+                        break;
+                }
+                setStrings(model.getDepartmentNameA());
+            }
+        });
+        adapter_quji.setItemClick(new SimpleItemCallback<Level, RecAdapter.MyViewHolder>() {
+            @Override
+            public void onItemClick(int position, Level model, int tag) {
+                recyclerId = 2;
+                setVisible(nav_card);
+                setGone(recyclerView, title_qiye, recycler_shiji, title_shiji, history_card);
+                lastLevel = flagLevel;
+                flagLevel = model;
+                switch (layer) {
+                    case 0:
+                        adapter_quji.setData(getData(1, -1, -1, -1, model.getQuxin()));
+                        layer = 1;
+                        break;
+                    case 1:
+                        if (position == 0) {
+                            typeAdapter.setData(getUserData(model));
+                            changeList(true, model.getDepartmentNameA(), recycler_quji);
+                        }
+                        adapter_quji.setData(getData(1, model.getKind1(), -1, -1, model.getQuxin()));
+                        layer = 2;
+                        flag2 = position;
+                        break;
+                    case 2:
+//                        if (flag2 == 2) {
+                        adapter_quji.setData(getData(1, model.getKind1(), model.getKind2(), -1, model.getQuxin()));
+//                        } else {
+                        typeAdapter.setData(getUserData(model));
+                        changeList(true, model.getDepartmentNameA(), recycler_quji);
+//                        }
+                        layer = 3;
+                        flag3 = position;
+                        break;
+                    case 3:
+                        typeAdapter.setData(getUserData(model));
+                        changeList(false, model.getDepartmentNameA(), recycler_quji);
+                        layer = 4;
+                        break;
+                }
+                setStrings(model.getDepartmentNameA());
             }
         });
         typeAdapter.setItemClick(new TypeItemCallback() {
             @Override
             public void onItemClick(int position, User model, int tag) {
                 super.onItemClick(position, model, tag);
-                L.i("wtf");
                 activity.showDetail(model);
+            }
+        });
+        history.setRightTvClickListener(new SuperTextView.OnRightTvClickListener() {
+            @Override
+            public void onClickListener() {
+                DBManager.newInstance(getContext()).deleteHistory();
+                Toast.makeText(getContext(), "记录已清空", Toast.LENGTH_SHORT).show();
+                historyAdapter.setNewData(null);
             }
         });
     }
 
-    private void changeList(boolean isShow, String s) {
+    private void changeList(boolean isShow, String s, RecyclerView view) {
         if (recycler_list.getAdapter() == null) {
             recycler_list.setAdapter(typeAdapter);
         } else {
             typeAdapter.notifyDataSetChanged();
         }
         if (isShow) {
-            setVisible(recyclerView);
+            setVisible(view);
         } else {
-            setGone(recyclerView);
+            setGone(view);
         }
         if (s != null) {
             setHeaderView(s, String.valueOf(typeAdapter.getItemCount()));
@@ -237,72 +370,68 @@ public class SecondFragment extends BaseFragment implements View.OnClickListener
                 if (layer == 0) {
                     return;
                 } else if (layer == 1) {
-                    adapter.setData(getFirstData());
+                    if (recyclerId == 0) {
+                        adapter.setData(getData(2, -1, -1, -1, -1));
+                    } else if (recyclerId == 1) {
+                        adapter_shiji.setData(getData(0, -1, -1, -1, -1));
+                    } else {
+                        adapter_quji.setData(getData());
+                    }
+                    setGone(result);
                     layer = 0;
                 } else if (layer == 2) {
-                    if (flag == 0) {
-                        adapter.setData(getSecondData());
-                    } else {
-                        adapter.setData(getData(2, -1, -1, -1, -1));
-                    }
-                    layer = 1;
-                    setGone(result);
-                } else if (layer == 3) {
-                    if (flag == 0) {
-                        if (flag1 == 0) {
-                            adapter.setData(getData(0, -1, -1, -1, -1));
-                        } else {
-                            adapter.setData(getData());
-                        }
-                    } else {
-
-                    }
-                    layer = 2;
-                    setGone(result);
-                } else if (layer == 4) {
-                   /* if (flag == 1) {
-                        L.i("wtf");
-                        typeAdapter.setData(getUserData(flagLevel));
-                        changeList(false);
-                        setGone(recycler_list);
-                    } else {*/
-                    if (flag1 == 0) {
+                    if (recyclerId == 0) {
+                        adapter.setData(getData(2, lastLevel.getKind1(), -1, -1, -1));
+                        setGone(result);
+                        setVisible(recyclerView);
+                    } else if (recyclerId == 1) {
                         typeAdapter.setData(getUserData(lastLevel));
-                        adapter.setData(getData(0, lastLevel.getKind1(), -1, -1, -1));
-                        changeList(true, lastLevel.getDepartmentNameA());
+                        adapter_shiji.setData(getData(0, lastLevel.getKind1(), -1, -1, -1));
+                        changeList(true, lastLevel.getDepartmentNameA(), recycler_shiji);
                         setVisible(result);
                     } else {
                         setGone(result);
-                        adapter.setData(getData(1, -1, -1, -1, lastLevel.getQuxin()));
+                        setVisible(recycler_quji);
+                        adapter_quji.setData(getData(1, -1, -1, -1, lastLevel.getQuxin()));
                     }
-//                    }
-//                    adapter.setData(getData(1, -1, -1, -1, flagLevel.getQuxin()));
-                    layer = 3;
-                } else if (layer == 5) {
-                    if (flag3 == 0) {
-                        typeAdapter.setData(getUserData(lastLevel));
-                        changeList(true, lastLevel.getDepartmentNameA());
+                    layer = 1;
+                } else if (layer == 3) {
+                    if (recyclerId == 2) {
+                        if (flag2 == 0) {
+                            typeAdapter.setData(getUserData(lastLevel));
+                            changeList(true, lastLevel.getDepartmentNameA(), recycler_quji);
+                        } else {
+                            setGone(result);
+                            setVisible(recycler_quji);
+                        }
+                        adapter_quji.setData(getData(1, lastLevel.getKind1(), -1, -1, lastLevel.getQuxin()));
+                    }
+                    layer = 2;
+                } else if (layer == 4) {
+//                    setGone(result);
+                    typeAdapter.setData(getUserData(lastLevel));
+                    changeList(true, lastLevel.getDepartmentNameA(), recycler_quji);
 
-                    } else {
-                        setGone(result);
-                    }
-                    adapter.setData(getData(1, lastLevel.getKind1(), -1, -1, lastLevel.getQuxin()));
-                    layer = 4;
+                    setVisible(recycler_quji);
+                    adapter_quji.setData(getData(1, lastLevel.getKind1(), lastLevel.getKind2(), -1, lastLevel.getQuxin()));
+                    layer = 3;
+
                 }
                 setStrings(null);
                 break;
             case R.id.home_btn:
-                if (layer == 0) {
-                    return;
-                }
-                adapter.setData(getFirstData());
+                adapter.setData(getData(2, -1, -1, -1, -1));
+                adapter_shiji.setData(getData(0, -1, -1, -1, -1));
+                adapter_quji.setData(getData());
+
                 layer = 0;
                 layout.removeAllTags();
                 setGone(result);
+                setVisible(recyclerView, recycler_shiji, recycler_quji, title_qiye, title_quji, title_shiji, history_card);
+                setGone(nav_card);
                 break;
         }
         flagLevel = lastLevel;
-        setVisible(recyclerView);
     }
 
     private void setStrings(String s) {
@@ -315,16 +444,44 @@ public class SecondFragment extends BaseFragment implements View.OnClickListener
         }
     }
 
-    private void setGone(View view) {
-        view.setVisibility(View.GONE);
+    private void setGone(View... views) {
+        for (View v : views) {
+            v.setVisibility(View.GONE);
+        }
+
     }
 
-    private void setVisible(View view) {
-        view.setVisibility(View.VISIBLE);
+    private void setVisible(View... views) {
+        for (View v : views) {
+            v.setVisibility(View.VISIBLE);
+        }
     }
 
     private void setHeaderView(String name, String num) {
         header.setLeftString(name);
         header.setRightString(num);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        initHistory();
+    }
+
+    private void initHistory() {
+        ArrayList<HistoryItem> historyItems = DBManager.newInstance(getContext()).getAllHistoryItem();
+        if (historyAdapter == null) {
+            historyAdapter = new HistoryAdapter(R.layout.history_view);
+            recycler_history.setAdapter(historyAdapter);
+            historyAdapter.setOnItemChildClickListener(new BaseQuickAdapter.OnItemChildClickListener() {
+                @Override
+                public void onItemChildClick(BaseQuickAdapter adapter, View view, int position) {
+                    HistoryItem item = (HistoryItem) adapter.getItem(position);
+                    User user = DBManager.newInstance(getContext()).queryUserById(item.getUserId());
+                    activity.showDetail(user);
+                }
+            });
+        }
+        historyAdapter.setNewData(historyItems);
     }
 }

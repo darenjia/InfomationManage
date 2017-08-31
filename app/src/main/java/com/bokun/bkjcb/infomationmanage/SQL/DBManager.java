@@ -2,11 +2,14 @@ package com.bokun.bkjcb.infomationmanage.SQL;
 
 import android.app.Activity;
 import android.app.Notification;
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
 
 import com.bokun.bkjcb.infomationmanage.Domain.Emergency;
+import com.bokun.bkjcb.infomationmanage.Domain.HistoryItem;
 import com.bokun.bkjcb.infomationmanage.Domain.Level;
 import com.bokun.bkjcb.infomationmanage.Domain.Unit;
 import com.bokun.bkjcb.infomationmanage.Domain.User;
@@ -52,13 +55,86 @@ public class DBManager {
         return user;
     }
 
+    public User queryUserById(int id) {
+        User user = null;
+//        cursor = database.query("User", null, "id=?", new String[]{String.valueOf(id)}, null, null, null);
+        cursor = database.rawQuery("SELECT " +
+                        "a.id as userid," +
+                        "a.Unitid," +
+                        "a.UserName," +
+                        "a.LoginName," +
+                        "a.Password," +
+                        "a.U_Tel," +
+                        "a.TEL," +
+                        "a.Role_A," +
+                        "a.Role_B," +
+                        "a.Role_C," +
+                        "a.Role_D," +
+                        "a.Flag," +
+                        "a.Duty," +
+                        "b.Address," +
+                        "b.id," +
+                        "b.Fax," +
+                        "b.Quxian," +
+                        "b.LevelID," +
+                        "b.Tel as Number," +
+                        "b.Zipcode," +
+                        "c.NewName," +
+                        "d.id," +
+                        "d.DepartmentName," +
+                        "d.Level," +
+                        "d.Kind1," +
+                        "d.Kind2," +
+                        "d.Kind3, " +
+                        "d.DepartmentNameA " +
+                        "FROM " +
+                        "User a " +
+                        "LEFT JOIN Unit b ON a.Unitid = b.id " +
+                        "LEFT JOIN z_Quxian c ON c.id = b.Quxian " +
+                        "LEFT JOIN z_Level d ON b.LevelID = d.id " +
+                        "where a.id = ?"
+                , new String[]{String.valueOf(id)});
+        if (cursor.moveToNext()) {
+            user = new User();
+            user.setId(cursor.getInt(cursor.getColumnIndex("userid")));
+            user.setUnitId(cursor.getInt(cursor.getColumnIndex("Unitid")));
+            user.setUserName(cursor.getString(cursor.getColumnIndex("UserName")));
+            user.setLoginName(cursor.getString(cursor.getColumnIndex("LoginName")));
+            user.setPassword(cursor.getString(cursor.getColumnIndex("Password")));
+            user.setTel(cursor.getString(cursor.getColumnIndex("TEL")));
+            user.setPhoneNumber(cursor.getString(cursor.getColumnIndex("U_Tel")));
+            user.setFlag(cursor.getInt(cursor.getColumnIndex("Flag")));
+            user.setDuty(cursor.getString(cursor.getColumnIndex("Duty")));
+            user.setRole_a(cursor.getInt(cursor.getColumnIndex("Role_A")));
+            user.setRole_b(cursor.getInt(cursor.getColumnIndex("Role_B")));
+            user.setRole_c(cursor.getInt(cursor.getColumnIndex("Role_C")));
+            user.setRole_d(cursor.getInt(cursor.getColumnIndex("Role_D")));
+
+            user.setQuXian(cursor.getString(cursor.getColumnIndex("NewName")));
+            user.setAddress(cursor.getString(cursor.getColumnIndex("Address")));
+            user.setFax(cursor.getString(cursor.getColumnIndex("Fax")));
+            user.setTel_U(cursor.getString(cursor.getColumnIndex("Number")));
+            user.setZipCode(cursor.getString(cursor.getColumnIndex("Zipcode")));
+            user.setLevelId(cursor.getInt(cursor.getColumnIndex("LevelID")));
+
+            user.setQuxin(cursor.getInt(cursor.getColumnIndex("Quxian")));
+            user.setDepartmentName(cursor.getString(cursor.getColumnIndex("DepartmentName")));
+            user.setLevel(cursor.getInt(cursor.getColumnIndex("Level")));
+            user.setKind1(cursor.getInt(cursor.getColumnIndex("Kind1")));
+            user.setKind2(cursor.getInt(cursor.getColumnIndex("Kind2")));
+            user.setKind3(cursor.getInt(cursor.getColumnIndex("Kind3")));
+            user.setDepartmentNameA(cursor.getString(cursor.getColumnIndex("DepartmentNameA")));
+        }
+        return user;
+    }
+
     public ArrayList<User> queryAllUser() {
         User user = null;
         Unit unit = null;
         Level level = null;
         ArrayList<User> users = new ArrayList<>();
         cursor = database.rawQuery("SELECT " +
-                        "a.id," +
+                        "a.id as userid," +
                         "a.Unitid," +
                         "a.UserName," +
                         "a.LoginName," +
@@ -95,6 +171,7 @@ public class DBManager {
                 , null);
         while (cursor.moveToNext()) {
             user = new User();
+            user.setId(cursor.getInt(cursor.getColumnIndex("userid")));
             user.setUnitId(cursor.getInt(cursor.getColumnIndex("Unitid")));
             user.setUserName(cursor.getString(cursor.getColumnIndex("UserName")));
             user.setLoginName(cursor.getString(cursor.getColumnIndex("LoginName")));
@@ -172,9 +249,8 @@ public class DBManager {
             para.add(String.valueOf(quxianId));
         }
 
-        if (kind1 != -1) {
-            sql.append("and Kind1 = ? AND Kind2 IS NOT NULL AND Kind3 IS NULL");
-            para.add(String.valueOf(kind1));
+        if (kind1 == -1) {
+            sql.append("and Kind1 is NOT NULL AND Kind2 IS NULL AND Kind3 IS NULL");
         } /*else if (kind2 == 0) {
             sql.append("and Kind1 = ? and Kind2 IS NOT NULL AND Kind3 IS NULL");
             para.add(String.valueOf(kind1));
@@ -187,10 +263,11 @@ public class DBManager {
             para.add(String.valueOf(kind1));
             para.add(String.valueOf(kind2));
         } else {
-            sql.append("and Kind1 is NOT NULL AND Kind2 IS NULL AND Kind3 IS NULL");
+            sql.append("and Kind1 = ? AND Kind2 IS NOT NULL AND Kind3 IS NULL");
+            para.add(String.valueOf(kind1));
         }
         String[] strings = new String[para.size()];
-//        L.i(sql.toString());
+        L.i(sql.toString());
         Cursor cursor = database.rawQuery(sql.toString(), para.toArray(strings));
         while (cursor.moveToNext()) {
             level = new Level();
@@ -340,6 +417,11 @@ public class DBManager {
         } else {
             builder.append(" and d.Kind2 IS Null");
         }
+        if (level.getKind3() != 0) {
+            builder.append(" and d.Kind3 = " + level.getKind3());
+        } else {
+            builder.append(" and d.Kind3 IS Null");
+        }
         builder.append(" ORDER BY d.DepartmentNameA COLLATE LOCALIZED ASC");
         cursor = database.rawQuery(builder.toString(), new String[]{String.valueOf(level.getLevel())});
         while (cursor.moveToNext()) {
@@ -392,5 +474,91 @@ public class DBManager {
             list.add(emergency);
         }
         return list;
+    }
+
+    //insert更新数据
+    public boolean insertUsers(ArrayList<User> list) {
+
+        for (int i = 0; i < list.size(); i++) {
+
+        }
+        return true;
+    }
+
+    private boolean insertUser(User user) {
+        ContentValues values = new ContentValues();
+        values.put("LoginName", user.getLoginName());
+        values.put("UserName", user.getUserName());
+        values.put("Unitid", user.getUnitId());
+        values.put("Password", user.getPassword());
+        values.put("U_Tel", user.getPhoneNumber());
+        values.put("TEL", user.getTel());
+        values.put("Duty", user.getDuty());
+        values.put("Role_A", user.getRole_a());
+        values.put("Role_B", user.getRole_b());
+        values.put("Role_C", user.getRole_c());
+        values.put("Role_D", user.getRole_d());
+        values.put("Flag", user.getFlag());
+        long flag = database.insert("User", "id", values);
+        return flag > 0;
+    }
+
+    private boolean insertUnit(Unit unit) {
+        ContentValues values = new ContentValues();
+        values.put("Quxian", unit.getQuXian());
+        values.put("Address", unit.getAddress());
+        values.put("Tel", unit.getTel());
+        values.put("Fax", unit.getFax());
+        values.put("Zipcode", unit.getZipCode());
+        values.put("LevelId", unit.getLevelId());
+        long flag = database.insert("Unit", "id", values);
+        return flag > 0;
+    }
+
+    private void createHistory() {
+        database.execSQL("Create table history(" +
+                "id Integer primary key," +
+                "userid int(6)," +
+                "time long(20)," +
+                "username char(10)," +
+                "tel char(20)" +
+                ")");
+    }
+
+    public void insertHistory(HistoryItem item) {
+        database.execSQL("insert into history(userid,time,tel,username) values (?,?,?,?)", new String[]{String.valueOf(item.getUserId()), String.valueOf(item.getTime()), item.getTel(), item.getUserName()});
+    }
+
+    private void updateHistory(HistoryItem item) {
+        ContentValues values = new ContentValues();
+        values.put("userid", item.getUserId());
+        values.put("time", item.getTime());
+        database.update("history", values, "id = ?", new String[]{String.valueOf(1)});
+    }
+
+    public ArrayList<HistoryItem> getAllHistoryItem() {
+        ArrayList<HistoryItem> items = new ArrayList<>();
+        HistoryItem item = null;
+        try {
+            cursor = database.query("history", null, null, null, null, null, "time DESC", "5");
+        } catch (SQLiteException e) {
+            createHistory();
+            return items;
+        }
+        while (cursor.moveToNext()) {
+            item = new HistoryItem();
+            item.setId(cursor.getInt(cursor.getColumnIndex("id")));
+            item.setUserId(cursor.getInt(cursor.getColumnIndex("userid")));
+            item.setTime(cursor.getLong(cursor.getColumnIndex("time")));
+            item.setUserName(cursor.getString(cursor.getColumnIndex("username")));
+            item.setTel(cursor.getString(cursor.getColumnIndex("tel")));
+            items.add(item);
+        }
+        return items;
+    }
+
+    public boolean deleteHistory() {
+        int flag = database.delete("history", null, null);
+        return flag > 0;
     }
 }

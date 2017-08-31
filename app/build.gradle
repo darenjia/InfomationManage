@@ -59,4 +59,5 @@ dependencies {
     compile 'com.allenliu.badgeview:library:1.1.1'
     compile 'org.greenrobot:eventbus:3.0.0'
     compile files('libs/ksoap2-android-assembly-3.0.0-jar-with-dependencies .jar')
+    compile 'com.facebook.stetho:stetho:1.5.0'
 }

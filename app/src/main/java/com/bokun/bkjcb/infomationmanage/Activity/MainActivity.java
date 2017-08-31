@@ -30,6 +30,7 @@ import com.allenliu.badgeview.BadgeFactory;
 import com.allenliu.badgeview.BadgeView;
 import com.bokun.bkjcb.infomationmanage.Adapter.SimpleExpandAdapter;
 import com.bokun.bkjcb.infomationmanage.Adapter.SimpleFragmentAdapter;
+import com.bokun.bkjcb.infomationmanage.Domain.HistoryItem;
 import com.bokun.bkjcb.infomationmanage.Domain.User;
 import com.bokun.bkjcb.infomationmanage.Fragment.MainFragment;
 import com.bokun.bkjcb.infomationmanage.Fragment.SecondFragment;
@@ -39,6 +40,7 @@ import com.bokun.bkjcb.infomationmanage.Http.HttpManager;
 import com.bokun.bkjcb.infomationmanage.Http.HttpRequestVo;
 import com.bokun.bkjcb.infomationmanage.Http.RequestListener;
 import com.bokun.bkjcb.infomationmanage.R;
+import com.bokun.bkjcb.infomationmanage.SQL.DBManager;
 import com.example.zhouwei.library.CustomPopWindow;
 
 import org.greenrobot.eventbus.EventBus;
@@ -155,7 +157,7 @@ public class MainActivity extends BaseActivity implements BottomNavigationView.O
         return true;
     }
 
-    public void actionCall(String number) {
+    public void actionCall(String number, User user) {
         number = number.trim();
         Pattern pattern = Pattern.compile("[0-9]*");
         Matcher m = pattern.matcher(number);
@@ -165,6 +167,15 @@ public class MainActivity extends BaseActivity implements BottomNavigationView.O
                 number = number.substring(0, end);
             }
         }
+        if (user != null) {
+            HistoryItem item = new HistoryItem();
+            item.setTel(number);
+            item.setUserName(user.getUserName());
+            item.setUserId(user.getId());
+            item.setTime(System.currentTimeMillis());
+            insertHistory(item);
+        }
+
         if (number.length() == 11) {
             number = "+86" + number;
         } else {
@@ -205,7 +216,7 @@ public class MainActivity extends BaseActivity implements BottomNavigationView.O
         bottomDialog.show();
     }
 
-    private void initDialogView(View view, User user) {
+    private void initDialogView(View view, final User user) {
 
         TextView name = (TextView) view.findViewById(R.id.name);
         AvatarImageView imageView = (AvatarImageView) view.findViewById(R.id.item_avatar);
@@ -266,7 +277,7 @@ public class MainActivity extends BaseActivity implements BottomNavigationView.O
             @Override
             public void onClick(View view) {
                 String number = ((SuperTextView) view).getLeftBottomString();
-                actionCall(number);
+                actionCall(number,user);
             }
         };
         View.OnLongClickListener longClickListener = new View.OnLongClickListener() {
@@ -290,7 +301,7 @@ public class MainActivity extends BaseActivity implements BottomNavigationView.O
             @Override
             public void onClick(View v) {
                 String number = ((SuperTextView) v).getRightBottomString();
-                actionCall(number);
+                actionCall(number,user);
             }
         });
     }
@@ -303,6 +314,10 @@ public class MainActivity extends BaseActivity implements BottomNavigationView.O
             }
         }
         return -1;
+    }
+
+    private void insertHistory(HistoryItem item) {
+        DBManager.newInstance(this).insertHistory(item);
     }
 
     private void showPopBottom(View view) {

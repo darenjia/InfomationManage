@@ -421,8 +421,8 @@ public class SimpleExpandAdapter extends BaseExpandableListAdapter implements Fi
 
     public static int getColor(Context context) {
         Random random = new Random();
-        int[] colors = {R.color.colorPrimary, R.color.red, R.color.green, R.color.colorAccent};
-        return context.getResources().getColor(colors[random.nextInt(4)]);
+        int[] colors = {R.color.colorPrimary, R.color.red, R.color.green, R.color.yellow};
+        return context.getResources().getColor(colors[random.nextInt(16)%4]);
     }
 
     private void openOrClose() {

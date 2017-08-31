@@ -15,6 +15,8 @@ import java.util.List;
  */
 
 public class RecAdapter extends SimpleRecAdapter<Level, RecAdapter.MyViewHolder> {
+    int[] colors = new int[]{R.color.random_1, R.color.random_2, R.color.random_3, R.color.random_4};
+
     public RecAdapter(Context context) {
         super(context);
     }
@@ -45,6 +47,7 @@ public class RecAdapter extends SimpleRecAdapter<Level, RecAdapter.MyViewHolder>
     public void onBindViewHolder(MyViewHolder holder, final int position) {
         final Level l = data.get(position);
         holder.textView.setText(data.get(position).getDepartmentNameA());
+//        holder.textView.setBackgroundColor(context.getResources().getColor(colors[position % 4]));
         holder.textView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -55,7 +58,7 @@ public class RecAdapter extends SimpleRecAdapter<Level, RecAdapter.MyViewHolder>
         });
     }
 
-   public static class MyViewHolder extends RecyclerView.ViewHolder {
+    public static class MyViewHolder extends RecyclerView.ViewHolder {
         TextView textView;
 
         public MyViewHolder(View itemView) {

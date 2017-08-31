@@ -16,6 +16,7 @@ import android.view.KeyEvent;
 import android.widget.Toast;
 
 import com.bokun.bkjcb.infomationmanage.Http.DefaultEvent;
+import com.bokun.bkjcb.infomationmanage.R;
 import com.bokun.bkjcb.infomationmanage.Utils.AppManager;
 
 import org.greenrobot.eventbus.EventBus;
@@ -24,6 +25,8 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import qiu.niorgai.StatusBarCompat;
 
 public abstract class BaseActivity extends AppCompatActivity {
 
@@ -48,6 +51,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         AppManager.getAppManager().addActivity(this);
         context = this;
         setView();
+        StatusBarCompat.setStatusBarColor(this, getResources().getColor(R.color.colorPrimary));
         initView();
         loadData();
         setListener();

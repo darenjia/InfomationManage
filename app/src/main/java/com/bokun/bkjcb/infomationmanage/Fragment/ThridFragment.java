@@ -94,8 +94,6 @@ public class ThridFragment extends BaseFragment {
         @Override
         protected void onPostExecute(Object o) {
             super.onPostExecute(o);
-//            recyclerView.setAdapter(adapter);
-//            adapter.setItemClick(callback);
             recyclerView.setAdapter(thirdAdapter);
             thirdAdapter.setOnItemChildClickListener(listener);
         }
@@ -116,7 +114,7 @@ public class ThridFragment extends BaseFragment {
                     .setTag("Dialog");
             dialog.show();
         } else {
-            activity.actionCall(emergency.getTel());
+            activity.actionCall(emergency.getTel(),null);
         }
     }
 
@@ -142,7 +140,7 @@ public class ThridFragment extends BaseFragment {
                     if (checkBox.isChecked()) {
                         SPUtils.put(getContext(), "isShowTip", false);
                     }
-                    activity.actionCall(emergency.getTel());
+                    activity.actionCall(emergency.getTel(),null);
                 } else if (v.getId() == R.id.tip_cancel) {
                     dialog.dismiss();
                 }

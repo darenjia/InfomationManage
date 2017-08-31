@@ -9,6 +9,7 @@ import java.io.Serializable;
  */
 
 public class User implements Serializable, Comparable<User> {
+    private int id;
     private int unitId;
     private String userName;
     private String loginName;
@@ -29,6 +30,14 @@ public class User implements Serializable, Comparable<User> {
 
     String py;
     String letter;
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 
     public int getUnitId() {
         return unitId;

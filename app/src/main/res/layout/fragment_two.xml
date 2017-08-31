@@ -1,106 +1,205 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
 
-    <android.support.v7.widget.CardView
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="5dp"
-        app:cardCornerRadius="4sp"
-        app:contentPadding="5dp">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-        <LinearLayout
+        <android.support.v7.widget.CardView
+            android:id="@+id/nav_card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_margin="5dp"
+            android:visibility="gone"
+            app:cardCornerRadius="4sp"
+            app:contentPadding="5dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="5dp">
-
-                <ImageView
-                    android:id="@+id/home_btn"
-                    android:layout_width="60dp"
-                    android:layout_height="40dp"
-                    android:gravity="center"
-                    android:layout_marginEnd="5dp"
-                    android:padding="8dp"
-                    android:src="@drawable/vector_drawable_home" />
+                android:orientation="vertical">
 
                 <LinearLayout
-                    android:layout_width="1dp"
-                    android:layout_height="match_parent"
-                    android:background="@color/colorPrimary" />
-
-                <ImageView
-                    android:id="@+id/ret_btn"
                     android:layout_width="match_parent"
-                    android:layout_height="40dp"
-                    android:gravity="left"
-                    android:src="@drawable/vector_drawable_return"
-                    android:padding="8dp"
-                    android:layout_marginStart="10dp"
-                    android:text="返回上级" />
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp">
+
+                    <Button
+                        android:id="@+id/home_btn"
+                        android:layout_width="0dp"
+                        android:layout_height="40dp"
+                        android:layout_marginEnd="5dp"
+                        android:layout_weight="1"
+                        android:background="@color/colorPrimary"
+                        android:gravity="center"
+                        android:padding="8dp"
+                        android:text="首页"
+                        android:textColor="@color/white" />
+
+                    <Button
+                        android:id="@+id/ret_btn"
+                        android:layout_width="0dp"
+                        android:layout_height="40dp"
+                        android:layout_marginStart="10dp"
+                        android:layout_weight="1"
+                        android:background="@color/blue"
+                        android:gravity="center"
+                        android:padding="8dp"
+                        android:text="返回上级"
+                        android:textColor="@color/white" />
+                </LinearLayout>
+
+                <co.lujun.androidtagview.TagContainerLayout
+                    android:id="@+id/tag_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="5dp"
+                    app:container_background_color="@color/white"
+                    app:container_border_radius="2dp"
+                    app:container_enable_drag="false"
+                    app:horizontal_interval="10dp"
+                    app:tag_clickable="false"
+                    app:tag_corner_radius="5dp"
+                    app:tag_theme="random"
+                    app:vertical_interval="10dp" />
 
             </LinearLayout>
 
+        </android.support.v7.widget.CardView>
+
+        <android.support.v7.widget.CardView
+            android:id="@+id/qieyedanwei"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            app:cardCornerRadius="4sp">
+
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginBottom="2dp"
-                android:background="@color/black" />
-
-            <co.lujun.androidtagview.TagContainerLayout
-                android:id="@+id/tag_layout"
-                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="5dp"
-                app:container_background_color="@color/white"
-                app:container_border_radius="2dp"
-                app:container_enable_drag="false"
-                app:horizontal_interval="10dp"
-                app:tag_clickable="false"
-                app:tag_corner_radius="5dp"
-                app:tag_theme="random"
-                app:vertical_interval="10dp" />
+                android:orientation="vertical">
 
-        </LinearLayout>
+                <TextView
+                    android:id="@+id/title_qiye"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="10dp"
+                    android:text="企业单位"
+                    android:textColor="@color/black_2"
+                    android:textSize="16sp" />
 
-    </android.support.v7.widget.CardView>
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/recyclerView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp" />
+                <!-- </android.support.v7.widget.CardView>-->
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/recyclerView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="5dp" />
+                <!-- <android.support.v7.widget.CardView
+                     android:id="@+id/shijidanwei"
+                     android:layout_width="match_parent"
+                     android:layout_height="wrap_content"
+                     android:layout_margin="5dp"
+                     app:cardCornerRadius="4sp">-->
+                <TextView
+                    android:id="@+id/title_shiji"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="10dp"
+                    android:text="市级单位"
+                    android:textColor="@color/black_2"
+                    android:textSize="16sp" />
 
-    <android.support.v7.widget.CardView
-        android:id="@+id/result"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="5dp"
-        android:visibility="gone"
-        app:cardCornerRadius="4sp">
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/recycler_shiji"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp" />
+                <!-- </android.support.v7.widget.CardView>-->
 
-        <com.allen.library.SuperTextView
-            android:id="@+id/header"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:background="@color/colorPrimary"
-            app:sLeftTextColor="@color/colorAccent"
-            app:sLeftTextString="@string/app_name"
-            app:sLeftTopTextSize="18sp"
-            app:sRightTextColor="@color/black"
-            app:sRightTextString="1" />
+                <!--  <android.support.v7.widget.CardView
+                      android:id="@+id/qujidanwei"
+                      android:layout_width="match_parent"
+                      android:layout_height="wrap_content"
+                      android:layout_margin="5dp"
+                      app:cardCornerRadius="4sp">-->
+                <TextView
+                    android:id="@+id/title_quji"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="10dp"
+                    android:text="区级单位"
+                    android:textColor="@color/black_2"
+                    android:textSize="16sp" />
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/recycler_list"
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/recycler_quji"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp" />
+            </LinearLayout>
+        </android.support.v7.widget.CardView>
+
+
+        <android.support.v7.widget.CardView
+            android:id="@+id/result"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="50dp" />
-    </android.support.v7.widget.CardView>
-</LinearLayout>
+            android:layout_margin="5dp"
+            android:visibility="gone"
+            app:cardCornerRadius="4sp">
+
+            <com.allen.library.SuperTextView
+                android:id="@+id/header"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="@color/colorPrimary"
+                app:sLeftTextColor="@color/colorAccent"
+                app:sLeftTextString="@string/app_name"
+                app:sLeftTopTextSize="18sp"
+                app:sRightTextColor="@color/black"
+                app:sRightTextString="1" />
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/recycler_list"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="50dp" />
+        </android.support.v7.widget.CardView>
+
+        <android.support.v7.widget.CardView
+            android:id="@+id/history_card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            app:cardCornerRadius="4sp"
+            app:contentPadding="5dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <com.allen.library.SuperTextView
+                    android:id="@+id/history_header"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    app:sLeftTextColor="@color/black_2"
+                    app:sLeftTextSize="16sp"
+                    app:sLeftTextString="历史记录"
+                    app:sRightTextSize="12sp"
+                    app:sRightTextString="清空" />
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/recycler_history"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp" />
+            </LinearLayout>
+        </android.support.v7.widget.CardView>
+    </LinearLayout>
+</ScrollView>

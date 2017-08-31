@@ -38,7 +38,7 @@ public class SQLiteOpenUtil extends SQLiteOpenHelper {
      */
     public SQLiteOpenUtil(Context context) {
 
-        super(context, DB_NAME, null, 1);
+        super(context, DB_NAME, null, 2);
         this.myContext = context;
     }
 

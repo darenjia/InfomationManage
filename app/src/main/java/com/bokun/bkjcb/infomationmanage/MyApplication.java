@@ -2,6 +2,8 @@ package com.bokun.bkjcb.infomationmanage;
 
 import android.app.Application;
 
+import com.facebook.stetho.Stetho;
+
 /**
  * Created by DengShuai on 2017/8/18.
  */
@@ -17,5 +19,6 @@ public class MyApplication extends Application{
             return;
         }
         LeakCanary.install(this);*/
+        Stetho.initializeWithDefaults(this);
     }
 }
