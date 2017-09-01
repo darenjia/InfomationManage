@@ -196,7 +196,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void toMainActivity() {
-        Intent intent = new Intent(LoginActivity.this, MainOtherActivity.class);
+        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
         startActivity(intent);
     }
 

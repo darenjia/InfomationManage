@@ -56,17 +56,33 @@ public class SimpleExpandAdapter extends BaseExpandableListAdapter implements Fi
         unitName = new ArrayList<>();
         List<User> userList = null;
         for (User u : list_p) {
-            if (!unitName.contains(u.getUnitName())) {
-                unitName.add(u.getUnitName());
-                if (userList != null) {
-                    Collections.sort(userList);
-                    users.add(userList);
-                }
-                userList = new ArrayList<>();
-                userList.add(u);
-            } else {
-                if (userList != null) {
+            if (u.getLevel() == 1 && (u.getKind1() == 2 || u.getKind1() == 3) && u.getKind2() != 0) {
+                if (!unitName.contains(u.getUnitName() + "(" + u.getQuXian() + ")")) {
+                    unitName.add(u.getUnitName() + "(" + u.getQuXian() + ")");
+                    if (userList != null) {
+                        Collections.sort(userList);
+                        users.add(userList);
+                    }
+                    userList = new ArrayList<>();
                     userList.add(u);
+                } else {
+                    if (userList != null) {
+                        userList.add(u);
+                    }
+                }
+            } else {
+                if (!unitName.contains(u.getUnitName())) {
+                    unitName.add(u.getUnitName());
+                    if (userList != null) {
+                        Collections.sort(userList);
+                        users.add(userList);
+                    }
+                    userList = new ArrayList<>();
+                    userList.add(u);
+                } else {
+                    if (userList != null) {
+                        userList.add(u);
+                    }
                 }
             }
         }
@@ -422,7 +438,7 @@ public class SimpleExpandAdapter extends BaseExpandableListAdapter implements Fi
     public static int getColor(Context context) {
         Random random = new Random();
         int[] colors = {R.color.colorPrimary, R.color.red, R.color.green, R.color.yellow};
-        return context.getResources().getColor(colors[random.nextInt(16)%4]);
+        return context.getResources().getColor(colors[random.nextInt(16) % 4]);
     }
 
     private void openOrClose() {

@@ -40,6 +40,13 @@ public class DBManager {
         return manager;
     }
 
+    public void close() {
+        if (database != null) {
+            database.close();
+            manager = null;
+        }
+    }
+
     public User queryUserByLoginName(String loginName) {
         User user = null;
         cursor = database.query("User", null, "LoginName=?", new String[]{loginName}, null, null, null);
@@ -167,7 +174,7 @@ public class DBManager {
                         "LEFT JOIN Unit b ON a.Unitid = b.id " +
                         "LEFT JOIN z_Quxian c ON c.id = b.Quxian " +
                         "LEFT JOIN z_Level d ON b.LevelID = d.id " +
-                        "ORDER BY d.DepartmentNameA COLLATE LOCALIZED ASC"
+                        "ORDER BY d.DepartmentNameA COLLATE LOCALIZED ASC,d.Quxian ASC"
                 , null);
         while (cursor.moveToNext()) {
             user = new User();
@@ -267,7 +274,7 @@ public class DBManager {
             para.add(String.valueOf(kind1));
         }
         String[] strings = new String[para.size()];
-        L.i(sql.toString());
+//        L.i(sql.toString());
         Cursor cursor = database.rawQuery(sql.toString(), para.toArray(strings));
         while (cursor.moveToNext()) {
             level = new Level();
@@ -456,7 +463,7 @@ public class DBManager {
             user.setUnitName(user.getDepartmentNameA());
             users.add(user);
         }
-        L.i("啥啥啥：" + users.size());
+//        L.i("啥啥啥：" + users.size());
         Collections.sort(users);
         return users;
     }

@@ -62,6 +62,7 @@ public class SecondFragment extends BaseFragment implements View.OnClickListener
     private SuperTextView header, history;
     private TextView title_qiye, title_shiji, title_quji;
     private HistoryAdapter historyAdapter;
+    private Button btn_return;
 
     public static SecondFragment newInstance() {
         if (fragment == null) {
@@ -78,7 +79,7 @@ public class SecondFragment extends BaseFragment implements View.OnClickListener
         recycler_shiji = (RecyclerView) view.findViewById(R.id.recycler_shiji);
         recycler_quji = (RecyclerView) view.findViewById(R.id.recycler_quji);
         recycler_list = (RecyclerView) view.findViewById(R.id.recycler_list);
-        Button btn_return = (Button) view.findViewById(R.id.ret_btn);
+        btn_return = (Button) view.findViewById(R.id.ret_btn);
         header = (SuperTextView) view.findViewById(R.id.header);
         history = (SuperTextView) view.findViewById(R.id.history_header);
         Button btn_home = (Button) view.findViewById(R.id.home_btn);
@@ -166,76 +167,7 @@ public class SecondFragment extends BaseFragment implements View.OnClickListener
                 lastLevel = flagLevel;
                 flagLevel = model;
                 recyclerId = 0;
-                /*switch (layer) {
-                    case 0:
-                        if (position == 0) {
-                            adapter.setData(getSecondData());
-                        } else {
-                            adapter.setData(getData(2, -1, -1, -1, -1));
-                        }
-                        setStrings(model.getDepartmentNameA());
-                        layer = 1;
-                        flag = position;
-                        break;
-                    case 1:
-                        if (flag == 0) {
-                            if (position == 0) {
-                                adapter.setData(getData(0, -1, -1, -1, -1));
-                            } else {
-                                adapter.setData(getData());
-                            }
-                        } else {
-                            adapter.setData(getData(2, model.getKind1(), -1, -1, -1));
-                        }
-                        layer = 2;
-                        flag1 = position;
-                        setStrings(model.getDepartmentNameA());
-                        break;
-                    case 2:
-                        if (flag == 1) {
-//                            L.i("做响应了");
-                            typeAdapter.setData(getUserData(model));
-                            changeList(false, model.getDepartmentNameA());
-                        } else {
-                            if (flag1 == 0) {
-//                                L.i("开始筛选了市级单位了");
-                                typeAdapter.setData(getUserData(model));
-                                adapter.setData(getData(0, model.getKind1(), -1, -1, -1));
-                                changeList(true, model.getDepartmentNameA());
-                            } else {
-                                adapter.setData(getData(1, -1, -1, -1, model.getQuxin()));
-                            }
-                        }
-                        layer = 3;
-                        flag2 = position;
-                        setStrings(model.getDepartmentNameA());
-                        break;
-                    case 3:
-                        if (flag1 == 0) {
-//                            L.i("市级第二级");
-                            typeAdapter.setData(getUserData(model));
-                            changeList(false, model.getDepartmentNameA());
-                        } else {
-//                            L.i("做区级筛选");
-                            if (position == 0) {
-                                typeAdapter.setData(getUserData(model));
-                                changeList(true, model.getDepartmentNameA());
-                            }
-                            adapter.setData(getData(1, model.getKind1(), -1, -1, model.getQuxin()));
-                        }
-                        flag3 = position;
-                        layer = 4;
-                        setStrings(model.getDepartmentNameA());
-                        break;
-                    case 4:
-                        typeAdapter.setData(getUserData(model));
-                        changeList(false, model.getDepartmentNameA());
-                        layer = 5;
-                        setStrings(model.getDepartmentNameA());
-                        break;
-                    case 5:
-                        break;
-                }*/
+                btn_return.setBackgroundResource(R.color.colorPrimary);
                 switch (layer) {
                     case 0:
                         adapter.setData(getData(2, model.getKind1(), -1, -1, -1));
@@ -258,6 +190,7 @@ public class SecondFragment extends BaseFragment implements View.OnClickListener
                 setGone(recyclerView, title_qiye, recycler_quji, title_quji, history_card);
                 lastLevel = flagLevel;
                 flagLevel = model;
+                btn_return.setBackgroundResource(R.color.colorPrimary);
                 switch (layer) {
                     case 0:
                         typeAdapter.setData(getUserData(model));
@@ -282,6 +215,7 @@ public class SecondFragment extends BaseFragment implements View.OnClickListener
                 setGone(recyclerView, title_qiye, recycler_shiji, title_shiji, history_card);
                 lastLevel = flagLevel;
                 flagLevel = model;
+                btn_return.setBackgroundResource(R.color.colorPrimary);
                 switch (layer) {
                     case 0:
                         adapter_quji.setData(getData(1, -1, -1, -1, model.getQuxin()));
@@ -416,6 +350,9 @@ public class SecondFragment extends BaseFragment implements View.OnClickListener
                     adapter_quji.setData(getData(1, lastLevel.getKind1(), lastLevel.getKind2(), -1, lastLevel.getQuxin()));
                     layer = 3;
 
+                }
+                if (layer == 0) {
+                    btn_return.setBackgroundResource(R.color.black);
                 }
                 setStrings(null);
                 break;

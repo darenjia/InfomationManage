@@ -13,12 +13,12 @@ import android.widget.CompoundButton;
 import com.bokun.bkjcb.infomationmanage.Adapter.ItemCallback;
 import com.bokun.bkjcb.infomationmanage.Adapter.ThirdAdapter;
 import com.bokun.bkjcb.infomationmanage.Adapter.ThirdRecAdapter;
-import com.bokun.bkjcb.infomationmanage.Animate.SlidAnimate;
 import com.bokun.bkjcb.infomationmanage.Domain.Emergency;
 import com.bokun.bkjcb.infomationmanage.R;
 import com.bokun.bkjcb.infomationmanage.SQL.DBManager;
 import com.bokun.bkjcb.infomationmanage.Utils.SPUtils;
 import com.chad.library.adapter.base.BaseQuickAdapter;
+import com.chad.library.adapter.base.animation.SlideInBottomAnimation;
 
 import java.util.ArrayList;
 
@@ -85,7 +85,7 @@ public class ThridFragment extends BaseFragment {
             list = DBManager.newInstance(getContext()).getAllEmergency();
             adapter = new ThirdRecAdapter(getContext());
             thirdAdapter = new ThirdAdapter(R.layout.recycler_view, list);
-            thirdAdapter.openLoadAnimation(new SlidAnimate());
+            thirdAdapter.openLoadAnimation(new SlideInBottomAnimation());
             thirdAdapter.isFirstOnly(false);
             adapter.setData(list);
             return null;

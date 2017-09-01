@@ -60,8 +60,8 @@
             android:layout_width="match_parent"
             android:layout_height="60dp"
             android:background="@color/white"
-            app:sLeftBottomTextSize="24sp"
             app:sLeftBottomTextColor="@color/black_0"
+            app:sLeftBottomTextSize="24sp"
             app:sLeftBottomTextString="13924481442"
             app:sLeftIconMarginLeft="20dp"
             app:sRightIconRes="@drawable/ic_bohao" />
@@ -71,8 +71,8 @@
             android:layout_width="match_parent"
             android:layout_height="60dp"
             android:background="@color/white"
-            app:sLeftBottomTextColor="@color/black_0"
             android:visibility="gone"
+            app:sLeftBottomTextColor="@color/black_0"
             app:sLeftBottomTextSize="18sp"
             app:sLeftBottomTextString="13924481442"
             app:sLeftIconMarginLeft="20dp"
@@ -101,12 +101,13 @@
             app:sLeftIconRes="@drawable/ic_bumen"
             app:sRightBottomMaxEms="20"
             app:sRightBottomTextString="徐汇区" />
+
         <com.allen.library.SuperTextView
             android:id="@+id/zhiwu"
             android:layout_width="match_parent"
             android:layout_height="40dp"
-            android:visibility="gone"
             android:background="@color/white"
+            android:visibility="gone"
             app:sLeftBottomTextColor="@color/black"
             app:sLeftBottomTextSize="16sp"
             app:sLeftBottomTextString="所属职务"
@@ -122,7 +123,8 @@
             app:sLeftTextColor="@color/black"
             app:sLeftTextSize="16sp"
             app:sLeftTextString="单位地址"
-            app:sRightBottomTextString="宛平南路80号" />
+            app:sRightMaxEms="30"
+            app:sRightTextString="宛平南路80号" />
 
         <com.allen.library.SuperTextView
             android:id="@+id/dianha_danwei"

@@ -248,7 +248,7 @@ public class MainActivity extends BaseActivity implements BottomNavigationView.O
         }
 
         department.setRightBottomString(user.getDepartmentName());
-        unit_address.setRightBottomString(user.getAddress());
+        unit_address.setRightString(user.getAddress());
         if (!TextUtils.isEmpty(user.getDuty())) {
             zhiwu.setRightBottomString(user.getDuty());
             zhiwu.setVisibility(View.VISIBLE);
@@ -277,7 +277,7 @@ public class MainActivity extends BaseActivity implements BottomNavigationView.O
             @Override
             public void onClick(View view) {
                 String number = ((SuperTextView) view).getLeftBottomString();
-                actionCall(number,user);
+                actionCall(number, user);
             }
         };
         View.OnLongClickListener longClickListener = new View.OnLongClickListener() {
@@ -301,7 +301,7 @@ public class MainActivity extends BaseActivity implements BottomNavigationView.O
             @Override
             public void onClick(View v) {
                 String number = ((SuperTextView) v).getRightBottomString();
-                actionCall(number,user);
+                actionCall(number, user);
             }
         });
     }
@@ -442,5 +442,11 @@ public class MainActivity extends BaseActivity implements BottomNavigationView.O
     @Override
     public void action(int i, Object object) {
 
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        DBManager.newInstance(this).close();
     }
 }
