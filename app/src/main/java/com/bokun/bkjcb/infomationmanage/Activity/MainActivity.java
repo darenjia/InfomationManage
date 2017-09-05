@@ -41,6 +41,8 @@ import com.bokun.bkjcb.infomationmanage.Http.HttpRequestVo;
 import com.bokun.bkjcb.infomationmanage.Http.RequestListener;
 import com.bokun.bkjcb.infomationmanage.R;
 import com.bokun.bkjcb.infomationmanage.SQL.DBManager;
+import com.bokun.bkjcb.infomationmanage.Utils.NetUtils;
+import com.bokun.bkjcb.infomationmanage.Utils.SPUtils;
 import com.example.zhouwei.library.CustomPopWindow;
 
 import org.greenrobot.eventbus.EventBus;
@@ -352,10 +354,14 @@ public class MainActivity extends BaseActivity implements BottomNavigationView.O
         button = (SuperButton) view.findViewById(R.id.refresh_btn);
         progressBar = (ProgressBar) view.findViewById(R.id.refresh_pro);
 
+        date = (String) SPUtils.get(this, "Time", "----.--.--");
         time.setText(date);
         if (needRefresh) {
             info.setText(R.string.needRefresh);
             button.setText("立即更新");
+        } else {
+            info.setText(R.string.unknownRefresh);
+            button.setText("检查更新");
         }
         button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -367,6 +373,10 @@ public class MainActivity extends BaseActivity implements BottomNavigationView.O
                     progressBar.setVisibility(View.VISIBLE);
                     button.setVisibility(View.GONE);
                 } else {
+                    if (!NetUtils.isConnected(MainActivity.this)) {
+                        info.setText("\t\t\t\t网络不可用！");
+                        return;
+                    }
                     checkUpdate();
                     progressBar.setVisibility(View.VISIBLE);
                     button.setVisibility(View.GONE);
@@ -380,6 +390,9 @@ public class MainActivity extends BaseActivity implements BottomNavigationView.O
     }
 
     private void checkUpdate() {
+        if (!NetUtils.isConnected(this)) {
+            return;
+        }
         if (manager != null && manager.isRunning()) {
             manager.cancelHttpRequest();
             manager.postRequest();
@@ -393,7 +406,7 @@ public class MainActivity extends BaseActivity implements BottomNavigationView.O
             public void run() {
                 try {
                     Thread.sleep(2000);
-                    EventBus.getDefault().post(new DefaultEvent(1));
+                    EventBus.getDefault().post(new DefaultEvent(0));
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -426,8 +439,9 @@ public class MainActivity extends BaseActivity implements BottomNavigationView.O
 
     private void getDate() {
         Date d = new Date(System.currentTimeMillis());
-        SimpleDateFormat format = new SimpleDateFormat("yy-MM-dd HH:mm");
+        SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd HH:mm");
         date = format.format(d);
+        SPUtils.put(this, "Time", date);
     }
 
     @Override

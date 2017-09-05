@@ -485,11 +485,26 @@ public class DBManager {
 
     //insert更新数据
     public boolean insertUsers(ArrayList<User> list) {
-
-        for (int i = 0; i < list.size(); i++) {
-
+        boolean flag = false;
+        database.beginTransaction();
+        try {
+            database.delete("User", null, null);
+            for (int i = 0; i < list.size(); i++) {
+                if (insertUser(list.get(i))) {
+                    continue;
+                } else {
+                    throw new SQLiteException();
+                }
+            }
+            database.setTransactionSuccessful();
+            flag = true;
+        } catch (SQLiteException e) {
+            L.i(e.getMessage());
+        } finally {
+            database.endTransaction();
         }
-        return true;
+
+        return flag;
     }
 
     private boolean insertUser(User user) {
@@ -509,7 +524,28 @@ public class DBManager {
         long flag = database.insert("User", "id", values);
         return flag > 0;
     }
+    public boolean insertUnits(ArrayList<Unit> list) {
+        boolean flag = false;
+        database.beginTransaction();
+        try {
+            database.delete("Unit", null, null);
+            for (int i = 0; i < list.size(); i++) {
+                if (insertUnit(list.get(i))) {
+                    continue;
+                } else {
+                    throw new SQLiteException();
+                }
+            }
+            database.setTransactionSuccessful();
+            flag = true;
+        } catch (SQLiteException e) {
+            L.i(e.getMessage());
+        } finally {
+            database.endTransaction();
+        }
 
+        return flag;
+    }
     private boolean insertUnit(Unit unit) {
         ContentValues values = new ContentValues();
         values.put("Quxian", unit.getQuXian());
