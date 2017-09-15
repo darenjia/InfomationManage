@@ -9,14 +9,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.allen.library.SuperTextView;
 import com.bokun.bkjcb.infomationmanage.Adapter.HistoryAdapter;
 import com.bokun.bkjcb.infomationmanage.Adapter.MultiTypeAdapter;
 import com.bokun.bkjcb.infomationmanage.Adapter.RecAdapter;
 import com.bokun.bkjcb.infomationmanage.Adapter.SimpleItemCallback;
-import com.bokun.bkjcb.infomationmanage.Adapter.TypeItemCallback;
 import com.bokun.bkjcb.infomationmanage.Domain.HistoryItem;
 import com.bokun.bkjcb.infomationmanage.Domain.Level;
 import com.bokun.bkjcb.infomationmanage.Domain.User;
@@ -75,7 +73,7 @@ public class SecondFragment extends BaseFragment implements View.OnClickListener
     protected View initView(LayoutInflater inflater, ViewGroup container) {
         View view = inflater.inflate(R.layout.fragment_two, null);
         recyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
-        recycler_history = (RecyclerView) view.findViewById(R.id.recycler_history);
+//        recycler_history = (RecyclerView) view.findViewById(R.id.recycler_history);
         recycler_shiji = (RecyclerView) view.findViewById(R.id.recycler_shiji);
         recycler_quji = (RecyclerView) view.findViewById(R.id.recycler_quji);
         recycler_list = (RecyclerView) view.findViewById(R.id.recycler_list);
@@ -249,21 +247,8 @@ public class SecondFragment extends BaseFragment implements View.OnClickListener
                 setStrings(model.getDepartmentNameA());
             }
         });
-        typeAdapter.setItemClick(new TypeItemCallback() {
-            @Override
-            public void onItemClick(int position, User model, int tag) {
-                super.onItemClick(position, model, tag);
-                activity.showDetail(model);
-            }
-        });
-        history.setRightTvClickListener(new SuperTextView.OnRightTvClickListener() {
-            @Override
-            public void onClickListener() {
-                DBManager.newInstance(getContext()).deleteHistory();
-                Toast.makeText(getContext(), "记录已清空", Toast.LENGTH_SHORT).show();
-                historyAdapter.setNewData(null);
-            }
-        });
+
+
     }
 
     private void changeList(boolean isShow, String s, RecyclerView view) {
@@ -292,7 +277,6 @@ public class SecondFragment extends BaseFragment implements View.OnClickListener
     }
 
     private ArrayList<User> getUserData(Level level) {
-//        L.i("level" + level.getQuxin() + ":" + level.getLevel() + ":" + level.getKind1() + ":" + level.getKind2());
         return DBManager.newInstance(getContext()).queryUser(level);
     }
 

@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/user_info"
     android:layout_width="match_parent"
-    android:layout_height="60dp">
+    android:layout_height="61dp">
 
     <cn.carbs.android.avatarimageview.library.AvatarImageView
         android:id="@+id/item_avatar"
@@ -80,4 +80,5 @@
             android:visibility="gone" />
 
     </LinearLayout>
+
 </RelativeLayout>

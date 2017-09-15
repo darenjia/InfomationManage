@@ -9,7 +9,9 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.ImageView;
 
+import com.bokun.bkjcb.infomationmanage.Activity.MainActivity;
 import com.bokun.bkjcb.infomationmanage.Adapter.ItemCallback;
 import com.bokun.bkjcb.infomationmanage.Adapter.ThirdAdapter;
 import com.bokun.bkjcb.infomationmanage.Adapter.ThirdRecAdapter;
@@ -38,6 +40,8 @@ public class ThridFragment extends BaseFragment {
     private BaseQuickAdapter.OnItemChildClickListener listener;
     private Emergency emergency;
     private BottomDialog dialog;
+    private ImageView btn_back;
+    private View.OnClickListener clickListener;
 
     public static ThridFragment newInstance() {
         if (fragment == null) {
@@ -50,6 +54,7 @@ public class ThridFragment extends BaseFragment {
     protected View initView(LayoutInflater inflater, ViewGroup container) {
         View view = inflater.inflate(R.layout.fragment_three, null);
         recyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
+        btn_back = (ImageView) view.findViewById(R.id.btn_back);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
         return view;
     }
@@ -70,7 +75,18 @@ public class ThridFragment extends BaseFragment {
                 creatTip();
             }
         };
+        btn_back.setOnClickListener(clickListener);
         new LoadDataTask().execute();
+    }
+
+    public void setClickListener(View.OnClickListener listener) {
+        this.clickListener = listener;
+    }
+
+    @Override
+    public ThridFragment setActivity(MainActivity activity) {
+        this.activity =activity;
+        return fragment;
     }
 
     class LoadDataTask extends AsyncTask {
@@ -114,7 +130,7 @@ public class ThridFragment extends BaseFragment {
                     .setTag("Dialog");
             dialog.show();
         } else {
-            activity.actionCall(emergency.getTel(),null);
+            activity.actionCall(emergency.getTel(), null);
         }
     }
 
@@ -140,7 +156,7 @@ public class ThridFragment extends BaseFragment {
                     if (checkBox.isChecked()) {
                         SPUtils.put(getContext(), "isShowTip", false);
                     }
-                    activity.actionCall(emergency.getTel(),null);
+                    activity.actionCall(emergency.getTel(), null);
                 } else if (v.getId() == R.id.tip_cancel) {
                     dialog.dismiss();
                 }

@@ -26,7 +26,7 @@ public class DBManager {
     private SQLiteDatabase database;
     private Context context;
     private static DBManager manager;
-    private Cursor cursor;
+    //private Cursor cursor;
 
     private DBManager(Context context) {
         this.context = context;
@@ -49,7 +49,7 @@ public class DBManager {
 
     public User queryUserByLoginName(String loginName) {
         User user = null;
-        cursor = database.query("User", null, "LoginName=?", new String[]{loginName}, null, null, null);
+        Cursor cursor = database.query("User", null, "LoginName=?", new String[]{loginName}, null, null, null);
         if (cursor.moveToNext()) {
             user = new User();
             user.setUnitId(cursor.getInt(cursor.getColumnIndex("Unitid")));
@@ -65,7 +65,7 @@ public class DBManager {
     public User queryUserById(int id) {
         User user = null;
 //        cursor = database.query("User", null, "id=?", new String[]{String.valueOf(id)}, null, null, null);
-        cursor = database.rawQuery("SELECT " +
+        Cursor cursor = database.rawQuery("SELECT " +
                         "a.id as userid," +
                         "a.Unitid," +
                         "a.UserName," +
@@ -140,7 +140,7 @@ public class DBManager {
         Unit unit = null;
         Level level = null;
         ArrayList<User> users = new ArrayList<>();
-        cursor = database.rawQuery("SELECT " +
+        Cursor cursor = database.rawQuery("SELECT " +
                         "a.id as userid," +
                         "a.Unitid," +
                         "a.UserName," +
@@ -261,14 +261,16 @@ public class DBManager {
         } /*else if (kind2 == 0) {
             sql.append("and Kind1 = ? and Kind2 IS NOT NULL AND Kind3 IS NULL");
             para.add(String.valueOf(kind1));
-        }*/ else if (kind2 != -1) {
+        }*/ else if (kind2 != -1 && kind3 == -1) {
             sql.append("and Kind1 = ? and Kind2 = ? AND Kind3 IS NOT NULL");
             para.add(String.valueOf(kind1));
             para.add(String.valueOf(kind2));
         } else if (kind3 != -1) {
-            sql.append("and Kind1 = ? and Kind2 = ? AND Kind3 IS NOT NULL");
+            sql.append("and Kind1 = ? and Kind2 = ? AND Kind3 = ?");
             para.add(String.valueOf(kind1));
             para.add(String.valueOf(kind2));
+            para.add(String.valueOf(kind3));
+            return levels;
         } else {
             sql.append("and Kind1 = ? AND Kind2 IS NOT NULL AND Kind3 IS NULL");
             para.add(String.valueOf(kind1));
@@ -278,6 +280,7 @@ public class DBManager {
         Cursor cursor = database.rawQuery(sql.toString(), para.toArray(strings));
         while (cursor.moveToNext()) {
             level = new Level();
+            level.setId(cursor.getInt(cursor.getColumnIndex("id")));
             level.setQuxin(cursor.getInt(cursor.getColumnIndex("Quxian")));
             level.setDepartmentName(cursor.getString(cursor.getColumnIndex("DepartmentName")));
             level.setDepartmentNameA(cursor.getString(cursor.getColumnIndex("DepartmentNameA")));
@@ -287,14 +290,14 @@ public class DBManager {
             level.setKind3(cursor.getInt(cursor.getColumnIndex("Kind3")));
             levels.add(level);
         }
-        L.i(levels.size());
+        L.i(levels.size()+"：区县列表");
         return levels;
     }
 
     public ArrayList<String> queryAllUnitName(String level) {
         ArrayList<String> list = new ArrayList<>();
         list.add("全部");
-        cursor = database.rawQuery("SELECT * FROM z_Level WHERE Level=? AND Kind2 IS NULL", new String[]{level});
+        Cursor cursor = database.rawQuery("SELECT * FROM z_Level WHERE Level=? AND Kind2 IS NULL", new String[]{level});
         while (cursor.moveToNext()) {
             String name = cursor.getString(cursor.getColumnIndex("DepartmentName"));
             list.add(name);
@@ -305,7 +308,7 @@ public class DBManager {
     public ArrayList<Level> queryAllQuName() {
         ArrayList<Level> list = new ArrayList<>();
         Level level = null;
-        cursor = database.rawQuery("SELECT * FROM z_Quxian", null);
+        Cursor cursor = database.rawQuery("SELECT * FROM z_Quxian", null);
         while (cursor.moveToNext()) {
             level = new Level();
             String name = cursor.getString(cursor.getColumnIndex("NewName"));
@@ -320,7 +323,7 @@ public class DBManager {
     public ArrayList<String> queryNameByQu(int quId) {
         ArrayList<String> list = new ArrayList<>();
         list.add("全部");
-        cursor = database.rawQuery("SELECT * FROM z_Level WHERE Quxian = ? AND Kind2 IS Null ", new String[]{String.valueOf(quId)});
+        Cursor cursor = database.rawQuery("SELECT * FROM z_Level WHERE Quxian = ? AND Kind2 IS Null ", new String[]{String.valueOf(quId)});
         while (cursor.moveToNext()) {
             String name = cursor.getString(cursor.getColumnIndex("DepartmentName"));
             list.add(name);
@@ -331,7 +334,7 @@ public class DBManager {
     public ArrayList<String> queryNameByUnitId(int unitId) {
         ArrayList<String> list = new ArrayList<>();
         list.add("全部");
-        cursor = database.rawQuery("SELECT * FROM z_Level WHERE Level = 2 AND Kind1 = ? AND Kind2 IS NOT NULL", new String[]{String.valueOf(unitId)});
+        Cursor cursor = database.rawQuery("SELECT * FROM z_Level WHERE Level = 2 AND Kind1 = ? AND Kind2 IS NOT NULL", new String[]{String.valueOf(unitId)});
         while (cursor.moveToNext()) {
             String name = cursor.getString(cursor.getColumnIndex("DepartmentName"));
             list.add(name);
@@ -342,7 +345,7 @@ public class DBManager {
     public ArrayList<String> queryNameByQu(int quID, int kind1) {
         ArrayList<String> list = new ArrayList<>();
         list.add("全部");
-        cursor = database.rawQuery("SELECT * FROM z_Level WHERE Level = 1 AND Quxian = ? AND Kind1 = ? AND Kind2 is NOT NULL AND Kind3 IS NULL", new String[]{String.valueOf(quID), String.valueOf(kind1)});
+        Cursor cursor = database.rawQuery("SELECT * FROM z_Level WHERE Level = 1 AND Quxian = ? AND Kind1 = ? AND Kind2 is NOT NULL AND Kind3 IS NULL", new String[]{String.valueOf(quID), String.valueOf(kind1)});
         while (cursor.moveToNext()) {
             String name = cursor.getString(cursor.getColumnIndex("DepartmentName"));
             list.add(name);
@@ -353,7 +356,7 @@ public class DBManager {
     public ArrayList<String> queryNameByQu(int quID, int kind1, int kind2) {
         ArrayList<String> list = new ArrayList<>();
         list.add("全部");
-        cursor = database.rawQuery("SELECT * FROM z_Level WHERE Level = 1 AND Quxian = ? AND Kind1 = ? AND Kind2 = ? AND Kind3 IS NOT NULL", new String[]{String.valueOf(quID), String.valueOf(kind1), String.valueOf(kind2)});
+        Cursor cursor = database.rawQuery("SELECT * FROM z_Level WHERE Level = 1 AND Quxian = ? AND Kind1 = ? AND Kind2 = ? AND Kind3 IS NOT NULL", new String[]{String.valueOf(quID), String.valueOf(kind1), String.valueOf(kind2)});
         while (cursor.moveToNext()) {
             String name = cursor.getString(cursor.getColumnIndex("DepartmentName"));
             list.add(name);
@@ -364,7 +367,7 @@ public class DBManager {
     public ArrayList<String> queryNameByKind1(int kind1) {
         ArrayList<String> list = new ArrayList<>();
         list.add("全部");
-        cursor = database.rawQuery("SELECT * FROM z_Level WHERE Level = 0 AND Kind1 = ? AND Kind2 is NOT NULL AND Kind3 IS NULL", new String[]{String.valueOf(kind1)});
+        Cursor cursor = database.rawQuery("SELECT * FROM z_Level WHERE Level = 0 AND Kind1 = ? AND Kind2 is NOT NULL AND Kind3 IS NULL", new String[]{String.valueOf(kind1)});
         while (cursor.moveToNext()) {
             String name = cursor.getString(cursor.getColumnIndex("DepartmentName"));
             list.add(name);
@@ -376,8 +379,11 @@ public class DBManager {
         ArrayList<User> users = new ArrayList<>();
         User user = null;
         StringBuilder builder = null;
+        if (level == null || level.getId() == -1) {
+            return users;
+        }
         builder = new StringBuilder("SELECT " +
-                "a.id," +
+                "a.id as userId," +
                 "a.Unitid," +
                 "a.UserName," +
                 "a.LoginName," +
@@ -410,8 +416,8 @@ public class DBManager {
                 "LEFT JOIN Unit b ON a.Unitid = b.id " +
                 "LEFT JOIN z_Quxian c ON c.id = b.Quxian " +
                 "LEFT JOIN z_Level d ON b.LevelID = d.id " +
-                "where d.Level = ? ");
-        if (level.getLevel() == 1) {
+                "where d.id = ? ");
+       /* if (level.getLevel() == 1) {
             builder.append(" and d.Quxian = " + level.getQuxin());
         }
         if (level.getKind1() != 0) {
@@ -428,11 +434,13 @@ public class DBManager {
             builder.append(" and d.Kind3 = " + level.getKind3());
         } else {
             builder.append(" and d.Kind3 IS Null");
-        }
+        }*/
         builder.append(" ORDER BY d.DepartmentNameA COLLATE LOCALIZED ASC");
-        cursor = database.rawQuery(builder.toString(), new String[]{String.valueOf(level.getLevel())});
+        L.i(level.getId() + ":::id");
+        Cursor cursor = database.rawQuery(builder.toString(), new String[]{String.valueOf(level.getId())});
         while (cursor.moveToNext()) {
             user = new User();
+            user.setId(cursor.getInt((cursor.getColumnIndex("userId"))));
             user.setUnitId(cursor.getInt(cursor.getColumnIndex("Unitid")));
             user.setUserName(cursor.getString(cursor.getColumnIndex("UserName")));
             user.setLoginName(cursor.getString(cursor.getColumnIndex("LoginName")));
@@ -471,7 +479,7 @@ public class DBManager {
     public ArrayList<Emergency> getAllEmergency() {
         ArrayList<Emergency> list = new ArrayList<>();
         Emergency emergency = null;
-        cursor = database.rawQuery("SELECT * FROM Emergency", null);
+        Cursor cursor = database.rawQuery("SELECT * FROM Emergency", null);
         while (cursor.moveToNext()) {
             emergency = new Emergency();
             emergency.setTel(cursor.getString(cursor.getColumnIndex("Tel")));
@@ -524,6 +532,7 @@ public class DBManager {
         long flag = database.insert("User", "id", values);
         return flag > 0;
     }
+
     public boolean insertUnits(ArrayList<Unit> list) {
         boolean flag = false;
         database.beginTransaction();
@@ -546,6 +555,7 @@ public class DBManager {
 
         return flag;
     }
+
     private boolean insertUnit(Unit unit) {
         ContentValues values = new ContentValues();
         values.put("Quxian", unit.getQuXian());
@@ -582,8 +592,9 @@ public class DBManager {
     public ArrayList<HistoryItem> getAllHistoryItem() {
         ArrayList<HistoryItem> items = new ArrayList<>();
         HistoryItem item = null;
+        Cursor cursor;
         try {
-            cursor = database.query("history", null, null, null, null, null, "time DESC", "5");
+            cursor = database.query("history", null, null, null, null, null, "time DESC", "8");
         } catch (SQLiteException e) {
             createHistory();
             return items;

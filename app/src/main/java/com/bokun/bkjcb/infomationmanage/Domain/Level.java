@@ -5,6 +5,7 @@ package com.bokun.bkjcb.infomationmanage.Domain;
  */
 
 public class Level {
+    private int id;
     private int quxin;
     private String departmentName;
     private String departmentNameA;
@@ -12,6 +13,14 @@ public class Level {
     private int kind1;
     private int kind2;
     private int kind3;
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 
     public int getQuxin() {
         return quxin;

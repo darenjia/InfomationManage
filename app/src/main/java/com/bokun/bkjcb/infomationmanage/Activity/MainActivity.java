@@ -32,9 +32,9 @@ import com.bokun.bkjcb.infomationmanage.Adapter.SimpleExpandAdapter;
 import com.bokun.bkjcb.infomationmanage.Adapter.SimpleFragmentAdapter;
 import com.bokun.bkjcb.infomationmanage.Domain.HistoryItem;
 import com.bokun.bkjcb.infomationmanage.Domain.User;
+import com.bokun.bkjcb.infomationmanage.Fragment.FirstFragment;
+import com.bokun.bkjcb.infomationmanage.Fragment.ForthFragment;
 import com.bokun.bkjcb.infomationmanage.Fragment.MainFragment;
-import com.bokun.bkjcb.infomationmanage.Fragment.SecondFragment;
-import com.bokun.bkjcb.infomationmanage.Fragment.ThridFragment;
 import com.bokun.bkjcb.infomationmanage.Http.DefaultEvent;
 import com.bokun.bkjcb.infomationmanage.Http.HttpManager;
 import com.bokun.bkjcb.infomationmanage.Http.HttpRequestVo;
@@ -136,9 +136,9 @@ public class MainActivity extends BaseActivity implements BottomNavigationView.O
     @Override
     protected void loadData() {
         ArrayList<Fragment> fragments = new ArrayList<>();
-        fragments.add(SecondFragment.newInstance().setActivity(this));
+        fragments.add(FirstFragment.newInstance().setActivity(this));
         fragments.add(MainFragment.newInstance().setActivity(this));
-        fragments.add(ThridFragment.newInstance().setActivity(this));
+        fragments.add(ForthFragment.newInstance().setActivity(this));
         SimpleFragmentAdapter adapter = new SimpleFragmentAdapter(getSupportFragmentManager(), fragments);
         viewPager.setAdapter(adapter);
     }
