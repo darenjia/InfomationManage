@@ -27,6 +27,7 @@ import qiu.niorgai.StatusBarCompat;
 public class LoginActivity extends AppCompatActivity {
 
     private UserLoginTask mAuthTask = null;
+    private User admin;
 
     // UI references.
     private EditText mEmailView;
@@ -154,6 +155,7 @@ public class LoginActivity extends AppCompatActivity {
            /* if (user.getPassword().equals(mPassword)) {
                 return 1;
             }*/
+           admin= user;
             return 1;
         }
 
@@ -197,6 +199,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private void toMainActivity() {
         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+        intent.putExtra("User",admin);
         startActivity(intent);
     }
 

@@ -15,12 +15,12 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -44,6 +44,7 @@ import com.bokun.bkjcb.infomationmanage.SQL.DBManager;
 import com.bokun.bkjcb.infomationmanage.Utils.NetUtils;
 import com.bokun.bkjcb.infomationmanage.Utils.SPUtils;
 import com.example.zhouwei.library.CustomPopWindow;
+import com.mikepenz.actionitembadge.library.ActionItemBadge;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -64,16 +65,16 @@ public class MainActivity extends BaseActivity implements BottomNavigationView.O
     private Intent intent;
     private BottomDialog bottomDialog;
     private CustomPopWindow popWindow;
-    private TextView refresh;
     private BadgeView badgeView;
-    private boolean needRefresh;
-    private SuperButton button;
-    private ProgressBar progressBar;
+    private SuperButton btn_ig;
+    private SuperButton btn_con;
     private TextView info;
     private AlertDialog dialog;
     private String date;
     private TextView time;
     private HttpManager manager;
+
+    public User user;
 
     @Override
     protected void setView() {
@@ -83,14 +84,16 @@ public class MainActivity extends BaseActivity implements BottomNavigationView.O
 
     @Override
     protected void initView() {
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         viewPager = (ViewPager) findViewById(R.id.viewpager);
         navigationView = (BottomNavigationView) findViewById(R.id.bottomNavigation);
-        refresh = (TextView) findViewById(R.id.main_refresh);
+//        refresh = (TextView) findViewById(R.id.main_refresh);
         badgeView = BadgeFactory.create(this)
                 .setWidthAndHeight(10, 10)
                 .setBadgeBackground(Color.RED)
                 .setBadgeGravity(Gravity.RIGHT | Gravity.TOP)
                 .setShape(BadgeView.SHAPE_CIRCLE);
+        setSupportActionBar(toolbar);
     }
 
     @Override
@@ -119,18 +122,7 @@ public class MainActivity extends BaseActivity implements BottomNavigationView.O
 
             }
         });
-        refresh.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (dialog == null) {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-                    builder.setView(createRefreshView());
-                    dialog = builder.create();
-                    dialog.setCanceledOnTouchOutside(true);
-                }
-                dialog.show();
-            }
-        });
+
     }
 
     @Override
@@ -141,6 +133,7 @@ public class MainActivity extends BaseActivity implements BottomNavigationView.O
         fragments.add(ForthFragment.newInstance().setActivity(this));
         SimpleFragmentAdapter adapter = new SimpleFragmentAdapter(getSupportFragmentManager(), fragments);
         viewPager.setAdapter(adapter);
+        user = (User) getIntent().getExtras().get("User");
     }
 
     @Override
@@ -351,43 +344,27 @@ public class MainActivity extends BaseActivity implements BottomNavigationView.O
         View view = View.inflate(this, R.layout.refresh_view, null);
         info = (TextView) view.findViewById(R.id.refresh_info);
         time = (TextView) view.findViewById(R.id.refresh_time);
-        button = (SuperButton) view.findViewById(R.id.refresh_btn);
-        progressBar = (ProgressBar) view.findViewById(R.id.refresh_pro);
+        btn_ig = (SuperButton) view.findViewById(R.id.ignore_btn);
+        btn_con = (SuperButton) view.findViewById(R.id.now_btn);
 
         date = (String) SPUtils.get(this, "Time", "----.--.--");
         time.setText(date);
-        if (needRefresh) {
-            info.setText(R.string.needRefresh);
-            button.setText("立即更新");
-        } else {
-            info.setText(R.string.unknownRefresh);
-            button.setText("检查更新");
-        }
-        button.setOnClickListener(new View.OnClickListener() {
+        btn_ig.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (needRefresh) {
-                    refreshData();
-                    dialog.setCanceledOnTouchOutside(false);
-                    info.setText("更新数据中。。。");
-                    progressBar.setVisibility(View.VISIBLE);
-                    button.setVisibility(View.GONE);
-                } else {
-                    if (!NetUtils.isConnected(MainActivity.this)) {
-                        info.setText("\t\t\t\t网络不可用！");
-                        return;
-                    }
-                    checkUpdate();
-                    progressBar.setVisibility(View.VISIBLE);
-                    button.setVisibility(View.GONE);
-                }
+                dialog.dismiss();
+            }
+        });
+        btn_con.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, UpdateActivity.class);
+                MainActivity.this.startActivity(intent);
             }
         });
         return view;
     }
 
-    private void refreshData() {
-    }
 
     private void checkUpdate() {
         if (!NetUtils.isConnected(this)) {
@@ -417,23 +394,15 @@ public class MainActivity extends BaseActivity implements BottomNavigationView.O
     @Override
     protected void handlerEvent(DefaultEvent event) {
         getDate();
-        if (event.getState_code() == 1) {
-            needRefresh = true;
-            badgeView.bind(refresh);
-            if (button != null) {
-                button.setVisibility(View.VISIBLE);
-                progressBar.setVisibility(View.GONE);
-                info.setText(R.string.needRefresh);
-                time.setText(date);
+        if (event.getState_code() == 0) {
+            if (dialog == null) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                builder.setView(createRefreshView());
+                dialog = builder.create();
+                dialog.setCanceledOnTouchOutside(true);
             }
-        } else {
-            needRefresh = false;
-            if (button != null) {
-                button.setVisibility(View.VISIBLE);
-                progressBar.setVisibility(View.GONE);
-                info.setText(R.string.unknownRefresh);
-                time.setText(date);
-            }
+            dialog.show();
+            ActionItemBadge.update(navigationView.getMenu().findItem(R.id.menu_badge), 1);
         }
     }
 

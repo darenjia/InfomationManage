@@ -120,16 +120,19 @@ public class ChildOneFragment extends Fragment implements View.OnClickListener {
             case 0://市级
                 adapter = new RecAdapter(getContext(), getData(0, -1, -1, -1, -1));
                 title.setText("市级单位");
+                title.setBackgroundColor(getResources().getColor(R.color.color_type_1));
                 flagLevel.setDepartmentNameA("市级单位");
                 break;
             case 1://区级
                 adapter = new RecAdapter(getContext(), getData());
                 title.setText("区级单位");
+                title.setBackgroundColor(getResources().getColor(R.color.color_type_2));
                 flagLevel.setDepartmentNameA("区级单位");
                 break;
             case 2://企业
                 adapter = new RecAdapter(getContext(), getData(2, -1, -1, -1, -1));
                 title.setText("企业单位");
+                title.setBackgroundColor(getResources().getColor(R.color.color_type_0));
                 flagLevel.setDepartmentNameA("企业单位");
                 break;
         }
@@ -292,6 +295,22 @@ public class ChildOneFragment extends Fragment implements View.OnClickListener {
     private void setStrings(String s) {
         if (s == null) {
             strings.remove(strings.size() - 1);
+            if (strings.size() > 0) {
+                String newTitle = strings.get(strings.size() - 1);
+                title.setText(newTitle);
+            } else {
+                switch (fragmentType) {
+                    case 0:
+                        title.setText("市级单位");
+                        break;
+                    case 1:
+                        title.setText("区级级单位");
+                        break;
+                    case 2:
+                        title.setText("企业单位");
+                        break;
+                }
+            }
             layout.removeTag(layout.getTags().size() - 1);
         } else {
             strings.add(s);

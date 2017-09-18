@@ -87,7 +87,8 @@
                     android:layout_height="wrap_content"
                     android:padding="10dp"
                     android:text="企业单位"
-                    android:textColor="@color/black_2"
+                    android:background="@color/color_type_0"
+                    android:textColor="@color/white"
                     android:textSize="16sp" />
 
                 <android.support.v7.widget.RecyclerView

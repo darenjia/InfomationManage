@@ -49,15 +49,34 @@ public class DBManager {
 
     public User queryUserByLoginName(String loginName) {
         User user = null;
-        Cursor cursor = database.query("User", null, "LoginName=?", new String[]{loginName}, null, null, null);
+//        Cursor cursor = database.query("User", null, "LoginName=?", new String[]{loginName}, null, null, null);
+        Cursor cursor = database.rawQuery("SELECT " +
+                "a.id," +
+                "a.UserName," +
+                "a.LoginName," +
+                "a.Password," +
+                "a.U_Tel," +
+                "a.TEL," +
+                "b.Address," +
+                "b.Quxian," +
+                "c.NewName," +
+                "d.DepartmentNameA " +
+                "FROM " +
+                "User a " +
+                "LEFT JOIN Unit b ON a.Unitid = b.id " +
+                "LEFT JOIN z_Quxian c ON c.id = b.Quxian " +
+                "LEFT JOIN z_Level d ON b.LevelID = d.id " +
+                "WHERE a.LoginName=?",new String[]{loginName});
         if (cursor.moveToNext()) {
             user = new User();
-            user.setUnitId(cursor.getInt(cursor.getColumnIndex("Unitid")));
             user.setUserName(cursor.getString(cursor.getColumnIndex("UserName")));
             user.setLoginName(cursor.getString(cursor.getColumnIndex("LoginName")));
             user.setPassword(cursor.getString(cursor.getColumnIndex("Password")));
             user.setTel(cursor.getString(cursor.getColumnIndex("TEL")));
-            user.setFlag(cursor.getInt(cursor.getColumnIndex("Flag")));
+            user.setTel_U(cursor.getString(cursor.getColumnIndex("U_Tel")));
+            user.setAddress(cursor.getString(cursor.getColumnIndex("Address")));
+            user.setQuXian(cursor.getString(cursor.getColumnIndex("NewName")));
+            user.setDepartmentNameA(cursor.getString(cursor.getColumnIndex("DepartmentNameA")));
         }
         return user;
     }
@@ -290,7 +309,7 @@ public class DBManager {
             level.setKind3(cursor.getInt(cursor.getColumnIndex("Kind3")));
             levels.add(level);
         }
-        L.i(levels.size()+"：区县列表");
+        L.i(levels.size() + "：区县列表");
         return levels;
     }
 

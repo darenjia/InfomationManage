@@ -11,6 +11,7 @@
     <color name="l_green">#7FFFD4</color>
 
     <color name="white">#ffffff</color>
+    <color name="white_0">#ecebeb</color>
     <color name="y_white">#cecdca</color>
     <color name="black">#787878</color>
     <color name="black_0">#605f5f</color>
@@ -22,4 +23,8 @@
     <color name="random_2">#FFFBD7</color>
     <color name="random_3">#FFEACC</color>
     <color name="random_4">#FDD9D6</color>
+    <color name="color_type_0">#27a9e3</color>
+    <color name="color_type_1">#28b779</color>
+    <color name="color_type_2">#ffb848</color>
+    <color name="color_type_3">#da542e</color>
 </resources>
