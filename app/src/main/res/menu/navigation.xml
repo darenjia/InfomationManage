@@ -12,7 +12,6 @@
 
     <item
         android:id="@+id/navigation_other"
-        android:actionLayout="@layout/menu_action_item_badge"
         android:icon="@drawable/ic_other"
         android:title="其他" />
 </menu>

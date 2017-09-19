@@ -5,6 +5,7 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.CALL_PHONE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.INTERNET"/>
 
     <application
         android:name=".MyApplication"
@@ -18,6 +19,7 @@
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -33,15 +35,20 @@
             android:screenOrientation="portrait"
             android:theme="@style/NoActionBar"
             android:windowSoftInputMode="stateAlwaysHidden|adjustPan">
-            <!-- <intent-filter>
+
+            <!--
+             <intent-filter>
                  <action android:name="android.intent.action.MAIN" />
                  <category android:name="android.intent.category.LAUNCHER" />
-             </intent-filter>-->
+             </intent-filter>
+            -->
         </activity>
         <activity
             android:name=".Activity.UpdateActivity"
             android:screenOrientation="portrait"
             android:theme="@style/NoActionBar" />
+        <activity android:name=".Activity.AboutActivity"
+            android:theme="@style/NoActionBar"></activity>
     </application>
 
 </manifest>

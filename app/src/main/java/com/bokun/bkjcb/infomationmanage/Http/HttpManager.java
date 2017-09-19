@@ -157,7 +157,7 @@ public class HttpManager implements Runnable {
 
             String NAMESPACE = "http://tempuri.org/";
             String METHOD_NAME = requestVo.methodName;
-            String URL = "http://192.168.137.1:1856/zgzxjkWebService.asmx";
+            String URL = "http://101.231.47.202:93/WebService1.asmx";
 //            String URL = Constants.HTTP_URL;
             // 新建 SoapObject 对象
             SoapObject rpc = new SoapObject(NAMESPACE, METHOD_NAME);

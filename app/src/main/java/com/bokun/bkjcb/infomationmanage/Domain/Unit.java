@@ -5,58 +5,76 @@ package com.bokun.bkjcb.infomationmanage.Domain;
  */
 
 public class Unit {
-    private String quXian;
-    private String address;
-    private String tel;
-    private String fax;
-    private String zipCode;
-    private int levelId;
+    private int id;
+    private String Quxian;
+    private String Address;
+    private String Tel;
+    private String Fax;
+    private String Zipcode;
+    private int LevelID;
+    private int IsShow;
 
-    public String getQuXian() {
-        return quXian;
+    public int getId() {
+        return id;
     }
 
-    public void setQuXian(String quXian) {
-        this.quXian = quXian;
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getQuxian() {
+        return Quxian;
+    }
+
+    public void setQuxian(String quxian) {
+        Quxian = quxian;
     }
 
     public String getAddress() {
-        return address;
+        return Address;
     }
 
     public void setAddress(String address) {
-        this.address = address;
+        Address = address;
     }
 
     public String getTel() {
-        return tel;
+        return Tel;
     }
 
     public void setTel(String tel) {
-        this.tel = tel;
+        Tel = tel;
     }
 
     public String getFax() {
-        return fax;
+        return Fax;
     }
 
     public void setFax(String fax) {
-        this.fax = fax;
+        Fax = fax;
     }
 
-    public String getZipCode() {
-        return zipCode;
+    public String getZipcode() {
+        return Zipcode;
     }
 
-    public void setZipCode(String zipCode) {
-        this.zipCode = zipCode;
+    public void setZipcode(String zipcode) {
+        Zipcode = zipcode;
     }
 
-    public int getLevelId() {
-        return levelId;
+    public int getLevelID() {
+        return LevelID;
     }
 
-    public void setLevelId(int levelId) {
-        this.levelId = levelId;
+    public void setLevelID(int levelID) {
+        LevelID = levelID;
+    }
+
+    public int getIsShow() {
+        return IsShow;
+    }
+
+    public void setIsShow(int isShow) {
+        IsShow = isShow;
     }
 }

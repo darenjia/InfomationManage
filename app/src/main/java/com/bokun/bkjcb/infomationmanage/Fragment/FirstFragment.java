@@ -16,6 +16,8 @@ public class FirstFragment extends BaseFragment {
 
     private FrameLayout layout;
     private static FirstFragment fragment;
+    private FragmentTransaction transaction;
+    private PartOneFragment partOneFragment;
 
     public static FirstFragment newInstance() {
         if (fragment == null) {
@@ -32,10 +34,10 @@ public class FirstFragment extends BaseFragment {
     }
 
     private void init() {
-        PartOneFragment fragment = (PartOneFragment) PartOneFragment.newInstance().setActivity(activity);
-        fragment.setLayoutAndManager(layout,activity.getSupportFragmentManager());
+        partOneFragment = (PartOneFragment) PartOneFragment.newInstance().setActivity(activity);
+        partOneFragment.setLayoutAndManager(layout, activity.getSupportFragmentManager());
         FragmentTransaction transaction = activity.getSupportFragmentManager().beginTransaction();
-        transaction.add(R.id.main_layout, fragment);
+        transaction.add(R.id.main_layout, partOneFragment);
         transaction.commit();
     }
 
@@ -47,7 +49,7 @@ public class FirstFragment extends BaseFragment {
     @Override
     public void onStart() {
         super.onStart();
-        if (layout.getChildCount()==0){
+        if (layout.getChildCount() == 0) {
             init();
         }
     }

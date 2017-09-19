@@ -1,5 +1,6 @@
 package com.bokun.bkjcb.infomationmanage.Http;
 
+import org.ksoap2.serialization.SoapObject;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
@@ -48,8 +49,8 @@ public class XmlParser {
         return res;
     }
 
-   /* public static String parseSoapObject(SoapObject object) {
+    public static String parseSoapObject(SoapObject object) {
         SoapManager manager = SoapManager.getInstance();
         return manager.soapToJson(object);
-    }*/
+    }
 }

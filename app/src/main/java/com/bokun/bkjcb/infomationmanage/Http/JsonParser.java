@@ -5,118 +5,46 @@ package com.bokun.bkjcb.infomationmanage.Http;
  * Created by BKJCB on 2017/3/16.
  */
 
+import com.bokun.bkjcb.infomationmanage.Domain.DB_User;
+import com.bokun.bkjcb.infomationmanage.Domain.Emergency;
+import com.bokun.bkjcb.infomationmanage.Domain.Level;
+import com.bokun.bkjcb.infomationmanage.Domain.LevelBind;
+import com.bokun.bkjcb.infomationmanage.Domain.Unit;
+import com.bokun.bkjcb.infomationmanage.Domain.VersionInfo;
+import com.bokun.bkjcb.infomationmanage.Domain.Z_Quxian;
+import com.bokun.bkjcb.infomationmanage.Utils.L;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+
+
+/**
+ * Created by BKJCB on 2017/3/16.
+ */
+
 public class JsonParser {
-    public Object parseJSON(String result, String s) {
-        return null;
-    }
 
-   /* public static JsonResult parseJSON(String json) {
-        JsonResult result = new JsonResult();
-        String content = XmlParser.parseJSON(json);
-        if (content.length() > 0) {
-            try {
-                JSONObject jsonObject = new JSONObject(content);
-                result.success = jsonObject.getBoolean("success");
-                result.message = jsonObject.getString("message");
-                result.resData = jsonObject.getString("data");
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        } else {
-            result.success = false;
-            result.message = "请求出错，请稍后再试！";
-        }
-        return result;
-    }
-
-    public static JsonResult parseSoap(SoapObject object) {
-        JsonResult result = new JsonResult();
-        if (object == null) {
-            return result;
-        }
-        LogUtil.logI(object.toString());
-        SoapObject detail = (SoapObject) object.getProperty(0);
-        String content = XmlParser.parseSoapObject(detail);
-        if (content.length() > 0) {
-            try {
-                JSONObject jsonObject = new JSONObject(content);
-                result.success = jsonObject.getBoolean("success");
-                result.message = jsonObject.getString("message");
-                try {
-                    result.resData = jsonObject.getString("data");
-                } catch (JSONException e) {
-                    result.resData = "";
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        } else {
-            result.success = false;
-            result.message = "请求出错，请稍后再试！";
-        }
-        return result;
-    }
-
-    public static ArrayList<CheckPlan> getJSONData(String json) {
-        LogUtil.logI(json);
-        ArrayList<CheckPlan> results = new ArrayList<>();
-        if (json.equals("{}")) {
-            return results;
-        }
+    public static String parseJSON(String result, String name) {
+        String json = null;
         try {
-            //将JSON的String 转成一个JsonArray对象
-            JSONArray jsonArray = new JSONArray(json);
-            for (int i = 0; i < jsonArray.length(); i++) {
-                CheckPlan checkPlan = new CheckPlan();
-                JSONObject con = jsonArray.optJSONObject(i);
-                try {
-                    checkPlan.setIdentifier(con.getInt("SysGcxxdjh"));
-                } catch (JSONException e) {
-                    checkPlan.setIdentifier(0);
-                }
-                try {
-                    checkPlan.setSysId(con.getInt("SysId"));
-                } catch (JSONException e) {
-                    checkPlan.setSysId(0);
-                }
-
-                try {
-                    checkPlan.setAddress(con.getString("ScJbGcdz"));
-                } catch (JSONException e) {
-                    checkPlan.setAddress("");
-                }
-                try {
-                    checkPlan.setArea(con.getString("ScXzJzmj"));
-                } catch (JSONException e) {
-                    checkPlan.setArea("");
-                }
-                try {
-                    checkPlan.setType(con.getString("SysSsmc"));
-                } catch (Exception e) {
-                    checkPlan.setType("");
-                }
-                try {
-                    checkPlan.setName(con.getString("ScJbGcmc"));
-                } catch (JSONException e) {
-                    checkPlan.setName("");
-                }
-                try {
-                    checkPlan.setQuxian(con.getString("SysQuXian"));
-                } catch (JSONException e) {
-                    checkPlan.setQuxian("");
-                }
-                results.add(checkPlan);
-            }
-        } catch (Exception e) {
+            JSONObject object = new JSONObject(result);
+            json = object.get(name).toString();
+        } catch (JSONException e) {
             e.printStackTrace();
         }
-        LogUtil.logI(results.size() + "");
-        return results;
+        return json;
     }
 
-    public static ArrayList<ProjectPlan> getProjectData(String json) {
-        LogUtil.logI(json);
-        ArrayList<ProjectPlan> results = new ArrayList<>();
+    public static ArrayList<VersionInfo> getResultData(String json) {
+        L.i(json);
+        json = parseJSON(json, "GetyearResult");
+        L.i(json);
+        ArrayList<VersionInfo> results = new ArrayList<>();
         if (json.equals("{}")) {
             return results;
         }
@@ -125,25 +53,119 @@ public class JsonParser {
         JsonArray array = parser.parse(json).getAsJsonArray();
         Gson gson = new Gson();
         for (JsonElement element : array) {
-            ProjectPlan projectPlan = gson.fromJson(element, ProjectPlan.class);
-            if (projectPlan.getAq_sysid() == null || projectPlan.getAq_sysid().equals("")) {
-                continue;
-            }
-            results.add(projectPlan);
+            VersionInfo result = gson.fromJson(element, VersionInfo.class);
+            results.add(result);
         }
         return results;
     }
 
-    public static ManagerInfo getUserInfo(String json) {
-        ManagerInfo result = new ManagerInfo();
-        try {
-            JSONObject jsonObject = new JSONObject(json);
-            result.quxian = jsonObject.getString("quxian");
-            result.roles = jsonObject.getString("roles");
-            result.username = jsonObject.getString("sys_realname");
-        } catch (JSONException e) {
-            e.printStackTrace();
+    public static ArrayList<Emergency> getEmergency(String json) {
+//        L.i(json);
+        json = parseJSON(json, "emergencyResult");
+        ArrayList<Emergency> results = new ArrayList<>();
+        if (json == null || json.equals("{}")) {
+            return results;
         }
-        return result;
-    }*/
+        L.i(json);
+        //将JSON的String 转成一个JsonArray对象
+        com.google.gson.JsonParser parser = new com.google.gson.JsonParser();
+        JsonArray array = parser.parse(json).getAsJsonArray();
+        Gson gson = new Gson();
+        for (JsonElement element : array) {
+            Emergency result = gson.fromJson(element, Emergency.class);
+            results.add(result);
+        }
+        return results;
+    }
+
+    public static ArrayList<LevelBind> getLevelBind(String json) {
+        L.i("levelbindResult:" + json);
+        json = parseJSON(json, "levelbindResult");
+        ArrayList<LevelBind> results = new ArrayList<>();
+        if (json == null || json.equals("{}")) {
+            return results;
+        }
+//        L.i(json);
+        //将JSON的String 转成一个JsonArray对象
+        com.google.gson.JsonParser parser = new com.google.gson.JsonParser();
+        JsonArray array = parser.parse(json).getAsJsonArray();
+        Gson gson = new Gson();
+        for (JsonElement element : array) {
+            LevelBind result = gson.fromJson(element, LevelBind.class);
+            results.add(result);
+        }
+        return results;
+    }
+
+    public static ArrayList<Unit> getUnit(String json) {
+        L.i("unitResult:" + json);
+        json = parseJSON(json, "unitResult");
+//        L.i(json + "");
+        ArrayList<Unit> results = new ArrayList<>();
+        if (json == null || json.equals("{}")) {
+            return results;
+        }
+        //将JSON的String 转成一个JsonArray对象
+        com.google.gson.JsonParser parser = new com.google.gson.JsonParser();
+        JsonArray array = parser.parse(json).getAsJsonArray();
+        Gson gson = new Gson();
+        for (JsonElement element : array) {
+            Unit result = gson.fromJson(element, Unit.class);
+            results.add(result);
+        }
+        return results;
+    }
+
+    public static ArrayList<Z_Quxian> getZ_Quxian(String json) {
+        L.i("z_quxianResult:" + json);
+        json = parseJSON(json, "z_quxianResult");
+        ArrayList<Z_Quxian> results = new ArrayList<>();
+        if (json == null || json.equals("{}")) {
+            return results;
+        }
+        //将JSON的String 转成一个JsonArray对象
+        com.google.gson.JsonParser parser = new com.google.gson.JsonParser();
+        JsonArray array = parser.parse(json).getAsJsonArray();
+        Gson gson = new Gson();
+        for (JsonElement element : array) {
+            Z_Quxian result = gson.fromJson(element, Z_Quxian.class);
+            results.add(result);
+        }
+        return results;
+    }
+    public static ArrayList<Level> getLevel(String json) {
+        L.i("z_levelResult:" + json);
+        json = parseJSON(json, "z_levelResult");
+        ArrayList<Level> results = new ArrayList<>();
+        if (json == null || json.equals("{}")) {
+            return results;
+        }
+        //将JSON的String 转成一个JsonArray对象
+        com.google.gson.JsonParser parser = new com.google.gson.JsonParser();
+        JsonArray array = parser.parse(json).getAsJsonArray();
+        Gson gson = new Gson();
+        for (JsonElement element : array) {
+            Level result = gson.fromJson(element, Level.class);
+            results.add(result);
+        }
+        return results;
+    }
+    public static ArrayList<DB_User> getUser(String json) {
+        L.i("userResult:" + json);
+        json = parseJSON(json, "userResult");
+        ArrayList<DB_User> results = new ArrayList<>();
+        if (json == null || json.equals("{}")) {
+            return results;
+        }
+        //将JSON的String 转成一个JsonArray对象
+        com.google.gson.JsonParser parser = new com.google.gson.JsonParser();
+        JsonArray array = parser.parse(json).getAsJsonArray();
+        Gson gson = new Gson();
+        for (JsonElement element : array) {
+            DB_User result = gson.fromJson(element, DB_User.class);
+            results.add(result);
+        }
+        return results;
+    }
 }
+

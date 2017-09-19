@@ -13,6 +13,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.allen.library.SuperTextView;
+import com.bokun.bkjcb.infomationmanage.Activity.AboutActivity;
 import com.bokun.bkjcb.infomationmanage.Activity.MainActivity;
 import com.bokun.bkjcb.infomationmanage.Adapter.MultiTypeAdapter;
 import com.bokun.bkjcb.infomationmanage.Adapter.RecAdapter;
@@ -60,6 +61,7 @@ public class ChildOneFragment extends Fragment implements View.OnClickListener {
     private View rootView;
     private MainActivity activity;
     private List<User> userList;
+    private Level level;
 
 
     public static ChildOneFragment newInstance(int type) {
@@ -116,6 +118,7 @@ public class ChildOneFragment extends Fragment implements View.OnClickListener {
         flagLevel = new Level();
         userList = null;
         layer = 0;
+        btn_return.setBackgroundResource(R.color.black_3);
         switch (fragmentType) {
             case 0://市级
                 adapter = new RecAdapter(getContext(), getData(0, -1, -1, -1, -1));
@@ -208,20 +211,40 @@ public class ChildOneFragment extends Fragment implements View.OnClickListener {
         });
     }
 
-    private void setDataAndView(Level model) {
+    private void setDataAndView(final Level model) {
         userList = getUserData(model);
+        ArrayList<Level> levels = null;
+        if (fragmentType != 2) {
+            levels = DBManager.newInstance(getContext()).queryLevel(model);
+        } else {
+            levels = DBManager.newInstance(getContext()).queryLevel_G(model);
+        }
         if (userList.size() > 0 || adapter.getItemCount() == 0) {
             setVisible(result);
             typeAdapter.setData(userList);
-            changeList(model.getDepartmentNameA());
+//            changeList(model.getDepartmentNameA());
+            header.setLeftString(model.getDepartmentNameA());
+            header.setRightString(typeAdapter.getItemCount() + "");
+            if (levels != null && levels.size() > 0) {
+                header.setLeftString(model.getDepartmentNameA() + "(" + levels.size() + ")");
+                header.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        AboutActivity.comeIn(model, getContext(), 1);
+                    }
+                });
+            } else {
+                header.setLeftString(model.getDepartmentNameA());
+                header.setOnClickListener(null);
+            }
         } else {
             setGone(result);
         }
         if (adapter.getItemCount() == 0) {
             setGone(recyclerView, title);
         } else {
-            setVisible(recyclerView, title);
             title.setText(model.getDepartmentNameA());
+            setVisible(recyclerView, title);
         }
     }
 
@@ -343,5 +366,9 @@ public class ChildOneFragment extends Fragment implements View.OnClickListener {
     public ChildOneFragment setActivity(MainActivity activity) {
         this.activity = activity;
         return fragment;
+    }
+
+    public void setData(Level l) {
+        this.level = l;
     }
 }

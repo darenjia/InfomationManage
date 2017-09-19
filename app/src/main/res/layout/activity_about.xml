@@ -18,36 +18,21 @@
             app:popupTheme="@style/AppTheme.PopupOverlay" />
     </android.support.design.widget.AppBarLayout>
 
-    <android.support.v7.widget.CardView
+   <!-- <android.support.v7.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_margin="20dp"
         android:layout_weight="1">
-
+-->
         <android.support.v7.widget.RecyclerView
-            android:id="@+id/recycler_update"
+            android:id="@+id/recycler_about"
             android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone"/>
+
+        <ExpandableListView
+            android:id="@+id/expand_about"
+            android:layout_width="match_parent"
+            android:visibility="gone"
             android:layout_height="match_parent" />
-    </android.support.v7.widget.CardView>
-
-    <Button
-        android:id="@+id/update_btn"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_margin="10dp"
-        android:background="@drawable/copy_bg"
-        android:padding="4dp"
-        android:text="检查更新"
-        android:textColor="@color/colorPrimary" />
-    <com.wang.avi.AVLoadingIndicatorView
-        android:id="@+id/update_progress"
-        android:layout_width="wrap_content"
-        android:layout_height="50dp"
-        android:layout_margin="10dp"
-        app:indicatorName="BallPulseIndicator"
-        app:indicatorColor="@color/colorPrimary"
-        android:layout_gravity="center"
-        android:visibility="gone"
-        />
-
 </LinearLayout>

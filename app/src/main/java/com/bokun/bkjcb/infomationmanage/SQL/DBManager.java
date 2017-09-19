@@ -8,11 +8,15 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 
+import com.bokun.bkjcb.infomationmanage.Domain.DB_User;
 import com.bokun.bkjcb.infomationmanage.Domain.Emergency;
 import com.bokun.bkjcb.infomationmanage.Domain.HistoryItem;
 import com.bokun.bkjcb.infomationmanage.Domain.Level;
+import com.bokun.bkjcb.infomationmanage.Domain.LevelBind;
 import com.bokun.bkjcb.infomationmanage.Domain.Unit;
 import com.bokun.bkjcb.infomationmanage.Domain.User;
+import com.bokun.bkjcb.infomationmanage.Domain.VersionInfo;
+import com.bokun.bkjcb.infomationmanage.Domain.Z_Quxian;
 import com.bokun.bkjcb.infomationmanage.Utils.L;
 
 import java.util.ArrayList;
@@ -66,7 +70,7 @@ public class DBManager {
                 "LEFT JOIN Unit b ON a.Unitid = b.id " +
                 "LEFT JOIN z_Quxian c ON c.id = b.Quxian " +
                 "LEFT JOIN z_Level d ON b.LevelID = d.id " +
-                "WHERE a.LoginName=?",new String[]{loginName});
+                "WHERE a.LoginName=?", new String[]{loginName});
         if (cursor.moveToNext()) {
             user = new User();
             user.setUserName(cursor.getString(cursor.getColumnIndex("UserName")));
@@ -193,6 +197,7 @@ public class DBManager {
                         "LEFT JOIN Unit b ON a.Unitid = b.id " +
                         "LEFT JOIN z_Quxian c ON c.id = b.Quxian " +
                         "LEFT JOIN z_Level d ON b.LevelID = d.id " +
+                        "Where b.IsShow = 0 and a.Flag = 0 " +
                         "ORDER BY d.DepartmentNameA COLLATE LOCALIZED ASC,d.Quxian ASC"
                 , null);
         while (cursor.moveToNext()) {
@@ -238,12 +243,12 @@ public class DBManager {
                 new String[]{String.valueOf(unitId)});
         if (cursor.moveToNext()) {
             unit = new Unit();
-            unit.setQuXian(cursor.getString(cursor.getColumnIndex("NewName")));
+            unit.setQuxian(cursor.getString(cursor.getColumnIndex("NewName")));
             unit.setAddress(cursor.getString(cursor.getColumnIndex("Address")));
             unit.setFax(cursor.getString(cursor.getColumnIndex("Fax")));
             unit.setTel(cursor.getString(cursor.getColumnIndex("Tel")));
-            unit.setZipCode(cursor.getString(cursor.getColumnIndex("Zipcode")));
-            unit.setLevelId(cursor.getInt(cursor.getColumnIndex("LevelID")));
+            unit.setZipcode(cursor.getString(cursor.getColumnIndex("Zipcode")));
+            unit.setLevelID(cursor.getInt(cursor.getColumnIndex("LevelID")));
         }
         return unit;
     }
@@ -337,6 +342,27 @@ public class DBManager {
             list.add(level);
         }
         return list;
+    }
+
+    public Level queryLevelId(Level level) {
+        ArrayList<Level> list = new ArrayList<>();
+        StringBuilder builder = new StringBuilder();
+        ArrayList<String> para = new ArrayList<>();
+        builder.append("SELECT a.id FROM z_Level a where a.Level=? and a.Kind1=? and a.DepartMentNameA=?");
+        para.add("" + level.getLevel());
+        para.add("" + level.getKind1());
+        para.add(level.getDepartmentNameA());
+        if (level.getQuxin() != 0) {
+            builder.append(" and a.Quxian=?");
+            para.add("" + level.getQuxin());
+        }
+        String[] strings = new String[para.size()];
+        Cursor cursor = database.rawQuery(builder.toString(),
+                para.toArray(strings));
+        while (cursor.moveToNext()) {
+            level.setId(cursor.getInt(0));
+        }
+        return level;
     }
 
     public ArrayList<String> queryNameByQu(int quId) {
@@ -435,7 +461,7 @@ public class DBManager {
                 "LEFT JOIN Unit b ON a.Unitid = b.id " +
                 "LEFT JOIN z_Quxian c ON c.id = b.Quxian " +
                 "LEFT JOIN z_Level d ON b.LevelID = d.id " +
-                "where d.id = ? ");
+                "where b.IsShow = 0 and a.Flag = 0 and d.id = ? ");
        /* if (level.getLevel() == 1) {
             builder.append(" and d.Quxian = " + level.getQuxin());
         }
@@ -511,7 +537,7 @@ public class DBManager {
     }
 
     //insert更新数据
-    public boolean insertUsers(ArrayList<User> list) {
+    public boolean insertUsers(ArrayList<DB_User> list) {
         boolean flag = false;
         database.beginTransaction();
         try {
@@ -534,19 +560,19 @@ public class DBManager {
         return flag;
     }
 
-    private boolean insertUser(User user) {
+    private boolean insertUser(DB_User user) {
         ContentValues values = new ContentValues();
         values.put("LoginName", user.getLoginName());
         values.put("UserName", user.getUserName());
-        values.put("Unitid", user.getUnitId());
+        values.put("Unitid", user.getUnitid());
         values.put("Password", user.getPassword());
-        values.put("U_Tel", user.getPhoneNumber());
+        values.put("U_Tel", user.getUTel());
         values.put("TEL", user.getTel());
         values.put("Duty", user.getDuty());
-        values.put("Role_A", user.getRole_a());
-        values.put("Role_B", user.getRole_b());
-        values.put("Role_C", user.getRole_c());
-        values.put("Role_D", user.getRole_d());
+        values.put("Role_A", user.getRoleA());
+        values.put("Role_B", user.getRoleB());
+        values.put("Role_C", user.getRoleC());
+        values.put("Role_D", user.getRoleD());
         values.put("Flag", user.getFlag());
         long flag = database.insert("User", "id", values);
         return flag > 0;
@@ -577,13 +603,145 @@ public class DBManager {
 
     private boolean insertUnit(Unit unit) {
         ContentValues values = new ContentValues();
-        values.put("Quxian", unit.getQuXian());
+        values.put("Quxian", unit.getQuxian());
         values.put("Address", unit.getAddress());
         values.put("Tel", unit.getTel());
         values.put("Fax", unit.getFax());
-        values.put("Zipcode", unit.getZipCode());
-        values.put("LevelId", unit.getLevelId());
+        values.put("Zipcode", unit.getZipcode());
+        values.put("LevelId", unit.getLevelID());
+        values.put("IsShow", unit.getIsShow());
         long flag = database.insert("Unit", "id", values);
+        return flag > 0;
+    }
+
+    public boolean insertEmergency(ArrayList<Emergency> list) {
+        boolean flag = false;
+        database.beginTransaction();
+        try {
+            database.delete("Emergency", null, null);
+            for (int i = 0; i < list.size(); i++) {
+                if (insertEmergency(list.get(i))) {
+                    continue;
+                } else {
+                    throw new SQLiteException();
+                }
+            }
+            database.setTransactionSuccessful();
+            flag = true;
+        } catch (SQLiteException e) {
+            L.i(e.getMessage());
+        } finally {
+            database.endTransaction();
+        }
+
+        return flag;
+    }
+
+    private boolean insertEmergency(Emergency emergency) {
+        ContentValues values = new ContentValues();
+        values.put("Tel", emergency.getTel());
+        values.put("Area", emergency.getArea());
+        values.put("Unit", emergency.getUnit());
+        values.put("Remarks", emergency.getRemarks());
+        long flag = database.insert("Emergency", "id", values);
+        return flag > 0;
+    }
+
+    public boolean insertLevel(ArrayList<Level> list) {
+        boolean flag = false;
+        database.beginTransaction();
+        try {
+            database.delete("z_Level", null, null);
+            for (int i = 0; i < list.size(); i++) {
+                if (insertLevel(list.get(i))) {
+                    continue;
+                } else {
+                    throw new SQLiteException();
+                }
+            }
+            database.setTransactionSuccessful();
+            flag = true;
+        } catch (SQLiteException e) {
+            L.i(e.getMessage());
+        } finally {
+            database.endTransaction();
+        }
+
+        return flag;
+    }
+
+    private boolean insertLevel(Level level) {
+        ContentValues values = new ContentValues();
+        values.put("Quxian", level.getLevel());
+        values.put("DepartmentName", level.getDepartmentName());
+        values.put("DepartmentNameA", level.getDepartmentNameA());
+        values.put("Level", level.getLevel());
+        values.put("Kind1", level.getKind1());
+        values.put("Kind2", level.getKind2());
+        values.put("Kind3", level.getKind3());
+        long flag = database.insert("z_Level", "id", values);
+        return flag > 0;
+    }
+
+    public boolean insertLevelBind(ArrayList<LevelBind> list) {
+        boolean flag = false;
+        database.beginTransaction();
+        try {
+            database.delete("levelbind", null, null);
+            for (int i = 0; i < list.size(); i++) {
+                if (insertLevelBind(list.get(i))) {
+                    continue;
+                } else {
+                    throw new SQLiteException();
+                }
+            }
+            database.setTransactionSuccessful();
+            flag = true;
+        } catch (SQLiteException e) {
+            L.i(e.getMessage());
+        } finally {
+            database.endTransaction();
+        }
+
+        return flag;
+    }
+
+    private boolean insertLevelBind(LevelBind level) {
+        ContentValues values = new ContentValues();
+        values.put("G_LevelID", level.getGLevelid());
+        values.put("Q_LevelID", level.getQLevelid());
+        long flag = database.insert("levelbind", "id", values);
+        return flag > 0;
+    }
+
+    public boolean insertQuxian(ArrayList<Z_Quxian> list) {
+        boolean flag = false;
+        database.beginTransaction();
+        try {
+            database.delete("z_Quxian", null, null);
+            for (int i = 0; i < list.size(); i++) {
+                if (insertQuxian(list.get(i))) {
+                    continue;
+                } else {
+                    throw new SQLiteException();
+                }
+            }
+            database.setTransactionSuccessful();
+            flag = true;
+        } catch (SQLiteException e) {
+            L.i(e.getMessage());
+        } finally {
+            database.endTransaction();
+        }
+
+        return flag;
+    }
+
+    private boolean insertQuxian(Z_Quxian quxian) {
+        ContentValues values = new ContentValues();
+        values.put("NewName", quxian.getNewName());
+        values.put("SortSeq", quxian.getSortSeq());
+        long flag = database.insert("z_Quxian", "id", values);
         return flag > 0;
     }
 
@@ -606,6 +764,24 @@ public class DBManager {
         values.put("userid", item.getUserId());
         values.put("time", item.getTime());
         database.update("history", values, "id = ?", new String[]{String.valueOf(1)});
+    }
+
+    public VersionInfo getVersionInfo() {
+        VersionInfo versionInfo = null;
+        Cursor cursor = database.query("z_version", null, null, null, null, null, null);
+        while (cursor.moveToNext()) {
+            versionInfo = new VersionInfo();
+            versionInfo.setDataV(cursor.getString(cursor.getColumnIndex("data_V")));
+            versionInfo.setProgramV(cursor.getString(cursor.getColumnIndex("program_V")));
+        }
+        return versionInfo;
+    }
+
+    public void setVersionInfo(VersionInfo info) {
+        ContentValues values = new ContentValues();
+        values.put("data_V", info.getDataV());
+        values.put("program_V", info.getProgramV());
+        database.update("z_version", values, "id = ?", new String[]{String.valueOf(1)});
     }
 
     public ArrayList<HistoryItem> getAllHistoryItem() {
@@ -633,5 +809,29 @@ public class DBManager {
     public boolean deleteHistory() {
         int flag = database.delete("history", null, null);
         return flag > 0;
+    }
+
+    public ArrayList<Level> queryLevel(Level level) {
+        ArrayList<Level> list = new ArrayList<>();
+        Level l = null;
+        Cursor cursor = database.query("levelbind", null, "G_LevelID = ?", new String[]{String.valueOf(level.getId())}, null, null, null);
+        while (cursor.moveToNext()) {
+            l = new Level();
+            l.setId(cursor.getInt(cursor.getColumnIndex("Q_LevelID")));
+            list.add(l);
+        }
+        return list;
+    }
+
+    public ArrayList<Level> queryLevel_G(Level level) {
+        ArrayList<Level> list = new ArrayList<>();
+        Level l = null;
+        Cursor cursor = database.query("levelbind", null, "Q_LevelID = ?", new String[]{String.valueOf(level.getId())}, null, null, null);
+        while (cursor.moveToNext()) {
+            l = new Level();
+            l.setId(cursor.getInt(cursor.getColumnIndex("G_LevelID")));
+            list.add(l);
+        }
+        return list;
     }
 }

@@ -12,6 +12,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.allen.library.SuperTextView;
+import com.bokun.bkjcb.infomationmanage.Activity.MainActivity;
 import com.bokun.bkjcb.infomationmanage.Adapter.HistoryAdapter;
 import com.bokun.bkjcb.infomationmanage.Domain.HistoryItem;
 import com.bokun.bkjcb.infomationmanage.Domain.User;
@@ -25,7 +26,7 @@ import java.util.ArrayList;
  * Created by DengShuai on 2017/9/14.
  */
 
-public class PartOneFragment extends BaseFragment implements View.OnClickListener {
+public class PartOneFragment extends BaseFragment implements View.OnClickListener, MainActivity.UpdateListener {
 
     private FrameLayout layout;
     private SuperTextView history;
@@ -33,6 +34,7 @@ public class PartOneFragment extends BaseFragment implements View.OnClickListene
     private TextView btn_quji;
     private TextView btn_qiye;
     private TextView btn_jinji;
+    private TextView notify;
     private RecyclerView recycler_history;
     private HistoryAdapter historyAdapter;
     private static PartOneFragment fragment;
@@ -61,6 +63,7 @@ public class PartOneFragment extends BaseFragment implements View.OnClickListene
         btn_quji = (TextView) view.findViewById(R.id.btn_quji);
         btn_qiye = (TextView) view.findViewById(R.id.btn_qiye);
         btn_jinji = (TextView) view.findViewById(R.id.btn_jinji);
+        notify = (TextView) view.findViewById(R.id.notify);
         recycler_history = (RecyclerView) view.findViewById(R.id.recycler_history);
         init();
         return view;
@@ -94,12 +97,16 @@ public class PartOneFragment extends BaseFragment implements View.OnClickListene
                 transaction.commit();
             }
         };
+        activity.setUpdateListener(this);
     }
 
     @Override
     public void onStart() {
         super.onStart();
         initHistory();
+        if (activity.hasNew) {
+            notify.setVisibility(View.VISIBLE);
+        }
     }
 
     private void initHistory() {
@@ -142,5 +149,10 @@ public class PartOneFragment extends BaseFragment implements View.OnClickListene
             transaction.replace(layout.getId(), oneFragment);
         }
         transaction.commit();
+    }
+
+    @Override
+    public void onChanged() {
+        notify.setVisibility(View.VISIBLE);
     }
 }

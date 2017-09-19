@@ -1,18 +1,20 @@
 package com.bokun.bkjcb.infomationmanage.Domain;
 
+import java.io.Serializable;
+
 /**
  * Created by DengShuai on 2017/7/12.
  */
 
-public class Level {
+public class Level implements Serializable{
     private int id;
-    private int quxin;
-    private String departmentName;
-    private String departmentNameA;
-    private int level;
-    private int kind1;
-    private int kind2;
-    private int kind3;
+    private int Quxin;
+    private String DepartmentName;
+    private String DepartmentNameA;
+    private int Level;
+    private int Kind1;
+    private int Kind2;
+    private int Kind3;
 
     public int getId() {
         return id;
@@ -23,58 +25,58 @@ public class Level {
     }
 
     public int getQuxin() {
-        return quxin;
+        return Quxin;
     }
 
     public void setQuxin(int quxin) {
-        this.quxin = quxin;
+        this.Quxin = quxin;
     }
 
     public String getDepartmentName() {
-        return departmentName;
+        return DepartmentName;
     }
 
     public void setDepartmentName(String departmentName) {
-        this.departmentName = departmentName;
+        this.DepartmentName = departmentName;
     }
 
     public String getDepartmentNameA() {
-        return departmentNameA;
+        return DepartmentNameA;
     }
 
     public void setDepartmentNameA(String departmentNameA) {
-        this.departmentNameA = departmentNameA;
+        this.DepartmentNameA = departmentNameA;
     }
 
     public int getLevel() {
-        return level;
+        return Level;
     }
 
     public void setLevel(int level) {
-        this.level = level;
+        this.Level = level;
     }
 
     public int getKind1() {
-        return kind1;
+        return Kind1;
     }
 
     public void setKind1(int kind1) {
-        this.kind1 = kind1;
+        this.Kind1 = kind1;
     }
 
     public int getKind2() {
-        return kind2;
+        return Kind2;
     }
 
     public void setKind2(int kind2) {
-        this.kind2 = kind2;
+        this.Kind2 = kind2;
     }
 
     public int getKind3() {
-        return kind3;
+        return Kind3;
     }
 
     public void setKind3(int kind3) {
-        this.kind3 = kind3;
+        this.Kind3 = kind3;
     }
 }

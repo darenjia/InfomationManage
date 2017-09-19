@@ -6,7 +6,6 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.NonNull;
@@ -17,7 +16,6 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
-import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
@@ -26,11 +24,10 @@ import android.widget.Toast;
 
 import com.allen.library.SuperButton;
 import com.allen.library.SuperTextView;
-import com.allenliu.badgeview.BadgeFactory;
-import com.allenliu.badgeview.BadgeView;
 import com.bokun.bkjcb.infomationmanage.Adapter.SimpleExpandAdapter;
 import com.bokun.bkjcb.infomationmanage.Adapter.SimpleFragmentAdapter;
 import com.bokun.bkjcb.infomationmanage.Domain.HistoryItem;
+import com.bokun.bkjcb.infomationmanage.Domain.Level;
 import com.bokun.bkjcb.infomationmanage.Domain.User;
 import com.bokun.bkjcb.infomationmanage.Fragment.FirstFragment;
 import com.bokun.bkjcb.infomationmanage.Fragment.ForthFragment;
@@ -39,14 +36,15 @@ import com.bokun.bkjcb.infomationmanage.Http.DefaultEvent;
 import com.bokun.bkjcb.infomationmanage.Http.HttpManager;
 import com.bokun.bkjcb.infomationmanage.Http.HttpRequestVo;
 import com.bokun.bkjcb.infomationmanage.Http.RequestListener;
+import com.bokun.bkjcb.infomationmanage.Http.XmlParser;
 import com.bokun.bkjcb.infomationmanage.R;
 import com.bokun.bkjcb.infomationmanage.SQL.DBManager;
+import com.bokun.bkjcb.infomationmanage.Utils.L;
 import com.bokun.bkjcb.infomationmanage.Utils.NetUtils;
 import com.bokun.bkjcb.infomationmanage.Utils.SPUtils;
 import com.example.zhouwei.library.CustomPopWindow;
-import com.mikepenz.actionitembadge.library.ActionItemBadge;
 
-import org.greenrobot.eventbus.EventBus;
+import org.ksoap2.serialization.SoapObject;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -65,7 +63,6 @@ public class MainActivity extends BaseActivity implements BottomNavigationView.O
     private Intent intent;
     private BottomDialog bottomDialog;
     private CustomPopWindow popWindow;
-    private BadgeView badgeView;
     private SuperButton btn_ig;
     private SuperButton btn_con;
     private TextView info;
@@ -73,13 +70,28 @@ public class MainActivity extends BaseActivity implements BottomNavigationView.O
     private String date;
     private TextView time;
     private HttpManager manager;
+    private boolean flag = false;
+    public boolean hasNew = false;
 
     public User user;
+    private ArrayList<Fragment> fragments;
+    private UpdateListener updateListener;
+
+
+    public interface UpdateListener {
+        void onChanged();
+    }
+
+    public void setUpdateListener(UpdateListener listener) {
+        this.updateListener = listener;
+    }
 
     @Override
     protected void setView() {
         setContentView(R.layout.activity_main2);
-        checkUpdate();
+        if (!flag) {
+            checkUpdate();
+        }
     }
 
     @Override
@@ -87,12 +99,6 @@ public class MainActivity extends BaseActivity implements BottomNavigationView.O
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         viewPager = (ViewPager) findViewById(R.id.viewpager);
         navigationView = (BottomNavigationView) findViewById(R.id.bottomNavigation);
-//        refresh = (TextView) findViewById(R.id.main_refresh);
-        badgeView = BadgeFactory.create(this)
-                .setWidthAndHeight(10, 10)
-                .setBadgeBackground(Color.RED)
-                .setBadgeGravity(Gravity.RIGHT | Gravity.TOP)
-                .setShape(BadgeView.SHAPE_CIRCLE);
         setSupportActionBar(toolbar);
     }
 
@@ -127,7 +133,7 @@ public class MainActivity extends BaseActivity implements BottomNavigationView.O
 
     @Override
     protected void loadData() {
-        ArrayList<Fragment> fragments = new ArrayList<>();
+        fragments = new ArrayList<>();
         fragments.add(FirstFragment.newInstance().setActivity(this));
         fragments.add(MainFragment.newInstance().setActivity(this));
         fragments.add(ForthFragment.newInstance().setActivity(this));
@@ -220,7 +226,7 @@ public class MainActivity extends BaseActivity implements BottomNavigationView.O
         SuperTextView tel1 = (SuperTextView) view.findViewById(R.id.phoneNumber1);
         SuperTextView tel2 = (SuperTextView) view.findViewById(R.id.phoneNumber2);
         SuperTextView quxian = (SuperTextView) view.findViewById(R.id.quxian);
-        SuperTextView department = (SuperTextView) view.findViewById(R.id.bumen);
+        final SuperTextView department = (SuperTextView) view.findViewById(R.id.bumen);
         SuperTextView zhiwu = (SuperTextView) view.findViewById(R.id.zhiwu);
         SuperTextView unit_address = (SuperTextView) view.findViewById(R.id.dizhi_danwei);
         SuperTextView unit_phone = (SuperTextView) view.findViewById(R.id.dianha_danwei);
@@ -242,7 +248,7 @@ public class MainActivity extends BaseActivity implements BottomNavigationView.O
             }
         }
 
-        department.setRightBottomString(user.getDepartmentName());
+        department.setRightBottomString(user.getDepartmentNameA());
         unit_address.setRightString(user.getAddress());
         if (!TextUtils.isEmpty(user.getDuty())) {
             zhiwu.setRightBottomString(user.getDuty());
@@ -299,6 +305,21 @@ public class MainActivity extends BaseActivity implements BottomNavigationView.O
                 actionCall(number, user);
             }
         });
+        department.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                viewPager.setCurrentItem(0);
+                FirstFragment firstFragment = (FirstFragment) fragments.get(0);
+                Level level = new Level();
+                level.setDepartmentNameA(department.getRightBottomString());
+                level.setLevel(user.getLevel());
+                level.setKind1(user.getKind1());
+                level.setKind2(user.getKind2());
+                level.setKind3(user.getKind3());
+                level.setQuxin(user.getQuxin());
+                AboutActivity.comeIn(level, MainActivity.this, 0);
+            }
+        });
     }
 
     private int isNumber(String s) {
@@ -353,13 +374,18 @@ public class MainActivity extends BaseActivity implements BottomNavigationView.O
             @Override
             public void onClick(View v) {
                 dialog.dismiss();
+                if (updateListener != null) {
+                    updateListener.onChanged();
+                }
+                flag = true;
             }
         });
         btn_con.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, UpdateActivity.class);
-                MainActivity.this.startActivity(intent);
+                UpdateActivity.comeIn(true, MainActivity.this);
+                dialog.dismiss();
+                flag = true;
             }
         });
         return view;
@@ -375,10 +401,10 @@ public class MainActivity extends BaseActivity implements BottomNavigationView.O
             manager.postRequest();
             return;
         }
-        HttpRequestVo requestVo = new HttpRequestVo(new HashMap<String, String>(), "");
+        HttpRequestVo requestVo = new HttpRequestVo(new HashMap<String, String>(), "version ");
         manager = new HttpManager(this, this, requestVo);
-//        manager.postRequest();
-        new Thread(new Runnable() {
+        manager.postRequest();
+       /* new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
@@ -388,7 +414,7 @@ public class MainActivity extends BaseActivity implements BottomNavigationView.O
                     e.printStackTrace();
                 }
             }
-        }).start();
+        }).start();*/
     }
 
     @Override
@@ -402,7 +428,9 @@ public class MainActivity extends BaseActivity implements BottomNavigationView.O
                 dialog.setCanceledOnTouchOutside(true);
             }
             dialog.show();
-            ActionItemBadge.update(navigationView.getMenu().findItem(R.id.menu_badge), 1);
+            hasNew = true;
+        } else {
+            hasNew = false;
         }
     }
 
@@ -424,7 +452,12 @@ public class MainActivity extends BaseActivity implements BottomNavigationView.O
 
     @Override
     public void action(int i, Object object) {
-
+        if (object != null) {
+            L.i(object.toString());
+            SoapObject soapObject = (SoapObject) object;
+            String s = XmlParser.parseSoapObject(soapObject);
+            L.i(s);
+        }
     }
 
     @Override

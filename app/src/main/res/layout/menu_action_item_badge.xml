@@ -18,10 +18,12 @@
         android:layout_height="wrap_content"
         android:layout_gravity="top|end"
         android:layout_marginTop="4dp"
+        android:background="@color/red"
         android:paddingBottom="1dp"
         android:paddingLeft="4dp"
         android:paddingRight="4dp"
         android:paddingTop="1dp"
+        android:text="1"
         android:textColor="@android:color/white"
         android:textSize="12sp" />
 </FrameLayout>

@@ -38,8 +38,6 @@ dependencies {
     compile 'com.belerweb:pinyin4j:2.5.1'
     compile 'com.android.support:design:25.3.1'
     compile project(':nice-spinner')
-    //    compile 'com.github.deano2390:MaterialShowcaseView:1.1.0'
-    //    compile 'com.getkeepsafe.taptargetview:taptargetview:1.9.1'
     compile 'com.isanwenyu.highlight:highlight:1.8.0'
     compile 'me.shaohui:bottomdialog:1.1.9'
     compile 'com.github.lygttpod:SuperTextView:2.1.1'
@@ -53,15 +51,11 @@ dependencies {
     //    debugCompile 'com.squareup.leakcanary:leakcanary-android:1.5.2'
     //    releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.2'
     compile 'co.lujun:androidtagview:1.1.4'
-    //    compile project(path: ':adapterlibrary')
     compile project(':adapterlibrary')
     compile 'com.github.pinguo-zhouwei:CustomPopwindow:2.1.1'
-    compile 'com.allenliu.badgeview:library:1.1.1'
     compile 'org.greenrobot:eventbus:3.0.0'
     compile files('libs/ksoap2-android-assembly-3.0.0-jar-with-dependencies .jar')
     compile 'com.facebook.stetho:stetho:1.5.0'
-    //
-    compile 'com.mikepenz:actionitembadge:3.3.1@aar'
-    compile 'com.mikepenz:iconics-core:2.8.1@aar'
-
+    compile 'com.github.rubensousa:raiflatbutton:0.1'
+    compile 'com.wang.avi:library:2.1.3'
 }

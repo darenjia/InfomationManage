@@ -21,10 +21,10 @@ public class ForthFragment extends BaseFragment implements View.OnClickListener 
     private SuperTextView help;
     private TextView exit;
     private TextView userName;
-    private TextView userTel;
-    private TextView userPhone;
-    private TextView unitName;
-    private TextView unitAddress;
+    private SuperTextView userTel;
+    private SuperTextView userPhone;
+    private SuperTextView unitName;
+    private SuperTextView unitAddress;
 
     public static ForthFragment newInstance() {
         if (fragment == null) {
@@ -37,10 +37,10 @@ public class ForthFragment extends BaseFragment implements View.OnClickListener 
     protected View initView(LayoutInflater inflater, ViewGroup container) {
         View view = inflater.inflate(R.layout.fragment_four, null);
         userName = (TextView) view.findViewById(R.id.user_name);
-        userTel = (TextView) view.findViewById(R.id.user_tel);
-        userPhone = (TextView) view.findViewById(R.id.user_tel_other);
-        unitName = (TextView) view.findViewById(R.id.unit_name);
-        unitAddress = (TextView) view.findViewById(R.id.unit_address);
+        userTel = (SuperTextView) view.findViewById(R.id.user_tel_1);
+        userPhone = (SuperTextView) view.findViewById(R.id.user_tel_other);
+        unitName = (SuperTextView) view.findViewById(R.id.unit_name);
+        unitAddress = (SuperTextView) view.findViewById(R.id.unit_address);
         exit = (TextView) view.findViewById(R.id.exit);
         update = (SuperTextView) view.findViewById(R.id.update);
         help = (SuperTextView) view.findViewById(R.id.help);
@@ -71,12 +71,16 @@ public class ForthFragment extends BaseFragment implements View.OnClickListener 
     public void onStart() {
         super.onStart();
         userName.setText(activity.user.getUserName());
-        userTel.setText(activity.user.getTel());
-        if (!userPhone.equals("")){
+        userTel.setCenterString(activity.user.getTel());
+        if (!userPhone.equals("")) {
             userPhone.setVisibility(View.VISIBLE);
-            userPhone.setText(activity.user.getTel_U());
+            userPhone.setCenterString(activity.user.getTel_U());
         }
-        unitName.setText(activity.user.getDepartmentNameA());
-        unitAddress.setText(activity.user.getAddress());
+        unitName.setCenterString(activity.user.getDepartmentNameA());
+        unitAddress.setCenterString(activity.user.getAddress());
+        if (activity.hasNew) {
+            update.setRightIcon(R.drawable.dot);
+            update.setRightString("");
+        }
     }
 }

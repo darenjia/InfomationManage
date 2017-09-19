@@ -5,40 +5,40 @@ package com.bokun.bkjcb.infomationmanage.Domain;
  */
 
 public class Emergency {
-    private String tel;
-    private String area;
-    private String unit;
-    private String remarks;
+    private String Tel;
+    private String Area;
+    private String Unit;
+    private String Remarks;
 
     public String getTel() {
-        return tel;
+        return Tel;
     }
 
     public void setTel(String tel) {
-        this.tel = tel;
+        this.Tel = tel;
     }
 
     public String getArea() {
-        return area;
+        return Area;
     }
 
     public void setArea(String area) {
-        this.area = area;
+        this.Area = area;
     }
 
     public String getUnit() {
-        return unit;
+        return Unit;
     }
 
     public void setUnit(String unit) {
-        this.unit = unit;
+        this.Unit = unit;
     }
 
     public String getRemarks() {
-        return remarks;
+        return Remarks;
     }
 
     public void setRemarks(String remarks) {
-        this.remarks = remarks;
+        this.Remarks = remarks;
     }
 }
