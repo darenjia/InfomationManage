@@ -119,6 +119,7 @@ public class ChildOneFragment extends Fragment implements View.OnClickListener {
         userList = null;
         layer = 0;
         btn_return.setBackgroundResource(R.color.black_3);
+        setVisible(title);
         switch (fragmentType) {
             case 0://市级
                 adapter = new RecAdapter(getContext(), getData(0, -1, -1, -1, -1));
@@ -176,20 +177,20 @@ public class ChildOneFragment extends Fragment implements View.OnClickListener {
                 } else if (recyclerId == 1) {
                     switch (layer) {
                         case 0:
-                            adapter.setData(getData(1, -1, -1, -1, model.getQuxin()));
+                            adapter.setData(getData(1, -1, -1, -1, model.getQuxian()));
                             layer = 1;
                             break;
                         case 1:
-                            adapter.setData(getData(1, model.getKind1(), -1, -1, model.getQuxin()));
+                            adapter.setData(getData(1, model.getKind1(), -1, -1, model.getQuxian()));
                             layer = 2;
                             flag2 = position;
                             break;
                         case 2:
-                            adapter.setData(getData(1, model.getKind1(), model.getKind2(), -1, model.getQuxin()));
+                            adapter.setData(getData(1, model.getKind1(), model.getKind2(), -1, model.getQuxian()));
                             layer = 3;
                             break;
                         case 3:
-                            adapter.setData(getData(1, model.getKind1(), model.getKind2(), model.getKind3(), model.getQuxin()));
+                            adapter.setData(getData(1, model.getKind1(), model.getKind2(), model.getKind3(), model.getQuxian()));
                             layer = 4;
                             break;
                     }
@@ -281,17 +282,17 @@ public class ChildOneFragment extends Fragment implements View.OnClickListener {
                     } else if (recyclerId == 0) {
                         adapter.setData(getData(0, flagLevel.getKind1(), -1, -1, -1));
                     } else {
-                        adapter.setData(getData(1, -1, -1, -1, flagLevel.getQuxin()));
+                        adapter.setData(getData(1, -1, -1, -1, flagLevel.getQuxian()));
                     }
                     layer = 1;
                 } else if (layer == 3) {
                     if (recyclerId == 1) {
-                        adapter.setData(getData(1, lastLevel.getKind1(), -1, -1, lastLevel.getQuxin()));
+                        adapter.setData(getData(1, lastLevel.getKind1(), -1, -1, lastLevel.getQuxian()));
                     }
                     layer = 2;
                 } else if (layer == 4) {
 
-                    adapter.setData(getData(1, lastLevel.getKind1(), lastLevel.getKind2(), -1, lastLevel.getQuxin()));
+                    adapter.setData(getData(1, lastLevel.getKind1(), lastLevel.getKind2(), -1, lastLevel.getQuxian()));
                     layer = 3;
 
                 }

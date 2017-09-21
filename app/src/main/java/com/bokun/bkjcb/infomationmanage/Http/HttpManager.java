@@ -157,13 +157,16 @@ public class HttpManager implements Runnable {
 
             String NAMESPACE = "http://tempuri.org/";
             String METHOD_NAME = requestVo.methodName;
-            String URL = "http://101.231.47.202:93/WebService1.asmx";
+//            String URL = "http://101.231.47.202:93/WebService1.asmx";
+            String URL = "http://192.168.100.172:92/WebService1.asmx";
 //            String URL = Constants.HTTP_URL;
             // 新建 SoapObject 对象
             SoapObject rpc = new SoapObject(NAMESPACE, METHOD_NAME);
             HashMap<String, String> map = requestVo.requestDataMap;
-            for (Map.Entry<String, String> entry : map.entrySet()) {
-                rpc.addProperty(entry.getKey(), entry.getValue());
+            if (map!=null){
+                for (Map.Entry<String, String> entry : map.entrySet()) {
+                    rpc.addProperty(entry.getKey(), entry.getValue());
+                }
             }
             // 创建 HttpTransportSE 对象,并指定 WebService 的 WSDL 文档的 URL
             ht = new HttpTransportSE(URL);

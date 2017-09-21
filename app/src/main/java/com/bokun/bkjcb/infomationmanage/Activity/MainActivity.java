@@ -29,12 +29,14 @@ import com.bokun.bkjcb.infomationmanage.Adapter.SimpleFragmentAdapter;
 import com.bokun.bkjcb.infomationmanage.Domain.HistoryItem;
 import com.bokun.bkjcb.infomationmanage.Domain.Level;
 import com.bokun.bkjcb.infomationmanage.Domain.User;
+import com.bokun.bkjcb.infomationmanage.Domain.VersionInfo;
 import com.bokun.bkjcb.infomationmanage.Fragment.FirstFragment;
 import com.bokun.bkjcb.infomationmanage.Fragment.ForthFragment;
 import com.bokun.bkjcb.infomationmanage.Fragment.MainFragment;
 import com.bokun.bkjcb.infomationmanage.Http.DefaultEvent;
 import com.bokun.bkjcb.infomationmanage.Http.HttpManager;
 import com.bokun.bkjcb.infomationmanage.Http.HttpRequestVo;
+import com.bokun.bkjcb.infomationmanage.Http.JsonParser;
 import com.bokun.bkjcb.infomationmanage.Http.RequestListener;
 import com.bokun.bkjcb.infomationmanage.Http.XmlParser;
 import com.bokun.bkjcb.infomationmanage.R;
@@ -42,14 +44,13 @@ import com.bokun.bkjcb.infomationmanage.SQL.DBManager;
 import com.bokun.bkjcb.infomationmanage.Utils.L;
 import com.bokun.bkjcb.infomationmanage.Utils.NetUtils;
 import com.bokun.bkjcb.infomationmanage.Utils.SPUtils;
+import com.bokun.bkjcb.infomationmanage.Utils.Utils;
 import com.example.zhouwei.library.CustomPopWindow;
 
+import org.greenrobot.eventbus.EventBus;
 import org.ksoap2.serialization.SoapObject;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -76,6 +77,7 @@ public class MainActivity extends BaseActivity implements BottomNavigationView.O
     public User user;
     private ArrayList<Fragment> fragments;
     private UpdateListener updateListener;
+    private AlertDialog.Builder builder;
 
 
     public interface UpdateListener {
@@ -316,7 +318,7 @@ public class MainActivity extends BaseActivity implements BottomNavigationView.O
                 level.setKind1(user.getKind1());
                 level.setKind2(user.getKind2());
                 level.setKind3(user.getKind3());
-                level.setQuxin(user.getQuxin());
+                level.setQuxian(user.getQuxin());
                 AboutActivity.comeIn(level, MainActivity.this, 0);
             }
         });
@@ -361,13 +363,15 @@ public class MainActivity extends BaseActivity implements BottomNavigationView.O
 
     }
 
-    private View createRefreshView() {
+    private View createRefreshView(final boolean type) {
         View view = View.inflate(this, R.layout.refresh_view, null);
         info = (TextView) view.findViewById(R.id.refresh_info);
         time = (TextView) view.findViewById(R.id.refresh_time);
         btn_ig = (SuperButton) view.findViewById(R.id.ignore_btn);
         btn_con = (SuperButton) view.findViewById(R.id.now_btn);
-
+        if (type) {
+            info.setText(R.string.SoftRefresh);
+        }
         date = (String) SPUtils.get(this, "Time", "----.--.--");
         time.setText(date);
         btn_ig.setOnClickListener(new View.OnClickListener() {
@@ -383,9 +387,9 @@ public class MainActivity extends BaseActivity implements BottomNavigationView.O
         btn_con.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                UpdateActivity.comeIn(true, MainActivity.this);
                 dialog.dismiss();
                 flag = true;
+                UpdateActivity.comeIn(type ? 1 : 2, MainActivity.this);
             }
         });
         return view;
@@ -401,52 +405,42 @@ public class MainActivity extends BaseActivity implements BottomNavigationView.O
             manager.postRequest();
             return;
         }
-        HttpRequestVo requestVo = new HttpRequestVo(new HashMap<String, String>(), "version ");
+        HttpRequestVo requestVo = new HttpRequestVo("version");
         manager = new HttpManager(this, this, requestVo);
         manager.postRequest();
-       /* new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    Thread.sleep(2000);
-                    EventBus.getDefault().post(new DefaultEvent(0));
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        }).start();*/
     }
 
     @Override
     protected void handlerEvent(DefaultEvent event) {
-        getDate();
-        if (event.getState_code() == 0) {
-            if (dialog == null) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-                builder.setView(createRefreshView());
+       date = Utils.getDate();
+        SPUtils.put(this, "Time", date);
+        if (builder == null) {
+            builder = new AlertDialog.Builder(MainActivity.this);
+        }
+        switch (event.getState_code()) {
+            case DefaultEvent.SOFT_NEED_UPDATE:
+                builder.setView(createRefreshView(true));
                 dialog = builder.create();
                 dialog.setCanceledOnTouchOutside(true);
-            }
-            dialog.show();
-            hasNew = true;
-        } else {
-            hasNew = false;
+                dialog.show();
+                hasNew = true;
+                break;
+            case DefaultEvent.DATA_NEED_UPDATE:
+//                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                builder.setView(createRefreshView(false));
+                dialog = builder.create();
+                dialog.setCanceledOnTouchOutside(true);
+                dialog.show();
+                hasNew = true;
+                break;
+            case DefaultEvent.GET_DATA_NULL:
+                hasNew = false;
+                break;
         }
-    }
-
-    private void getDate() {
-        Date d = new Date(System.currentTimeMillis());
-        SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd HH:mm");
-        date = format.format(d);
-        SPUtils.put(this, "Time", date);
     }
 
     @Override
     public void onBackPressed() {
-        /*if (needRefresh) {
-            Toast.makeText(this, "数据更新中，禁止操作", Toast.LENGTH_SHORT).show();
-            return;
-        }*/
         super.onBackPressed();
     }
 
@@ -456,7 +450,15 @@ public class MainActivity extends BaseActivity implements BottomNavigationView.O
             L.i(object.toString());
             SoapObject soapObject = (SoapObject) object;
             String s = XmlParser.parseSoapObject(soapObject);
-            L.i(s);
+            VersionInfo version = JsonParser.getVersion(s).get(0);
+            VersionInfo local = DBManager.newInstance(this).getVersionInfo();
+            if (!version.getProgramV().equals(local.getProgramV())) {
+                EventBus.getDefault().post(new DefaultEvent(DefaultEvent.SOFT_NEED_UPDATE));
+            } else if (!version.getDataV().equals(local.getDataV())) {
+                EventBus.getDefault().post(new DefaultEvent(DefaultEvent.DATA_NEED_UPDATE));
+            }
+        } else {
+            EventBus.getDefault().post(new DefaultEvent(DefaultEvent.GET_DATA_NULL));
         }
     }
 

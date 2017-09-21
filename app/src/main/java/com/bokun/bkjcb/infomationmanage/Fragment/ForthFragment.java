@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.allen.library.SuperTextView;
+import com.bokun.bkjcb.infomationmanage.Activity.HelpActivity;
 import com.bokun.bkjcb.infomationmanage.Activity.LoginActivity;
 import com.bokun.bkjcb.infomationmanage.Activity.UpdateActivity;
 import com.bokun.bkjcb.infomationmanage.R;
@@ -57,13 +58,13 @@ public class ForthFragment extends BaseFragment implements View.OnClickListener 
     @Override
     public void onClick(View v) {
         if (v.getId() == R.id.update) {
-            UpdateActivity.comeIn(false, getContext());
+            UpdateActivity.comeIn(0, getContext());
         } else if (v.getId() == R.id.exit) {
             Intent intent = new Intent(getContext(), LoginActivity.class);
             startActivity(intent);
             activity.finish();
         } else {
-
+            HelpActivity.comeIn(getContext());
         }
     }
 
@@ -80,7 +81,8 @@ public class ForthFragment extends BaseFragment implements View.OnClickListener 
         unitAddress.setCenterString(activity.user.getAddress());
         if (activity.hasNew) {
             update.setRightIcon(R.drawable.dot);
-            update.setRightString("");
+            update.setRightString("新版本");
+            update.setRightTextColor(getResources().getColor(R.color.red_1));
         }
     }
 }

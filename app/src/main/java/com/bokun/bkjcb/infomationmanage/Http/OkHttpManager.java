@@ -124,7 +124,7 @@ public class OkHttpManager implements Runnable {
             // }
             if (response.isSuccessful()) {
                 listener.action(RequestListener.EVENT_GET_DATA_SUCCESS,
-                        response.body().string());
+                        response.body().byteStream());
 
             } else {
                 listener.action(RequestListener.EVENT_NETWORD_EEEOR, null);

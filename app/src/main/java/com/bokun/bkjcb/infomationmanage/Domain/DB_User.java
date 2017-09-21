@@ -1,48 +1,33 @@
 package com.bokun.bkjcb.infomationmanage.Domain;
 
 public class DB_User {
-    private final int id;
+    private int id;
 
-    private final int unitid;
+    private int Unitid;
 
-    private final String userName;
+    private String UserName;
 
-    private final String loginName;
+    private String LoginName;
 
-    private final String password;
+    private String Password;
 
-    private final String uTel;
+    private String U_Tel;
 
-    private final String tel;
+    private String TEL;
 
-    private final String duty;
+    private String Duty;
 
-    private final int roleA;
+    private int Role_A;
 
-    private final int roleB;
+    private int Role_B;
 
-    private final int roleC;
+    private int Role_C;
 
-    private final int roleD;
+    private int Role_D;
 
-    private final int flag;
+    private int Flag;
 
-    public DB_User(int id, int unitid, String userName, String loginName, String password,
-                   String uTel, String tel, String duty, int roleA, int roleB, int roleC,
-                   int roleD, int flag) {
-        this.id = id;
-        this.unitid = unitid;
-        this.userName = userName;
-        this.loginName = loginName;
-        this.password = password;
-        this.uTel = uTel;
-        this.tel = tel;
-        this.duty = duty;
-        this.roleA = roleA;
-        this.roleB = roleB;
-        this.roleC = roleC;
-        this.roleD = roleD;
-        this.flag = flag;
+    public DB_User() {
     }
 
     public int getId() {
@@ -50,50 +35,50 @@ public class DB_User {
     }
 
     public int getUnitid() {
-        return unitid;
+        return Unitid;
     }
 
     public String getUserName() {
-        return userName;
+        return UserName;
     }
 
     public String getLoginName() {
-        return loginName;
+        return LoginName;
     }
 
     public String getPassword() {
-        return password;
+        return Password;
     }
 
-    public String getUTel() {
-        return uTel;
+    public String getU_Tel() {
+        return U_Tel;
     }
 
-    public String getTel() {
-        return tel;
+    public String getTEL() {
+        return TEL;
     }
 
     public String getDuty() {
-        return duty;
+        return Duty;
     }
 
-    public int getRoleA() {
-        return roleA;
+    public int getRole_A() {
+        return Role_A;
     }
 
-    public int getRoleB() {
-        return roleB;
+    public int getRole_B() {
+        return Role_B;
     }
 
-    public int getRoleC() {
-        return roleC;
+    public int getRole_C() {
+        return Role_C;
     }
 
-    public int getRoleD() {
-        return roleD;
+    public int getRole_D() {
+        return Role_D;
     }
 
     public int getFlag() {
-        return flag;
+        return Flag;
     }
 }

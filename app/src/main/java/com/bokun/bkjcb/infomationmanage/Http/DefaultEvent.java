@@ -7,6 +7,10 @@ package com.bokun.bkjcb.infomationmanage.Http;
 public class DefaultEvent {
     public static final int GET_DATA_SUCCESS = 0;
     public static final int GET_DATA_NULL = 1;
+    public static final int SOFT_NEED_UPDATE = 2;
+    public static final int DATA_NEED_UPDATE = 3;
+    public static final int SUCCESS = 4;
+    public static final int FAILED = 5;
     private int state_code;
     private int type;
 

@@ -3,14 +3,14 @@ package com.bokun.bkjcb.infomationmanage.Domain;
 public class LevelBind {
     private int id;
 
-    private int gLevelid;
+    private int G_LevelID;
 
-    private int qLevelid;
+    private int Q_LevelID;
 
     public LevelBind(int id, int gLevelid, int qLevelid) {
         this.id = id;
-        this.gLevelid = gLevelid;
-        this.qLevelid = qLevelid;
+        this.G_LevelID = gLevelid;
+        this.Q_LevelID = qLevelid;
     }
 
     public int getId() {
@@ -18,10 +18,10 @@ public class LevelBind {
     }
 
     public int getGLevelid() {
-        return gLevelid;
+        return G_LevelID;
     }
 
     public int getQLevelid() {
-        return qLevelid;
+        return Q_LevelID;
     }
 }

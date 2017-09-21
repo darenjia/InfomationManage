@@ -2,6 +2,7 @@ package com.bokun.bkjcb.infomationmanage.Fragment;
 
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -42,6 +43,7 @@ public class PartOneFragment extends BaseFragment implements View.OnClickListene
     private FragmentTransaction transaction;
     private ChildOneFragment oneFragment;
     private View.OnClickListener listener;
+    private CardView history_card;
 
     public static PartOneFragment newInstance() {
         if (fragment == null) {
@@ -65,6 +67,7 @@ public class PartOneFragment extends BaseFragment implements View.OnClickListene
         btn_jinji = (TextView) view.findViewById(R.id.btn_jinji);
         notify = (TextView) view.findViewById(R.id.notify);
         recycler_history = (RecyclerView) view.findViewById(R.id.recycler_history);
+        history_card = (CardView) view.findViewById(R.id.history_card);
         init();
         return view;
     }
@@ -111,19 +114,25 @@ public class PartOneFragment extends BaseFragment implements View.OnClickListene
 
     private void initHistory() {
         ArrayList<HistoryItem> historyItems = DBManager.newInstance(getContext()).getAllHistoryItem();
-        if (historyAdapter == null) {
-            historyAdapter = new HistoryAdapter(R.layout.history_view);
-            recycler_history.setAdapter(historyAdapter);
-            historyAdapter.setOnItemChildClickListener(new BaseQuickAdapter.OnItemChildClickListener() {
-                @Override
-                public void onItemChildClick(BaseQuickAdapter adapter, View view, int position) {
-                    HistoryItem item = (HistoryItem) adapter.getItem(position);
-                    User user = DBManager.newInstance(getContext()).queryUserById(item.getUserId());
-                    activity.showDetail(user);
-                }
-            });
+        if (historyItems.size() > 0) {
+            history_card.setVisibility(View.VISIBLE);
+            if (historyAdapter == null) {
+                historyAdapter = new HistoryAdapter(R.layout.history_view);
+                recycler_history.setAdapter(historyAdapter);
+                historyAdapter.setOnItemChildClickListener(new BaseQuickAdapter.OnItemChildClickListener() {
+                    @Override
+                    public void onItemChildClick(BaseQuickAdapter adapter, View view, int position) {
+                        HistoryItem item = (HistoryItem) adapter.getItem(position);
+                        User user = DBManager.newInstance(getContext()).queryUserById(item.getUserId());
+                        activity.showDetail(user);
+                    }
+                });
+            }
+            historyAdapter.setNewData(historyItems);
+        } else {
+            history_card.setVisibility(View.GONE);
         }
-        historyAdapter.setNewData(historyItems);
+
     }
 
     @Override

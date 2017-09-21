@@ -3,13 +3,13 @@ package com.bokun.bkjcb.infomationmanage.Domain;
 public class Z_Quxian {
     private int id;
 
-    private String newName;
+    private String NewName;
 
     private int sortSeq;
 
     public Z_Quxian(int id, String newName, int sortSeq) {
         this.id = id;
-        this.newName = newName;
+        this.NewName = newName;
         this.sortSeq = sortSeq;
     }
 
@@ -18,7 +18,7 @@ public class Z_Quxian {
     }
 
     public String getNewName() {
-        return newName;
+        return NewName;
     }
 
     public int getSortSeq() {

@@ -11,7 +11,7 @@
         android:layout_width="24dp"
         android:layout_height="24dp"
         android:layout_gravity="center_vertical"
-        android:layout_marginLeft="16dp"
+        android:layout_marginLeft="6dp"
         app:eiv_animationDuration="300"
         app:eiv_color="#000"
         app:eiv_colorLess="@color/colorPrimary"
@@ -26,7 +26,8 @@
         android:layout_height="match_parent"
         android:layout_marginEnd="40dp"
         android:layout_marginStart="40dp"
-        android:padding="10dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
         android:textColor="#5b5b5b"
         android:textSize="20sp" />
 
@@ -34,7 +35,7 @@
         android:id="@+id/num"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginEnd="16dp"
+        android:layout_marginEnd="6dp"
         android:gravity="end|center"
         android:text="12"
         android:textColor="@color/colorAccent"

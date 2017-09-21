@@ -8,7 +8,7 @@ import java.io.Serializable;
 
 public class Level implements Serializable{
     private int id;
-    private int Quxin;
+    private int Quxian;
     private String DepartmentName;
     private String DepartmentNameA;
     private int Level;
@@ -24,12 +24,12 @@ public class Level implements Serializable{
         this.id = id;
     }
 
-    public int getQuxin() {
-        return Quxin;
+    public int getQuxian() {
+        return Quxian;
     }
 
-    public void setQuxin(int quxin) {
-        this.Quxin = quxin;
+    public void setQuxian(int quxin) {
+        this.Quxian = quxin;
     }
 
     public String getDepartmentName() {

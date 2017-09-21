@@ -332,4 +332,15 @@ public class AboutActivity extends BaseActivity {
     public void onBackPressed() {
         finish();
     }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] paramArrayOfInt) {
+        if (requestCode == 0) {
+            if (verifyPermissions(paramArrayOfInt)) {
+                startActivity(intent);
+            } else {
+                Toast.makeText(this, "没有拨号权限，无法拨打电话", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
 }

@@ -1,13 +1,13 @@
 package com.bokun.bkjcb.infomationmanage.Domain;
 
 public class VersionInfo {
-    private String dataV;
+    private String data_V;
 
-    private String programV;
+    private String program_V;
 
     public VersionInfo(String dataV, String programV) {
-        this.dataV = dataV;
-        this.programV = programV;
+        this.data_V = dataV;
+        this.program_V = programV;
     }
 
     public VersionInfo() {
@@ -15,18 +15,18 @@ public class VersionInfo {
     }
 
     public void setDataV(String dataV) {
-        this.dataV = dataV;
+        this.data_V = dataV;
     }
 
     public void setProgramV(String programV) {
-        this.programV = programV;
+        this.program_V = programV;
     }
 
     public String getDataV() {
-        return dataV;
+        return data_V;
     }
 
     public String getProgramV() {
-        return programV;
+        return program_V;
     }
 }

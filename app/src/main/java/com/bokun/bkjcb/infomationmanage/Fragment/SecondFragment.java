@@ -216,7 +216,7 @@ public class SecondFragment extends BaseFragment implements View.OnClickListener
                 btn_return.setBackgroundResource(R.color.colorPrimary);
                 switch (layer) {
                     case 0:
-                        adapter_quji.setData(getData(1, -1, -1, -1, model.getQuxin()));
+                        adapter_quji.setData(getData(1, -1, -1, -1, model.getQuxian()));
                         layer = 1;
                         break;
                     case 1:
@@ -224,13 +224,13 @@ public class SecondFragment extends BaseFragment implements View.OnClickListener
                             typeAdapter.setData(getUserData(model));
                             changeList(true, model.getDepartmentNameA(), recycler_quji);
                         }
-                        adapter_quji.setData(getData(1, model.getKind1(), -1, -1, model.getQuxin()));
+                        adapter_quji.setData(getData(1, model.getKind1(), -1, -1, model.getQuxian()));
                         layer = 2;
                         flag2 = position;
                         break;
                     case 2:
 //                        if (flag2 == 2) {
-                        adapter_quji.setData(getData(1, model.getKind1(), model.getKind2(), -1, model.getQuxin()));
+                        adapter_quji.setData(getData(1, model.getKind1(), model.getKind2(), -1, model.getQuxian()));
 //                        } else {
                         typeAdapter.setData(getUserData(model));
                         changeList(true, model.getDepartmentNameA(), recycler_quji);
@@ -310,7 +310,7 @@ public class SecondFragment extends BaseFragment implements View.OnClickListener
                     } else {
                         setGone(result);
                         setVisible(recycler_quji);
-                        adapter_quji.setData(getData(1, -1, -1, -1, lastLevel.getQuxin()));
+                        adapter_quji.setData(getData(1, -1, -1, -1, lastLevel.getQuxian()));
                     }
                     layer = 1;
                 } else if (layer == 3) {
@@ -322,7 +322,7 @@ public class SecondFragment extends BaseFragment implements View.OnClickListener
                             setGone(result);
                             setVisible(recycler_quji);
                         }
-                        adapter_quji.setData(getData(1, lastLevel.getKind1(), -1, -1, lastLevel.getQuxin()));
+                        adapter_quji.setData(getData(1, lastLevel.getKind1(), -1, -1, lastLevel.getQuxian()));
                     }
                     layer = 2;
                 } else if (layer == 4) {
@@ -331,7 +331,7 @@ public class SecondFragment extends BaseFragment implements View.OnClickListener
                     changeList(true, lastLevel.getDepartmentNameA(), recycler_quji);
 
                     setVisible(recycler_quji);
-                    adapter_quji.setData(getData(1, lastLevel.getKind1(), lastLevel.getKind2(), -1, lastLevel.getQuxin()));
+                    adapter_quji.setData(getData(1, lastLevel.getKind1(), lastLevel.getKind2(), -1, lastLevel.getQuxian()));
                     layer = 3;
 
                 }

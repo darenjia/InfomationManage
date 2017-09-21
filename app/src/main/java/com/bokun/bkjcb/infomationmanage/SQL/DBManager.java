@@ -239,11 +239,12 @@ public class DBManager {
 
     public Unit queryUnit(int unitId) {
         Unit unit = null;
-        Cursor cursor = database.rawQuery("SELECT a.Address,a.Fax,a.Tel,a.Zipcode,a.LevelID,b.NewName FROM Unit a LEFT JOIN z_Quxian b ON b.id = a.Quxian where a.id = ?",
+        Cursor cursor = database.rawQuery("SELECT a.Address,a.Fax,a.Tel,a.Zipcode,a.LevelID,a.Quxian,b.NewName FROM Unit a LEFT JOIN z_Quxian b ON b.id = a.Quxian where a.id = ?",
                 new String[]{String.valueOf(unitId)});
         if (cursor.moveToNext()) {
             unit = new Unit();
-            unit.setQuxian(cursor.getString(cursor.getColumnIndex("NewName")));
+            unit.setQuxian(cursor.getInt(cursor.getColumnIndex("Quxian")));
+            unit.setQuxianName(cursor.getString(cursor.getColumnIndex("NewName")));
             unit.setAddress(cursor.getString(cursor.getColumnIndex("Address")));
             unit.setFax(cursor.getString(cursor.getColumnIndex("Fax")));
             unit.setTel(cursor.getString(cursor.getColumnIndex("Tel")));
@@ -259,7 +260,7 @@ public class DBManager {
                 new String[]{String.valueOf(levelId)});
         if (cursor.moveToNext()) {
             level = new Level();
-            level.setQuxin(cursor.getInt(cursor.getColumnIndex("Quxian")));
+            level.setQuxian(cursor.getInt(cursor.getColumnIndex("Quxian")));
             level.setDepartmentName(cursor.getString(cursor.getColumnIndex("DepartmentName")));
             level.setLevel(cursor.getInt(cursor.getColumnIndex("Level")));
             level.setKind1(cursor.getInt(cursor.getColumnIndex("Kind1")));
@@ -281,12 +282,12 @@ public class DBManager {
         }
 
         if (kind1 == -1) {
-            sql.append("and Kind1 is NOT NULL AND Kind2 IS NULL AND Kind3 IS NULL");
+            sql.append("and Kind1 != 0 AND Kind2 = 0 AND Kind3 = 0");
         } /*else if (kind2 == 0) {
             sql.append("and Kind1 = ? and Kind2 IS NOT NULL AND Kind3 IS NULL");
             para.add(String.valueOf(kind1));
         }*/ else if (kind2 != -1 && kind3 == -1) {
-            sql.append("and Kind1 = ? and Kind2 = ? AND Kind3 IS NOT NULL");
+            sql.append("and Kind1 = ? and Kind2 = ? AND Kind3 != 0");
             para.add(String.valueOf(kind1));
             para.add(String.valueOf(kind2));
         } else if (kind3 != -1) {
@@ -296,7 +297,7 @@ public class DBManager {
             para.add(String.valueOf(kind3));
             return levels;
         } else {
-            sql.append("and Kind1 = ? AND Kind2 IS NOT NULL AND Kind3 IS NULL");
+            sql.append("and Kind1 = ? AND Kind2 != 0 AND Kind3 = 0");
             para.add(String.valueOf(kind1));
         }
         String[] strings = new String[para.size()];
@@ -305,13 +306,16 @@ public class DBManager {
         while (cursor.moveToNext()) {
             level = new Level();
             level.setId(cursor.getInt(cursor.getColumnIndex("id")));
-            level.setQuxin(cursor.getInt(cursor.getColumnIndex("Quxian")));
+            level.setQuxian(cursor.getInt(cursor.getColumnIndex("Quxian")));
             level.setDepartmentName(cursor.getString(cursor.getColumnIndex("DepartmentName")));
             level.setDepartmentNameA(cursor.getString(cursor.getColumnIndex("DepartmentNameA")));
             level.setLevel(cursor.getInt(cursor.getColumnIndex("Level")));
             level.setKind1(cursor.getInt(cursor.getColumnIndex("Kind1")));
             level.setKind2(cursor.getInt(cursor.getColumnIndex("Kind2")));
             level.setKind3(cursor.getInt(cursor.getColumnIndex("Kind3")));
+            if (level.getDepartmentNameA().equals("")) {
+                level.setDepartmentNameA(level.getDepartmentName());
+            }
             levels.add(level);
         }
         L.i(levels.size() + "：区县列表");
@@ -337,7 +341,7 @@ public class DBManager {
             level = new Level();
             String name = cursor.getString(cursor.getColumnIndex("NewName"));
             level.setLevel(1);
-            level.setQuxin(cursor.getInt(cursor.getColumnIndex("id")));
+            level.setQuxian(cursor.getInt(cursor.getColumnIndex("id")));
             level.setDepartmentNameA(name);
             list.add(level);
         }
@@ -352,9 +356,9 @@ public class DBManager {
         para.add("" + level.getLevel());
         para.add("" + level.getKind1());
         para.add(level.getDepartmentNameA());
-        if (level.getQuxin() != 0) {
+        if (level.getQuxian() != 0) {
             builder.append(" and a.Quxian=?");
-            para.add("" + level.getQuxin());
+            para.add("" + level.getQuxian());
         }
         String[] strings = new String[para.size()];
         Cursor cursor = database.rawQuery(builder.toString(),
@@ -562,19 +566,20 @@ public class DBManager {
 
     private boolean insertUser(DB_User user) {
         ContentValues values = new ContentValues();
+        values.put("id", user.getId());
         values.put("LoginName", user.getLoginName());
         values.put("UserName", user.getUserName());
         values.put("Unitid", user.getUnitid());
         values.put("Password", user.getPassword());
-        values.put("U_Tel", user.getUTel());
-        values.put("TEL", user.getTel());
+        values.put("U_Tel", user.getU_Tel());
+        values.put("TEL", user.getTEL());
         values.put("Duty", user.getDuty());
-        values.put("Role_A", user.getRoleA());
-        values.put("Role_B", user.getRoleB());
-        values.put("Role_C", user.getRoleC());
-        values.put("Role_D", user.getRoleD());
+        values.put("Role_A", user.getRole_A());
+        values.put("Role_B", user.getRole_B());
+        values.put("Role_C", user.getRole_C());
+        values.put("Role_D", user.getRole_D());
         values.put("Flag", user.getFlag());
-        long flag = database.insert("User", "id", values);
+        long flag = database.insert("User", null, values);
         return flag > 0;
     }
 
@@ -603,6 +608,7 @@ public class DBManager {
 
     private boolean insertUnit(Unit unit) {
         ContentValues values = new ContentValues();
+        values.put("id", unit.getId());
         values.put("Quxian", unit.getQuxian());
         values.put("Address", unit.getAddress());
         values.put("Tel", unit.getTel());
@@ -610,7 +616,7 @@ public class DBManager {
         values.put("Zipcode", unit.getZipcode());
         values.put("LevelId", unit.getLevelID());
         values.put("IsShow", unit.getIsShow());
-        long flag = database.insert("Unit", "id", values);
+        long flag = database.insert("Unit", null, values);
         return flag > 0;
     }
 
@@ -639,11 +645,12 @@ public class DBManager {
 
     private boolean insertEmergency(Emergency emergency) {
         ContentValues values = new ContentValues();
+        values.put("id", emergency.getId());
         values.put("Tel", emergency.getTel());
         values.put("Area", emergency.getArea());
         values.put("Unit", emergency.getUnit());
         values.put("Remarks", emergency.getRemarks());
-        long flag = database.insert("Emergency", "id", values);
+        long flag = database.insert("Emergency", null, values);
         return flag > 0;
     }
 
@@ -672,14 +679,15 @@ public class DBManager {
 
     private boolean insertLevel(Level level) {
         ContentValues values = new ContentValues();
-        values.put("Quxian", level.getLevel());
+        values.put("id", level.getId());
+        values.put("Quxian", level.getQuxian());
         values.put("DepartmentName", level.getDepartmentName());
         values.put("DepartmentNameA", level.getDepartmentNameA());
         values.put("Level", level.getLevel());
         values.put("Kind1", level.getKind1());
         values.put("Kind2", level.getKind2());
         values.put("Kind3", level.getKind3());
-        long flag = database.insert("z_Level", "id", values);
+        long flag = database.insert("z_Level", null, values);
         return flag > 0;
     }
 
@@ -708,9 +716,10 @@ public class DBManager {
 
     private boolean insertLevelBind(LevelBind level) {
         ContentValues values = new ContentValues();
+        values.put("id", level.getId());
         values.put("G_LevelID", level.getGLevelid());
         values.put("Q_LevelID", level.getQLevelid());
-        long flag = database.insert("levelbind", "id", values);
+        long flag = database.insert("levelbind", null, values);
         return flag > 0;
     }
 
@@ -739,9 +748,10 @@ public class DBManager {
 
     private boolean insertQuxian(Z_Quxian quxian) {
         ContentValues values = new ContentValues();
+        values.put("id", quxian.getId());
         values.put("NewName", quxian.getNewName());
         values.put("SortSeq", quxian.getSortSeq());
-        long flag = database.insert("z_Quxian", "id", values);
+        long flag = database.insert("z_Quxian", null, values);
         return flag > 0;
     }
 

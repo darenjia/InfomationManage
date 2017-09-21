@@ -6,13 +6,14 @@ package com.bokun.bkjcb.infomationmanage.Domain;
 
 public class Unit {
     private int id;
-    private String Quxian;
+    private int Quxian;
     private String Address;
     private String Tel;
     private String Fax;
     private String Zipcode;
     private int LevelID;
     private int IsShow;
+    private String QuxianName;
 
     public int getId() {
         return id;
@@ -22,11 +23,11 @@ public class Unit {
         this.id = id;
     }
 
-    public String getQuxian() {
+    public int getQuxian() {
         return Quxian;
     }
 
-    public void setQuxian(String quxian) {
+    public void setQuxian(int quxian) {
         Quxian = quxian;
     }
 
@@ -76,5 +77,13 @@ public class Unit {
 
     public void setIsShow(int isShow) {
         IsShow = isShow;
+    }
+
+    public String getQuxianName() {
+        return QuxianName;
+    }
+
+    public void setQuxianName(String quxianName) {
+        QuxianName = quxianName;
     }
 }

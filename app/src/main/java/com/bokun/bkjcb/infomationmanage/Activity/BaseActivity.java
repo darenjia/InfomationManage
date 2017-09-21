@@ -36,10 +36,10 @@ public abstract class BaseActivity extends AppCompatActivity {
     private String[] premissions = new String[]{
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE,
-            Manifest.permission.CAMERA,
+           /* Manifest.permission.CAMERA,
             Manifest.permission.RECORD_AUDIO,
             Manifest.permission.ACCESS_COARSE_LOCATION,
-            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.ACCESS_FINE_LOCATION,*/
             //Manifest.permission.READ_PHONE_STATE
     };
     private boolean isNeedCheck = false;
@@ -83,7 +83,6 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        EventBus.getDefault().unregister(this);
         AppManager.getAppManager().finishActivity(this);
         super.onDestroy();
     }
@@ -91,6 +90,12 @@ public abstract class BaseActivity extends AppCompatActivity {
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         return super.onKeyDown(keyCode, event);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        EventBus.getDefault().unregister(this);
     }
 
     @Override
@@ -202,7 +207,7 @@ public abstract class BaseActivity extends AppCompatActivity {
      *
      * @since 2.5.0
      */
-    private void startAppSettings() {
+    public void startAppSettings() {
         Intent intent = new Intent(
                 Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
         intent.setData(Uri.parse("package:" + getPackageName()));

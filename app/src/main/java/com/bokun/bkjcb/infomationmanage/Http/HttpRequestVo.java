@@ -35,6 +35,10 @@ public class HttpRequestVo {
         this.parser = parser;
     }
 
+    public HttpRequestVo(String methodName) {
+        this.methodName = methodName;
+    }
+
     public HttpRequestVo(HashMap<String, String> requestDataMap, String methodName) {
         this.requestDataMap = requestDataMap;
         this.methodName = methodName;

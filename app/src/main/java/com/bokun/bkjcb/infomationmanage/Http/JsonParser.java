@@ -167,5 +167,23 @@ public class JsonParser {
         }
         return results;
     }
+    public static ArrayList<VersionInfo> getVersion(String json) {
+        L.i("versionResult:" + json);
+        json = parseJSON(json, "versionResult");
+        ArrayList<VersionInfo> results = new ArrayList<>();
+        if (json == null || json.equals("{}")) {
+            return results;
+        }
+//        L.i("Result:" + json);
+        //将JSON的String 转成一个JsonArray对象
+        com.google.gson.JsonParser parser = new com.google.gson.JsonParser();
+        JsonArray array = parser.parse(json).getAsJsonArray();
+        Gson gson = new Gson();
+        for (JsonElement element : array) {
+            VersionInfo result = gson.fromJson(element, VersionInfo.class);
+            results.add(result);
+        }
+        return results;
+    }
 }
 

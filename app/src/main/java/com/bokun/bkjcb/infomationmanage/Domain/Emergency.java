@@ -5,10 +5,19 @@ package com.bokun.bkjcb.infomationmanage.Domain;
  */
 
 public class Emergency {
+    private int id;
     private String Tel;
     private String Area;
     private String Unit;
     private String Remarks;
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 
     public String getTel() {
         return Tel;

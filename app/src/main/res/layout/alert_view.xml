@@ -124,7 +124,7 @@
             app:sLeftTextSize="16sp"
             app:sLeftTextString="单位地址"
             app:sRightMaxEms="30"
-            app:sRightTextString="宛平南路80号" />
+            app:sRightTextString="宛平南路80号宛平南路80号" />
 
         <com.allen.library.SuperTextView
             android:id="@+id/dianha_danwei"
