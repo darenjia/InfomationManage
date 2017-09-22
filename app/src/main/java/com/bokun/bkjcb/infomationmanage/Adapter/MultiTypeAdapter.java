@@ -52,7 +52,7 @@ public class MultiTypeAdapter extends SimpleRecAdapter<User, MultiTypeAdapter.Mu
     public void onBindViewHolder(MultiTypeViewHolder holder, final int position) {
         final User user = getItemData(position);
         holder.tv.setText(user.getUserName());
-        holder.iv.setTextAndColor(user.getUserName().substring(0, 1), SimpleExpandAdapter.getColor(context));
+        holder.iv.setTextAndColor(user.getUserName().substring(0, 1), SimpleExpandAdapter.getColor(context,position));
         holder.qx.setText(user.getQuXian());
         holder.bm.setText(user.getDuty());
         if (user.getRole_a() != 0) {

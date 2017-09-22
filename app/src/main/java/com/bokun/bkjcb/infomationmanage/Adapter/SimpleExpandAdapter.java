@@ -165,7 +165,7 @@ public class SimpleExpandAdapter extends BaseExpandableListAdapter implements Fi
         AvatarImageView iv = (AvatarImageView) view.findViewById(R.id.item_avatar);
         User user = users.get(groupPosition).get(childPosition);
         tv.setText(user.getUserName());
-        iv.setTextAndColor(tv.getText().toString().substring(0, 1), getColor(mContext));
+        iv.setTextAndColor(tv.getText().toString().substring(0, 1), getColor(mContext,childPosition));
         qx.setText(user.getQuXian());
         bm.setText(user.getDuty());
         if (user.getRole_a() != 0) {
@@ -435,10 +435,10 @@ public class SimpleExpandAdapter extends BaseExpandableListAdapter implements Fi
         return users.get(group).get(child);
     }
 
-    public static int getColor(Context context) {
+    public static int getColor(Context context, int position) {
         Random random = new Random();
-        int[] colors = {R.color.colorPrimary, R.color.red, R.color.green, R.color.yellow};
-        return context.getResources().getColor(colors[random.nextInt(16) % 4]);
+        int[] colors = {R.color.color_type_0, R.color.color_type_1, R.color.color_type_2, R.color.color_type_3};
+        return context.getResources().getColor(colors[position % 4]);
     }
 
     private void openOrClose() {

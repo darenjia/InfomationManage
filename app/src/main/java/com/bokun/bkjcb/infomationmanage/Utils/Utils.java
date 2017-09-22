@@ -1,7 +1,16 @@
 package com.bokun.bkjcb.infomationmanage.Utils;
 
 import android.content.Context;
+import android.content.Intent;
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
+import android.support.v4.content.FileProvider;
 
 import com.bokun.bkjcb.infomationmanage.R;
 
@@ -21,7 +30,7 @@ import java.util.Random;
 public class Utils {
     public static int GetRandomColor(Context context) {
         Random random = new Random();
-        int[] colors = new int[]{R.color.random_1, R.color.random_2, R.color.random_3, R.color.random_4};
+        int[] colors = new int[]{R.color.color_type_0, R.color.color_type_1, R.color.color_type_2, R.color.color_type_3};
         return context.getResources().getColor(colors[random.nextInt(15) % 4]);
     }
 
@@ -48,5 +57,42 @@ public class Utils {
         } catch (IOException e) {
 
         }
+    }
+
+    public static void installApk(Context context, File file) {
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        Uri data;
+        // 判断版本大于等于7.0
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            // "net.csdn.blog.ruancoder.fileprovider"即是在清单文件中配置的authorities
+            data = FileProvider.getUriForFile(context, "com.bokun.bkjcb.infomationmanage.fileprovider", file);
+            // 给目标应用一个临时授权
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        } else {
+            data = Uri.fromFile(file);
+        }
+        intent.setDataAndType(data, "application/vnd.android.package-archive");
+        context.startActivity(intent);
+    }
+
+    public static Drawable compressBitmap(Resources resources, int id) {
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        BitmapFactory.decodeResource(resources, id, options);
+        int height = options.outHeight;
+        int width = options.outWidth;
+        int inSampleSize = 1;
+        int reqHeight = 480;
+        int reqWidth = 480;
+        if (height < reqHeight || width > reqWidth) {
+            final int heightRatio = Math.round((float) height / (float) reqHeight);
+            final int widthRatio = Math.round((float) width / (float) reqWidth);
+            inSampleSize = heightRatio < widthRatio ? heightRatio : widthRatio;
+        }
+        options.inSampleSize = inSampleSize;
+        options.inJustDecodeBounds = false;
+        Bitmap mBitmap = BitmapFactory.decodeResource(resources, id, options);
+//        mBitmap = ThumbnailUtils.extractThumbnail(mBitmap, w, h);
+        return new BitmapDrawable( resources,mBitmap);
     }
 }

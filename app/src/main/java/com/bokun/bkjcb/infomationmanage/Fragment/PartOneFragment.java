@@ -13,6 +13,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.allen.library.SuperTextView;
+import com.bokun.bkjcb.infomationmanage.Activity.AboutActivity;
 import com.bokun.bkjcb.infomationmanage.Activity.MainActivity;
 import com.bokun.bkjcb.infomationmanage.Adapter.HistoryAdapter;
 import com.bokun.bkjcb.infomationmanage.Domain.HistoryItem;
@@ -100,20 +101,32 @@ public class PartOneFragment extends BaseFragment implements View.OnClickListene
                 transaction.commit();
             }
         };
-        activity.setUpdateListener(this);
+        history.setLeftTvClickListener(new SuperTextView.OnLeftTvClickListener() {
+            @Override
+            public void onClickListener() {
+                AboutActivity.comeIn(null, getActivity(), 3);
+            }
+        });
     }
 
     @Override
     public void onStart() {
         super.onStart();
+        activity.setUpdateListener(this);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
         initHistory();
-        if (activity.hasNew) {
+      /*  if (activity.hasNew) {
+            L.i("搞什么啊");
             notify.setVisibility(View.VISIBLE);
-        }
+        }*/
     }
 
     private void initHistory() {
-        ArrayList<HistoryItem> historyItems = DBManager.newInstance(getContext()).getAllHistoryItem();
+        ArrayList<HistoryItem> historyItems = DBManager.newInstance(getContext()).getAllHistoryItem("8");
         if (historyItems.size() > 0) {
             history_card.setVisibility(View.VISIBLE);
             if (historyAdapter == null) {
@@ -161,7 +174,11 @@ public class PartOneFragment extends BaseFragment implements View.OnClickListene
     }
 
     @Override
-    public void onChanged() {
-        notify.setVisibility(View.VISIBLE);
+    public void onChanged(boolean is) {
+        if (is) {
+            notify.setVisibility(View.VISIBLE);
+        } else {
+            notify.setVisibility(View.GONE);
+        }
     }
 }

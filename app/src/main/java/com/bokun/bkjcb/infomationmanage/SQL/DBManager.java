@@ -794,12 +794,12 @@ public class DBManager {
         database.update("z_version", values, "id = ?", new String[]{String.valueOf(1)});
     }
 
-    public ArrayList<HistoryItem> getAllHistoryItem() {
+    public ArrayList<HistoryItem> getAllHistoryItem(String limit) {
         ArrayList<HistoryItem> items = new ArrayList<>();
         HistoryItem item = null;
         Cursor cursor;
         try {
-            cursor = database.query("history", null, null, null, null, null, "time DESC", "8");
+            cursor = database.query("history", null, null, null, null, null, "time DESC", limit);
         } catch (SQLiteException e) {
             createHistory();
             return items;

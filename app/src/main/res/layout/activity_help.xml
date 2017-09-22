@@ -78,21 +78,22 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:padding="@dimen/dp_10">
 
                 <ImageView
+                    android:id="@+id/image_one"
                     android:layout_width="0dp"
                     android:layout_height="180dp"
                     android:layout_weight="1"
-                    android:scaleType="fitCenter"
-                    android:src="@drawable/help1" />
+                    android:scaleType="fitCenter" />
 
                 <ImageView
+                    android:id="@+id/image_two"
                     android:layout_width="0dp"
                     android:layout_height="180dp"
                     android:layout_weight="1"
-                    android:scaleType="fitCenter"
-                    android:src="@drawable/help2" />
+                    android:scaleType="fitCenter" />
             </LinearLayout>
 
             <TextView
@@ -128,14 +129,15 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:padding="10dp"
-                    android:text="选择 储存-清空数据，然后重新打开应用" />
+                    android:text="选择 储存-清空数据，然后重新运行" />
             </LinearLayout>
 
             <ImageView
+                android:id="@+id/image_four"
                 android:layout_width="wrap_content"
                 android:layout_height="180dp"
-                android:scaleType="fitCenter"
-                android:src="@drawable/help4" />
+                android:padding="10dp"
+                android:scaleType="fitCenter" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -158,46 +160,56 @@
                 android:layout_marginStart="10dp"
                 android:padding="10dp"
                 android:text="1.在联系人详情页面长按号码可复制号码" />
+
             <ImageView
+                android:id="@+id/image_five"
                 android:layout_width="wrap_content"
                 android:layout_height="180dp"
-                android:scaleType="fitCenter"
-                android:src="@drawable/help5" />
+                android:padding="10dp"
+                android:scaleType="fitCenter" />
+
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
                 android:padding="10dp"
                 android:text="2.在姓名查找界面可输入手机号码进行查找" />
+
             <ImageView
+                android:id="@+id/image_six"
                 android:layout_width="wrap_content"
                 android:layout_height="180dp"
-                android:scaleType="fitCenter"
-                android:src="@drawable/help6" />
+                android:padding="10dp"
+                android:scaleType="fitCenter" />
+
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
                 android:padding="10dp"
                 android:text="3.在首页查看联系人时，如果部门名称后面有数字提示，表示该部门有监管单位或被监管单位" />
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:padding="10dp">
 
                 <ImageView
+                    android:id="@+id/image_three"
                     android:layout_width="0dp"
                     android:layout_height="180dp"
                     android:layout_weight="1"
                     android:scaleType="fitCenter"
-                    android:src="@drawable/help3" />
+                    />
 
                 <ImageView
+                    android:id="@+id/image_seven"
                     android:layout_width="0dp"
                     android:layout_height="180dp"
                     android:layout_weight="1"
                     android:scaleType="fitCenter"
-                    android:src="@drawable/help7" />
+                     />
             </LinearLayout>
 
         </LinearLayout>

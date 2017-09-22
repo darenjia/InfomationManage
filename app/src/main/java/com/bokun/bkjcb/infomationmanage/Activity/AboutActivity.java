@@ -20,6 +20,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.allen.library.SuperTextView;
+import com.bokun.bkjcb.infomationmanage.Adapter.HistoryAdapter;
 import com.bokun.bkjcb.infomationmanage.Adapter.MultiTypeAdapter;
 import com.bokun.bkjcb.infomationmanage.Adapter.SimpleExpandAdapter;
 import com.bokun.bkjcb.infomationmanage.Adapter.TypeItemCallback;
@@ -29,7 +30,9 @@ import com.bokun.bkjcb.infomationmanage.Domain.User;
 import com.bokun.bkjcb.infomationmanage.Http.DefaultEvent;
 import com.bokun.bkjcb.infomationmanage.R;
 import com.bokun.bkjcb.infomationmanage.SQL.DBManager;
+import com.bokun.bkjcb.infomationmanage.Utils.Utils;
 import com.bokun.bkjcb.infomationmanage.View.DividerItemDecoration;
+import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.example.zhouwei.library.CustomPopWindow;
 
 import java.util.ArrayList;
@@ -50,6 +53,7 @@ public class AboutActivity extends BaseActivity {
     private int type;
     private ExpandableListView listView;
     private SimpleExpandAdapter adapter;
+    private HistoryAdapter historyAdapter;
 
     @Override
     protected void setView() {
@@ -63,8 +67,12 @@ public class AboutActivity extends BaseActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         if (type == 1) {
             toolbar.setTitle(level.getDepartmentNameA() + "-相关企业");
-        } else {
+        } else if (type == 0) {
             toolbar.setTitle(level.getDepartmentNameA());
+        } else if (type == 2) {
+            toolbar.setTitle("相关管理单位");
+        } else if (type == 3) {
+            toolbar.setTitle("所有历史记录");
         }
 
         toolbar.setNavigationIcon(R.drawable.back_aa);
@@ -102,7 +110,9 @@ public class AboutActivity extends BaseActivity {
 
     @Override
     protected void loadData() {
-        level = DBManager.newInstance(this).queryLevelId(level);
+        if (level != null) {
+            level = DBManager.newInstance(this).queryLevelId(level);
+        }
         if (type == 0) {
             recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
             typeAdapter = new MultiTypeAdapter(this);
@@ -110,9 +120,28 @@ public class AboutActivity extends BaseActivity {
             recyclerView.setAdapter(typeAdapter);
             recyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL_LIST));
             recyclerView.setVisibility(View.VISIBLE);
+        } else if (type == 3) {
+            recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+            ArrayList<HistoryItem> historyItems = DBManager.newInstance(this).getAllHistoryItem(null);
+            historyAdapter = new HistoryAdapter(R.layout.history_view, historyItems);
+            recyclerView.setAdapter(historyAdapter);
+            historyAdapter.setOnItemChildClickListener(new BaseQuickAdapter.OnItemChildClickListener() {
+                @Override
+                public void onItemChildClick(BaseQuickAdapter adapter, View view, int position) {
+                    HistoryItem item = (HistoryItem) adapter.getItem(position);
+                    User user = DBManager.newInstance(AboutActivity.this).queryUserById(item.getUserId());
+                    showDetail(user);
+                }
+            });
+            recyclerView.setVisibility(View.VISIBLE);
         } else {
             ArrayList<User> users = new ArrayList<>();
-            ArrayList<Level> levels = DBManager.newInstance(this).queryLevel(level);
+            ArrayList<Level> levels;
+            if (type == 1) {
+                levels = DBManager.newInstance(this).queryLevel(level);
+            } else {
+                levels = DBManager.newInstance(this).queryLevel_G(level);
+            }
             for (Level l : levels) {
                 users.addAll(DBManager.newInstance(this).queryUser(l));
             }
@@ -158,7 +187,7 @@ public class AboutActivity extends BaseActivity {
         TextView name = (TextView) view.findViewById(R.id.name);
         AvatarImageView imageView = (AvatarImageView) view.findViewById(R.id.item_avatar);
         name.setText(user.getUserName());
-        imageView.setTextAndColor(user.getUserName().substring(0, 1), SimpleExpandAdapter.getColor(this));
+        imageView.setTextAndColor(user.getUserName().substring(0, 1), Utils.GetRandomColor(this));
         SuperTextView tel1 = (SuperTextView) view.findViewById(R.id.phoneNumber1);
         SuperTextView tel2 = (SuperTextView) view.findViewById(R.id.phoneNumber2);
         SuperTextView quxian = (SuperTextView) view.findViewById(R.id.quxian);
@@ -185,7 +214,13 @@ public class AboutActivity extends BaseActivity {
         }
 
         department.setRightBottomString(user.getDepartmentNameA());
-        unit_address.setRightString(user.getAddress());
+        String address = user.getAddress();
+        if (address.length() > 15) {
+            unit_address.setRightString(address.substring(15, address.length()));
+            unit_address.setRightTopString(address.substring(0, 15));
+        } else {
+            unit_address.setRightString(user.getAddress());
+        }
         if (!TextUtils.isEmpty(user.getDuty())) {
             zhiwu.setRightBottomString(user.getDuty());
             zhiwu.setVisibility(View.VISIBLE);

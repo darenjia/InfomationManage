@@ -390,7 +390,7 @@ public class SecondFragment extends BaseFragment implements View.OnClickListener
     }
 
     private void initHistory() {
-        ArrayList<HistoryItem> historyItems = DBManager.newInstance(getContext()).getAllHistoryItem();
+        ArrayList<HistoryItem> historyItems = DBManager.newInstance(getContext()).getAllHistoryItem("8");
         if (historyAdapter == null) {
             historyAdapter = new HistoryAdapter(R.layout.history_view);
             recycler_history.setAdapter(historyAdapter);

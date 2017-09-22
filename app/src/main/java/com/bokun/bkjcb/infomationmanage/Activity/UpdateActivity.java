@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Environment;
@@ -35,6 +34,7 @@ import com.bokun.bkjcb.infomationmanage.Http.XmlParser;
 import com.bokun.bkjcb.infomationmanage.R;
 import com.bokun.bkjcb.infomationmanage.SQL.DBManager;
 import com.bokun.bkjcb.infomationmanage.Utils.AppManager;
+import com.bokun.bkjcb.infomationmanage.Utils.Constants;
 import com.bokun.bkjcb.infomationmanage.Utils.L;
 import com.bokun.bkjcb.infomationmanage.Utils.NetUtils;
 import com.bokun.bkjcb.infomationmanage.Utils.SPUtils;
@@ -110,11 +110,7 @@ public class UpdateActivity extends BaseActivity implements RequestListener {
                     Toast.makeText(context, "请重新打开应用", Toast.LENGTH_SHORT).show();
                     AppManager.getAppManager().AppExit(context);
                 } else if (updateNow == 4) {
-                    Intent intent = new Intent(Intent.ACTION_VIEW);
-//                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    intent.setDataAndType(Uri.fromFile(file),
-                            "application/vnd.android.package-archive");
-                    context.startActivity(intent);
+                    Utils.installApk(context, file);
                 }
             }
         });
@@ -261,10 +257,11 @@ public class UpdateActivity extends BaseActivity implements RequestListener {
                     dialog.dismiss();
                     finish();
                 }
-            }).setPositiveButton("再看看", new DialogInterface.OnClickListener() {
+            }).setPositiveButton("立即更新", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     dialog.dismiss();
+                    download();
                 }
             });
             AlertDialog dialog = builder.create();
@@ -280,11 +277,7 @@ public class UpdateActivity extends BaseActivity implements RequestListener {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     dialog.dismiss();
-                    Intent intent = new Intent(Intent.ACTION_VIEW);
-//                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    intent.setDataAndType(Uri.fromFile(file),
-                            "application/vnd.android.package-archive");
-                    context.startActivity(intent);
+                    Utils.installApk(context, file);
                 }
             }).setNegativeButton("取消", new DialogInterface.OnClickListener() {
                 @Override
@@ -295,6 +288,8 @@ public class UpdateActivity extends BaseActivity implements RequestListener {
             });
             AlertDialog dialog = builder.create();
             dialog.show();
+        } else if (updateNow == 2) {
+            finish();
         }
     }
 
@@ -495,7 +490,7 @@ public class UpdateActivity extends BaseActivity implements RequestListener {
         @Override
         protected Boolean doInBackground(Void... voids) {
             try {
-                URL url = new URL("http://101.231.47.202:92/GasAddress.apk");
+                URL url = new URL(Constants.URL_SOFT);
                 HttpURLConnection connection = (HttpURLConnection) url.openConnection();
                 if (connection.getResponseCode() == 200) {
                     String path = Environment.getExternalStorageDirectory() + "/GasAddressBook";

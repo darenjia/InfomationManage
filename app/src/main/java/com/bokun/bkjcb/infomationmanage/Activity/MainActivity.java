@@ -24,7 +24,6 @@ import android.widget.Toast;
 
 import com.allen.library.SuperButton;
 import com.allen.library.SuperTextView;
-import com.bokun.bkjcb.infomationmanage.Adapter.SimpleExpandAdapter;
 import com.bokun.bkjcb.infomationmanage.Adapter.SimpleFragmentAdapter;
 import com.bokun.bkjcb.infomationmanage.Domain.HistoryItem;
 import com.bokun.bkjcb.infomationmanage.Domain.Level;
@@ -81,7 +80,7 @@ public class MainActivity extends BaseActivity implements BottomNavigationView.O
 
 
     public interface UpdateListener {
-        void onChanged();
+        void onChanged(boolean isShow);
     }
 
     public void setUpdateListener(UpdateListener listener) {
@@ -224,7 +223,7 @@ public class MainActivity extends BaseActivity implements BottomNavigationView.O
         TextView name = (TextView) view.findViewById(R.id.name);
         AvatarImageView imageView = (AvatarImageView) view.findViewById(R.id.item_avatar);
         name.setText(user.getUserName());
-        imageView.setTextAndColor(user.getUserName().substring(0, 1), SimpleExpandAdapter.getColor(this));
+        imageView.setTextAndColor(user.getUserName().substring(0, 1), Utils.GetRandomColor(this));
         SuperTextView tel1 = (SuperTextView) view.findViewById(R.id.phoneNumber1);
         SuperTextView tel2 = (SuperTextView) view.findViewById(R.id.phoneNumber2);
         SuperTextView quxian = (SuperTextView) view.findViewById(R.id.quxian);
@@ -251,7 +250,13 @@ public class MainActivity extends BaseActivity implements BottomNavigationView.O
         }
 
         department.setRightBottomString(user.getDepartmentNameA());
-        unit_address.setRightString(user.getAddress());
+        String address = user.getAddress();
+        if (address.length() > 15) {
+            unit_address.setRightString(address.substring(15, address.length()));
+            unit_address.setRightTopString(address.substring(0, 15));
+        } else {
+            unit_address.setRightString(user.getAddress());
+        }
         if (!TextUtils.isEmpty(user.getDuty())) {
             zhiwu.setRightBottomString(user.getDuty());
             zhiwu.setVisibility(View.VISIBLE);
@@ -379,7 +384,7 @@ public class MainActivity extends BaseActivity implements BottomNavigationView.O
             public void onClick(View v) {
                 dialog.dismiss();
                 if (updateListener != null) {
-                    updateListener.onChanged();
+                    updateListener.onChanged(true);
                 }
                 flag = true;
             }
@@ -389,6 +394,9 @@ public class MainActivity extends BaseActivity implements BottomNavigationView.O
             public void onClick(View v) {
                 dialog.dismiss();
                 flag = true;
+                if (updateListener != null) {
+                    updateListener.onChanged(true);
+                }
                 UpdateActivity.comeIn(type ? 1 : 2, MainActivity.this);
             }
         });
@@ -412,7 +420,7 @@ public class MainActivity extends BaseActivity implements BottomNavigationView.O
 
     @Override
     protected void handlerEvent(DefaultEvent event) {
-       date = Utils.getDate();
+        date = Utils.getDate();
         SPUtils.put(this, "Time", date);
         if (builder == null) {
             builder = new AlertDialog.Builder(MainActivity.this);
@@ -421,20 +429,26 @@ public class MainActivity extends BaseActivity implements BottomNavigationView.O
             case DefaultEvent.SOFT_NEED_UPDATE:
                 builder.setView(createRefreshView(true));
                 dialog = builder.create();
-                dialog.setCanceledOnTouchOutside(true);
+                dialog.setCanceledOnTouchOutside(false);
                 dialog.show();
                 hasNew = true;
                 break;
             case DefaultEvent.DATA_NEED_UPDATE:
-//                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
                 builder.setView(createRefreshView(false));
                 dialog = builder.create();
-                dialog.setCanceledOnTouchOutside(true);
+                dialog.setCanceledOnTouchOutside(false);
                 dialog.show();
                 hasNew = true;
                 break;
             case DefaultEvent.GET_DATA_NULL:
                 hasNew = false;
+                break;
+            case DefaultEvent.GET_DATA_SUCCESS:
+                hasNew = false;
+                if (updateListener != null) {
+                    updateListener.onChanged(false);
+                }
+                flag = true;
                 break;
         }
     }
@@ -456,10 +470,17 @@ public class MainActivity extends BaseActivity implements BottomNavigationView.O
                 EventBus.getDefault().post(new DefaultEvent(DefaultEvent.SOFT_NEED_UPDATE));
             } else if (!version.getDataV().equals(local.getDataV())) {
                 EventBus.getDefault().post(new DefaultEvent(DefaultEvent.DATA_NEED_UPDATE));
+            } else {
+                EventBus.getDefault().post(new DefaultEvent(DefaultEvent.GET_DATA_SUCCESS));
             }
         } else {
             EventBus.getDefault().post(new DefaultEvent(DefaultEvent.GET_DATA_NULL));
         }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
     }
 
     @Override

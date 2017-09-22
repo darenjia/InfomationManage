@@ -231,7 +231,7 @@ public class ChildOneFragment extends Fragment implements View.OnClickListener {
                 header.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        AboutActivity.comeIn(model, getContext(), 1);
+                        AboutActivity.comeIn(model, getContext(), fragmentType != 2 ? 1 : 2);
                     }
                 });
             } else {

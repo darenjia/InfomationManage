@@ -80,9 +80,11 @@ public class ForthFragment extends BaseFragment implements View.OnClickListener 
         unitName.setCenterString(activity.user.getDepartmentNameA());
         unitAddress.setCenterString(activity.user.getAddress());
         if (activity.hasNew) {
-            update.setRightIcon(R.drawable.dot);
+            update.setRightTvDrawableRight(getResources().getDrawable(R.drawable.dot));
             update.setRightString("新版本");
-            update.setRightTextColor(getResources().getColor(R.color.red_1));
+        }else {
+            update.setRightTvDrawableRight(null);
+            update.setRightString("");
         }
     }
 }
