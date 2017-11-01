@@ -15,6 +15,7 @@ public class Level implements Serializable{
     private int Kind1;
     private int Kind2;
     private int Kind3;
+    private int flag;
 
     public int getId() {
         return id;
@@ -78,5 +79,13 @@ public class Level implements Serializable{
 
     public void setKind3(int kind3) {
         this.Kind3 = kind3;
+    }
+
+    public int getFlag() {
+        return flag;
+    }
+
+    public void setFlag(int flag) {
+        this.flag = flag;
     }
 }

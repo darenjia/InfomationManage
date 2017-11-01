@@ -88,19 +88,21 @@
             app:sLeftBottomTextSize="16sp"
             app:sLeftBottomTextString="所属区县"
             app:sLeftIconRes="@drawable/ic_quxian"
-            app:sRightBottomTextString="徐汇区" />
+            app:sRightBottomTextString="徐汇区"
+            app:sUseRipple="false" />
 
         <com.allen.library.SuperTextView
             android:id="@+id/bumen"
             android:layout_width="match_parent"
             android:layout_height="40dp"
             android:background="@color/white"
-            app:sLeftBottomTextColor="@color/black"
-            app:sLeftBottomTextSize="16sp"
-            app:sLeftBottomTextString="所属部门"
+            app:sCenterSpaceHeight="2dp"
             app:sLeftIconRes="@drawable/ic_bumen"
-            app:sRightBottomMaxEms="20"
-            app:sRightBottomTextString="徐汇区" />
+            app:sLeftTextColor="@color/black"
+            app:sLeftTextSize="16sp"
+            app:sLeftTextString="所属部门"
+            app:sRightTextString="徐汇区"
+            app:sRightViewGravity="right_center" />
 
         <com.allen.library.SuperTextView
             android:id="@+id/zhiwu"
@@ -112,7 +114,9 @@
             app:sLeftBottomTextSize="16sp"
             app:sLeftBottomTextString="所属职务"
             app:sLeftIconRes="@drawable/ic_zhiwu"
-            app:sRightBottomTextString="徐汇区" />
+            app:sRightBottomMaxEms="20"
+            app:sRightBottomTextString="徐汇区"
+            app:sUseRipple="false" />
 
         <com.allen.library.SuperTextView
             android:id="@+id/dianha_danwei"
@@ -137,7 +141,8 @@
             app:sLeftBottomTextString="单位传真"
             app:sLeftIconRes="@drawable/ic_chuanzhen"
             app:sRightBottomMaxEms="30"
-            app:sRightBottomTextString="6645624" />
+            app:sRightBottomTextString="6645624"
+            app:sUseRipple="false" />
 
         <com.allen.library.SuperTextView
             android:id="@+id/youbian_danwei"
@@ -149,20 +154,22 @@
             app:sLeftBottomTextSize="16sp"
             app:sLeftBottomTextString="单位邮编"
             app:sLeftIconRes="@drawable/ic_youbian"
-            app:sRightBottomTextString="6645624" />
+            app:sRightBottomTextString="6645624"
+            app:sUseRipple="false" />
 
         <com.allen.library.SuperTextView
             android:id="@+id/dizhi_danwei"
             android:layout_width="match_parent"
             android:layout_height="40dp"
             android:background="@color/white"
+            app:sCenterSpaceHeight="2dp"
             app:sLeftIconRes="@drawable/ic_address"
             app:sLeftTextColor="@color/black"
             app:sLeftTextSize="16sp"
             app:sLeftTextString="单位地址"
-            app:sCenterSpaceHeight="2dp"
+            app:sRightTextString="宛平南路80号"
             app:sRightViewGravity="right_center"
-            app:sRightTextString="宛平南路80号" />
+            app:sUseRipple="false" />
     </LinearLayout>
     <!--</ScrollView>-->
 </LinearLayout>

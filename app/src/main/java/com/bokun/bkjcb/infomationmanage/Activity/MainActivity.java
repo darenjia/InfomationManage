@@ -227,7 +227,7 @@ public class MainActivity extends BaseActivity implements BottomNavigationView.O
         SuperTextView tel1 = (SuperTextView) view.findViewById(R.id.phoneNumber1);
         SuperTextView tel2 = (SuperTextView) view.findViewById(R.id.phoneNumber2);
         SuperTextView quxian = (SuperTextView) view.findViewById(R.id.quxian);
-        final SuperTextView department = (SuperTextView) view.findViewById(R.id.bumen);
+        SuperTextView department = (SuperTextView) view.findViewById(R.id.bumen);
         SuperTextView zhiwu = (SuperTextView) view.findViewById(R.id.zhiwu);
         SuperTextView unit_address = (SuperTextView) view.findViewById(R.id.dizhi_danwei);
         SuperTextView unit_phone = (SuperTextView) view.findViewById(R.id.dianha_danwei);
@@ -248,8 +248,14 @@ public class MainActivity extends BaseActivity implements BottomNavigationView.O
                 tel1.setLeftBottomString(s1);
             }
         }
-
-        department.setRightBottomString(user.getDepartmentNameA());
+        final String unitName = user.getDepartmentNameA();
+        if (unitName.length() > 15) {
+            department.setRightString(unitName.substring(15, unitName.length()));
+            department.setRightTopString(unitName.substring(0, 15));
+        } else {
+            department.setRightString(unitName);
+        }
+//        department.setRightBottomString(user.getDepartmentNameA());
         String address = user.getAddress();
         if (address.length() > 15) {
             unit_address.setRightString(address.substring(15, address.length()));
@@ -261,6 +267,7 @@ public class MainActivity extends BaseActivity implements BottomNavigationView.O
             zhiwu.setRightBottomString(user.getDuty());
             zhiwu.setVisibility(View.VISIBLE);
         }
+        final String qxName = user.getQuXian();
         if (!TextUtils.isEmpty(user.getQuXian())) {
             quxian.setRightBottomString(user.getQuXian());
             quxian.setVisibility(View.VISIBLE);
@@ -315,16 +322,16 @@ public class MainActivity extends BaseActivity implements BottomNavigationView.O
         department.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                viewPager.setCurrentItem(0);
-                FirstFragment firstFragment = (FirstFragment) fragments.get(0);
+               /* viewPager.setCurrentItem(0);
+                FirstFragment firstFragment = (FirstFragment) fragments.get(0);*/
                 Level level = new Level();
-                level.setDepartmentNameA(department.getRightBottomString());
+                level.setDepartmentNameA(unitName);
                 level.setLevel(user.getLevel());
                 level.setKind1(user.getKind1());
                 level.setKind2(user.getKind2());
                 level.setKind3(user.getKind3());
                 level.setQuxian(user.getQuxin());
-                AboutActivity.comeIn(level, MainActivity.this, 0);
+                AboutActivity.comeIn(level, MainActivity.this, 0, qxName);
             }
         });
     }

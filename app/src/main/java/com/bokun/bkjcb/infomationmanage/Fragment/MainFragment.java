@@ -15,17 +15,30 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ExpandableListView;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
-import com.bokun.bkjcb.infomationmanage.Adapter.SimpleExpandAdapter;
+import com.bokun.bkjcb.infomationmanage.Adapter.ExpandAdapter;
 import com.bokun.bkjcb.infomationmanage.Domain.User;
 import com.bokun.bkjcb.infomationmanage.R;
 import com.bokun.bkjcb.infomationmanage.SQL.DBManager;
+import com.bokun.bkjcb.infomationmanage.Utils.StringFilter;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import info.hoang8f.android.segmented.SegmentedGroup;
+import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
+import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
+import io.reactivex.functions.Predicate;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * Created by DengShuai on 2017/8/22.
@@ -36,12 +49,15 @@ public class MainFragment extends BaseFragment implements View.OnClickListener {
     private ImageView searchButton, cancelButton;
     private EditText editText;
     private String keyWord;
-    private SimpleExpandAdapter adapter;
+    private ExpandAdapter adapter;
     private ExpandableListView listView;
     private SegmentedGroup group;
-    private boolean searchFlag = false;
+    private boolean searchFlag = true;
     private ProgressDialog dialog;
     private ArrayList<User> users;
+    private LinearLayout layout;
+    private StringFilter filter;
+    private Disposable disposable;
 
     public static MainFragment newInstance() {
         if (fragment == null) {
@@ -58,46 +74,26 @@ public class MainFragment extends BaseFragment implements View.OnClickListener {
         editText = (EditText) view.findViewById(R.id.edit_search);
         listView = (ExpandableListView) view.findViewById(R.id.listView);
         group = (SegmentedGroup) view.findViewById(R.id.segmented);
+        layout = (LinearLayout) view.findViewById(R.id.search_progress);
 
         listView.setGroupIndicator(null);
         return view;
     }
 
+    private void showProgress() {
+        layout.setVisibility(View.VISIBLE);
+        listView.setVisibility(View.GONE);
+    }
+
+    private void hideProgress() {
+        layout.setVisibility(View.GONE);
+        listView.setVisibility(View.VISIBLE);
+    }
+
+
     @Override
     protected void setListener() {
         listView.setOnChildClickListener(null);
-        editText.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                keyWord = charSequence.toString().trim();
-                if (adapter == null) {
-                    return;
-                }
-//                L.i(keyWord);
-                if (TextUtils.isEmpty(keyWord)) {
-                    adapter.initData();
-                    cancelButton.setImageResource(R.mipmap.ic_search);
-                    searchButton.setVisibility(View.GONE);
-                } else {
-                    if (i1 == 1 && i2 == 0) {
-                        adapter.repaceData();
-                    }
-                    cancelButton.setImageResource(R.mipmap.ic_close);
-                    searchButton.setVisibility(View.VISIBLE);
-                    adapter.getFilter().filter(searchFlag + "," + keyWord);
-                }
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-
-            }
-        });
         searchButton.setOnClickListener(this);
         cancelButton.setOnClickListener(this);
         editText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -110,27 +106,10 @@ public class MainFragment extends BaseFragment implements View.OnClickListener {
                 return false;
             }
         });
-        group.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup group, int checkedId) {
-                if (checkedId == R.id.button1) {
-                    editText.setHint("按姓名查找");
-                    searchFlag = false;
-                } else {
-                    editText.setHint("按单位查找");
-                    searchFlag = true;
-                }
-                keyWord = editText.getText().toString().trim();
-                if (!keyWord.equals("")) {
-                    adapter.repaceData();
-                    adapter.getFilter().filter(searchFlag + "," + keyWord);
-                }
-            }
-        });
         listView.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
             @Override
             public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
-                activity.showDetail(adapter.getUser(groupPosition,childPosition));
+                activity.showDetail(adapter.getUser(groupPosition, childPosition));
                 return false;
             }
         });
@@ -147,7 +126,7 @@ public class MainFragment extends BaseFragment implements View.OnClickListener {
                 break;
             case R.id.clearSearch:
                 if (!TextUtils.isEmpty(editText.getText().toString().trim())) {
-                    adapter.initData();
+//                    adapter.replaceData(users);
                     cancelButton.setImageResource(R.mipmap.ic_search);
                     searchButton.setVisibility(View.GONE);
                     editText.setText("");
@@ -156,19 +135,74 @@ public class MainFragment extends BaseFragment implements View.OnClickListener {
         }
     }
 
+    private Observable<String> createTextChangeObservable() {
+        return Observable.create(new ObservableOnSubscribe<String>() {
+            @Override
+            public void subscribe(final ObservableEmitter<String> e) throws Exception {
+                editText.addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable s) {
+                        if (!s.toString().equals("")) {
+                            cancelButton.setImageResource(R.mipmap.ic_close);
+//                            searchButton.setVisibility(View.VISIBLE);
+                        } else {
+                            cancelButton.setImageResource(R.mipmap.ic_search);
+                        }
+                        e.onNext(s.toString().trim());
+                    }
+                });
+            }
+        }).debounce(500, TimeUnit.MILLISECONDS);
+    }
+
+    private Observable<String> createStateChangeObservable() {
+        return Observable.create(new ObservableOnSubscribe<String>() {
+            @Override
+            public void subscribe(final ObservableEmitter<String> e) throws Exception {
+                group.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(RadioGroup group, int checkedId) {
+                        if (checkedId == R.id.button1) {
+                            editText.setHint("按姓名查找");
+                            searchFlag = true;
+                        } else {
+                            editText.setHint("按单位查找");
+                            searchFlag = false;
+                        }
+                        e.onNext(editText.getText().toString().trim());
+                    }
+                });
+            }
+        }).filter(new Predicate<String>() {
+            @Override
+            public boolean test(String s) throws Exception {
+                return s.equals("");
+            }
+        }).debounce(500, TimeUnit.MILLISECONDS);
+    }
+
     class LoadDataTask extends AsyncTask {
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-//            createDialog().show();
         }
 
         @Override
         protected Object doInBackground(Object[] objects) {
             users = DBManager.newInstance(getContext()).queryAllUser();
 //            Collections.sort(users);
-            adapter = new SimpleExpandAdapter(getContext(), users);
+            adapter = new ExpandAdapter(getContext(), users);
             adapter.setListView(listView);
             return null;
         }
@@ -177,18 +211,47 @@ public class MainFragment extends BaseFragment implements View.OnClickListener {
         protected void onPostExecute(Object o) {
             super.onPostExecute(o);
             listView.setAdapter(adapter);
-            listView.setTextFilterEnabled(true);
-//            dialog.dismiss();
+            filter = new StringFilter(users);
         }
     }
 
-    private ProgressDialog createDialog() {
-        if (dialog == null) {
-            dialog = new ProgressDialog(getContext());
-            dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-
-            dialog.setMessage("请稍等");
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (!disposable.isDisposed()) {
+            disposable.dispose();
         }
-        return dialog;
     }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        Observable<String> textChangeObservable = createTextChangeObservable();
+        Observable<String> stateChangeObservable = createStateChangeObservable();
+        Observable<String> observable = io.reactivex.Observable.merge(textChangeObservable, stateChangeObservable);
+        disposable = observable
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnNext(new Consumer<String>() {
+                    @Override
+                    public void accept(String s) throws Exception {
+                        showProgress();
+                    }
+                })
+                .observeOn(Schedulers.io())
+                .map(new Function<String, List<User>>() {
+                    @Override
+                    public List<User> apply(String s) throws Exception {
+                        return filter.filter(searchFlag, s);
+                    }
+                })
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<List<User>>() {
+                    @Override
+                    public void accept(List<User> strings) throws Exception {
+                        adapter.replaceData(strings);
+                        hideProgress();
+                    }
+                });
+    }
+
 }

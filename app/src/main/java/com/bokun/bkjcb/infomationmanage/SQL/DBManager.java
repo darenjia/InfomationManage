@@ -1,7 +1,5 @@
 package com.bokun.bkjcb.infomationmanage.SQL;
 
-import android.app.Activity;
-import android.app.Notification;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -197,7 +195,7 @@ public class DBManager {
                         "LEFT JOIN Unit b ON a.Unitid = b.id " +
                         "LEFT JOIN z_Quxian c ON c.id = b.Quxian " +
                         "LEFT JOIN z_Level d ON b.LevelID = d.id " +
-                        "Where b.IsShow = 0 and a.Flag = 0 " +
+                        "Where b.IsShow = 0 and a.Flag = 0 and d.flag = 0 " +
                         "ORDER BY d.DepartmentNameA COLLATE LOCALIZED ASC,d.Quxian ASC"
                 , null);
         while (cursor.moveToNext()) {
@@ -274,7 +272,7 @@ public class DBManager {
         ArrayList<Level> levels = new ArrayList<>();
         Level level = null;
         ArrayList<String> para = new ArrayList<>();
-        StringBuilder sql = new StringBuilder("SELECT * FROM z_Level where level = ? ");
+        StringBuilder sql = new StringBuilder("SELECT * FROM z_Level where level = ? and flag = 0 ");
         para.add(String.valueOf(level_l));
         if (level_l == 1 && quxianId != -1) {
             sql.append("and Quxian = ? ");
@@ -485,7 +483,7 @@ public class DBManager {
             builder.append(" and d.Kind3 IS Null");
         }*/
         builder.append(" ORDER BY d.DepartmentNameA COLLATE LOCALIZED ASC");
-        L.i(level.getId() + ":::id");
+//        L.i(level.getId() + ":::id");
         Cursor cursor = database.rawQuery(builder.toString(), new String[]{String.valueOf(level.getId())});
         while (cursor.moveToNext()) {
             user = new User();
@@ -520,7 +518,6 @@ public class DBManager {
             user.setUnitName(user.getDepartmentNameA());
             users.add(user);
         }
-//        L.i("啥啥啥：" + users.size());
         Collections.sort(users);
         return users;
     }
@@ -687,6 +684,7 @@ public class DBManager {
         values.put("Kind1", level.getKind1());
         values.put("Kind2", level.getKind2());
         values.put("Kind3", level.getKind3());
+        values.put("flag", level.getFlag());
         long flag = database.insert("z_Level", null, values);
         return flag > 0;
     }

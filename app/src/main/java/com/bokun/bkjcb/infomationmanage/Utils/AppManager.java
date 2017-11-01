@@ -1,7 +1,6 @@
 package com.bokun.bkjcb.infomationmanage.Utils;
 
 import android.app.Activity;
-import android.app.ActivityManager;
 import android.content.Context;
 
 import java.util.Stack;
@@ -86,9 +85,9 @@ public class AppManager {
     public void AppExit(Context context) {
         try {
             finishAllActivity();
-            ActivityManager activityMgr= (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+         /*   ActivityManager activityMgr= (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
             activityMgr.restartPackage(context.getPackageName());
-            System.exit(0);
+            System.exit(0);*/
             android.os.Process.killProcess(android.os.Process.myPid());
         } catch (Exception e) {	}
     }

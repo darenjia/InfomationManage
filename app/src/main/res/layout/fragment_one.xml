@@ -89,7 +89,7 @@
                                 android:maxLength="10"
                                 android:maxLines="1"
                                 android:paddingEnd="8dp"
-                                android:paddingRight="8dp"/>
+                                android:paddingRight="8dp" />
 
                             <ImageView
                                 android:id="@+id/image_search"
@@ -105,6 +105,19 @@
 
             </LinearLayout>
 
+            <LinearLayout
+                android:id="@+id/search_progress"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center_horizontal"
+                android:visibility="gone">
+
+                <ProgressBar
+                    style="@style/Base.Widget.AppCompat.ProgressBar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp" />
+            </LinearLayout>
 
             <ExpandableListView
                 android:id="@+id/listView"

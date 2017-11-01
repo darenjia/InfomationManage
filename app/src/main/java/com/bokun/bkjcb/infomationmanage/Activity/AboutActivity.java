@@ -54,12 +54,16 @@ public class AboutActivity extends BaseActivity {
     private ExpandableListView listView;
     private SimpleExpandAdapter adapter;
     private HistoryAdapter historyAdapter;
+    private String quXian;
 
     @Override
     protected void setView() {
         setContentView(R.layout.activity_about);
         level = (Level) getIntent().getExtras().get("Level");
         type = getIntent().getIntExtra("type", 0);
+        if (level.getQuxian() != 0) {
+            quXian = getIntent().getStringExtra("quxian");
+        }
     }
 
     @Override
@@ -68,7 +72,12 @@ public class AboutActivity extends BaseActivity {
         if (type == 1) {
             toolbar.setTitle(level.getDepartmentNameA() + "-相关企业");
         } else if (type == 0) {
-            toolbar.setTitle(level.getDepartmentNameA());
+            if (!TextUtils.isEmpty(quXian)) {
+                toolbar.setTitle(level.getDepartmentNameA() + "(" + quXian + ")");
+            } else {
+                toolbar.setTitle(level.getDepartmentNameA());
+            }
+
         } else if (type == 2) {
             toolbar.setTitle("相关管理单位");
         } else if (type == 3) {
@@ -168,6 +177,14 @@ public class AboutActivity extends BaseActivity {
         activity.startActivity(intent);
     }
 
+    public static void comeIn(Level level, Context activity, int type, String unitName) {
+        Intent intent = new Intent(activity, AboutActivity.class);
+        intent.putExtra("Level", level);
+        intent.putExtra("type", type);
+        intent.putExtra("quxian", unitName);
+        activity.startActivity(intent);
+    }
+
     public void showDetail(final User user) {
         bottomDialog = BottomDialog.create(getSupportFragmentManager())
                 .setViewListener(new BottomDialog.ViewListener() {
@@ -212,8 +229,14 @@ public class AboutActivity extends BaseActivity {
                 tel1.setLeftBottomString(s1);
             }
         }
-
-        department.setRightBottomString(user.getDepartmentNameA());
+        String unitName = user.getDepartmentNameA();
+        if (unitName.length() > 15) {
+            department.setRightString(unitName.substring(15, unitName.length()));
+            department.setRightTopString(unitName.substring(0, 15));
+        } else {
+            department.setRightString(unitName);
+        }
+//        department.setRightBottomString(user.getDepartmentNameA());
         String address = user.getAddress();
         if (address.length() > 15) {
             unit_address.setRightString(address.substring(15, address.length()));
