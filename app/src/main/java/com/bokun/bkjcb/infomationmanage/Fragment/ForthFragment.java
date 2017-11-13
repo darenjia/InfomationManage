@@ -71,9 +71,14 @@ public class ForthFragment extends BaseFragment implements View.OnClickListener 
     @Override
     public void onStart() {
         super.onStart();
-        userName.setText(activity.user.getUserName());
-        userTel.setCenterString(activity.user.getTel());
-        if (!userPhone.equals("")) {
+        String nameStr = activity.user.getUserName() + " (" + activity.user.getDuty() + ")";
+        userName.setText(nameStr);
+//        userTel.setCenterString(activity.user.getTel());
+        if (!activity.user.getTel().equals("")) {
+            userTel.setVisibility(View.VISIBLE);
+            userTel.setCenterString(activity.user.getTel());
+        }
+        if (!activity.user.getTel_U().equals("")) {
             userPhone.setVisibility(View.VISIBLE);
             userPhone.setCenterString(activity.user.getTel_U());
         }
@@ -82,7 +87,7 @@ public class ForthFragment extends BaseFragment implements View.OnClickListener 
         if (activity.hasNew) {
             update.setRightTvDrawableRight(getResources().getDrawable(R.drawable.dot));
             update.setRightString("新版本");
-        }else {
+        } else {
             update.setRightTvDrawableRight(null);
             update.setRightString("");
         }

@@ -50,7 +50,9 @@ public class ExpandAdapter extends BaseExpandableListAdapter {
                     userList.add(u);
                 } else {
                     if (userList != null) {
-                        userList.add(u);
+                        if (!userList.contains(u)) {//去重
+                            userList.add(u);
+                        }
                     }
                 }
             } else {
@@ -64,7 +66,9 @@ public class ExpandAdapter extends BaseExpandableListAdapter {
                     userList.add(u);
                 } else {
                     if (userList != null) {
-                        userList.add(u);
+                        if (!userList.contains(u)) {//去重
+                            userList.add(u);
+                        }
                     }
                 }
             }

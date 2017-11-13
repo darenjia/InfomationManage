@@ -206,6 +206,13 @@ public class User implements Serializable, Comparable<User> {
         return this.userName + this.tel + Cn2Spell.getPinYin(userName) + this.phoneNumber;
     }
 
+    //判断两个人是否是同一个人
+    @Override
+    public boolean equals(Object obj) {
+        User user = (User) obj;
+        return this.userName.equals(user.userName) && (this.tel.equals(user.getTel()) && (this.duty.equals(user.duty)));
+    }
+
     private int quxin;
     private String departmentName;
     private int level;

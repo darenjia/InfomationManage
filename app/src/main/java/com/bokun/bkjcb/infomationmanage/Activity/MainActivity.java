@@ -18,11 +18,11 @@ import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.allen.library.SuperButton;
 import com.allen.library.SuperTextView;
 import com.bokun.bkjcb.infomationmanage.Adapter.SimpleFragmentAdapter;
 import com.bokun.bkjcb.infomationmanage.Domain.HistoryItem;
@@ -63,8 +63,8 @@ public class MainActivity extends BaseActivity implements BottomNavigationView.O
     private Intent intent;
     private BottomDialog bottomDialog;
     private CustomPopWindow popWindow;
-    private SuperButton btn_ig;
-    private SuperButton btn_con;
+    private Button btn_ig;
+    private Button btn_con;
     private TextView info;
     private AlertDialog dialog;
     private String date;
@@ -90,9 +90,9 @@ public class MainActivity extends BaseActivity implements BottomNavigationView.O
     @Override
     protected void setView() {
         setContentView(R.layout.activity_main2);
-        if (!flag) {
+       /* if (!flag) {
             checkUpdate();
-        }
+        }*/
     }
 
     @Override
@@ -134,13 +134,15 @@ public class MainActivity extends BaseActivity implements BottomNavigationView.O
 
     @Override
     protected void loadData() {
+        hasNew = getIntent().getBooleanExtra("hasNew", false);
+        user = (User) getIntent().getExtras().get("User");
+        L.i("是否有新版本" + hasNew);
         fragments = new ArrayList<>();
         fragments.add(FirstFragment.newInstance().setActivity(this));
         fragments.add(MainFragment.newInstance().setActivity(this));
         fragments.add(ForthFragment.newInstance().setActivity(this));
         SimpleFragmentAdapter adapter = new SimpleFragmentAdapter(getSupportFragmentManager(), fragments);
         viewPager.setAdapter(adapter);
-        user = (User) getIntent().getExtras().get("User");
     }
 
     @Override
@@ -249,17 +251,17 @@ public class MainActivity extends BaseActivity implements BottomNavigationView.O
             }
         }
         final String unitName = user.getDepartmentNameA();
-        if (unitName.length() > 15) {
-            department.setRightString(unitName.substring(15, unitName.length()));
-            department.setRightTopString(unitName.substring(0, 15));
+        if (unitName.length() > 16) {
+            department.setRightString(unitName.substring(16, unitName.length()));
+            department.setRightTopString(unitName.substring(0, 16));
         } else {
             department.setRightString(unitName);
         }
 //        department.setRightBottomString(user.getDepartmentNameA());
         String address = user.getAddress();
-        if (address.length() > 15) {
-            unit_address.setRightString(address.substring(15, address.length()));
-            unit_address.setRightTopString(address.substring(0, 15));
+        if (address.length() > 16) {
+            unit_address.setRightString(address.substring(16, address.length()));
+            unit_address.setRightTopString(address.substring(0, 16));
         } else {
             unit_address.setRightString(user.getAddress());
         }
@@ -379,8 +381,8 @@ public class MainActivity extends BaseActivity implements BottomNavigationView.O
         View view = View.inflate(this, R.layout.refresh_view, null);
         info = (TextView) view.findViewById(R.id.refresh_info);
         time = (TextView) view.findViewById(R.id.refresh_time);
-        btn_ig = (SuperButton) view.findViewById(R.id.ignore_btn);
-        btn_con = (SuperButton) view.findViewById(R.id.now_btn);
+        btn_ig = (Button) view.findViewById(R.id.ignore_btn);
+        btn_con = (Button) view.findViewById(R.id.now_btn);
         if (type) {
             info.setText(R.string.SoftRefresh);
         }
@@ -488,6 +490,9 @@ public class MainActivity extends BaseActivity implements BottomNavigationView.O
     @Override
     protected void onStart() {
         super.onStart();
+       /* if (updateListener != null && hasNew) {
+            updateListener.onChanged(true);
+        }*/
     }
 
     @Override

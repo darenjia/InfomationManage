@@ -75,7 +75,9 @@ public class PartOneFragment extends BaseFragment implements View.OnClickListene
 
     private void init() {
         recycler_history.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
-
+        if (activity.hasNew) {
+            notify.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override

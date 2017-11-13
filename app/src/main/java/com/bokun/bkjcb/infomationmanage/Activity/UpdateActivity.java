@@ -140,9 +140,9 @@ public class UpdateActivity extends BaseActivity implements RequestListener {
         recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         strings = new ArrayList<>();
         VersionInfo info = DBManager.newInstance(context).getVersionInfo();
-        strings.add("当前数据版本:" + info.getDataV());
-        strings.add("当前程序版本:" + info.getProgramV());
-        strings.add("上次检查时间:" + SPUtils.get(this, "Time", "（无）"));
+        strings.add("当前数据版本：" + info.getDataV());
+        strings.add("当前程序版本：" + info.getProgramV());
+        strings.add("上次检查时间：" + SPUtils.get(this, "Time", "（无）"));
         adapter = new UpdateAdapter(R.layout.update_view, strings);
         recyclerView.setAdapter(adapter);
         updateNow = getIntent().getIntExtra("need", 0);

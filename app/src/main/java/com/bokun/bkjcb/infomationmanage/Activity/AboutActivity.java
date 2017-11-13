@@ -230,17 +230,17 @@ public class AboutActivity extends BaseActivity {
             }
         }
         String unitName = user.getDepartmentNameA();
-        if (unitName.length() > 15) {
-            department.setRightString(unitName.substring(15, unitName.length()));
-            department.setRightTopString(unitName.substring(0, 15));
+        if (unitName.length() > 16) {
+            department.setRightString(unitName.substring(16, unitName.length()));
+            department.setRightTopString(unitName.substring(0, 16));
         } else {
             department.setRightString(unitName);
         }
 //        department.setRightBottomString(user.getDepartmentNameA());
         String address = user.getAddress();
-        if (address.length() > 15) {
-            unit_address.setRightString(address.substring(15, address.length()));
-            unit_address.setRightTopString(address.substring(0, 15));
+        if (address.length() > 16) {
+            unit_address.setRightString(address.substring(16, address.length()));
+            unit_address.setRightTopString(address.substring(0, 16));
         } else {
             unit_address.setRightString(user.getAddress());
         }

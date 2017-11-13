@@ -23,6 +23,7 @@ import com.bokun.bkjcb.infomationmanage.Adapter.ExpandAdapter;
 import com.bokun.bkjcb.infomationmanage.Domain.User;
 import com.bokun.bkjcb.infomationmanage.R;
 import com.bokun.bkjcb.infomationmanage.SQL.DBManager;
+import com.bokun.bkjcb.infomationmanage.Utils.L;
 import com.bokun.bkjcb.infomationmanage.Utils.StringFilter;
 
 import java.util.ArrayList;
@@ -180,13 +181,14 @@ public class MainFragment extends BaseFragment implements View.OnClickListener {
                             searchFlag = false;
                         }
                         e.onNext(editText.getText().toString().trim());
+                        L.i(editText.getText().toString().trim());
                     }
                 });
             }
         }).filter(new Predicate<String>() {
             @Override
             public boolean test(String s) throws Exception {
-                return s.equals("");
+                return !s.equals("");
             }
         }).debounce(500, TimeUnit.MILLISECONDS);
     }

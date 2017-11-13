@@ -49,7 +49,8 @@ public class DBManager {
         }
     }
 
-    public User queryUserByLoginName(String loginName) {
+    public ArrayList<User> queryUserByLoginName(String loginName) {
+        ArrayList<User> users = new ArrayList<>();
         User user = null;
 //        Cursor cursor = database.query("User", null, "LoginName=?", new String[]{loginName}, null, null, null);
         Cursor cursor = database.rawQuery("SELECT " +
@@ -59,6 +60,7 @@ public class DBManager {
                 "a.Password," +
                 "a.U_Tel," +
                 "a.TEL," +
+                "a.Duty," +
                 "b.Address," +
                 "b.Quxian," +
                 "c.NewName," +
@@ -69,18 +71,24 @@ public class DBManager {
                 "LEFT JOIN z_Quxian c ON c.id = b.Quxian " +
                 "LEFT JOIN z_Level d ON b.LevelID = d.id " +
                 "WHERE a.LoginName=?", new String[]{loginName});
-        if (cursor.moveToNext()) {
+        while (cursor.moveToNext()) {
             user = new User();
+            user.setId(cursor.getInt(cursor.getColumnIndex("id")));
             user.setUserName(cursor.getString(cursor.getColumnIndex("UserName")));
             user.setLoginName(cursor.getString(cursor.getColumnIndex("LoginName")));
             user.setPassword(cursor.getString(cursor.getColumnIndex("Password")));
             user.setTel(cursor.getString(cursor.getColumnIndex("TEL")));
+            user.setDuty(cursor.getString(cursor.getColumnIndex("Duty")));
             user.setTel_U(cursor.getString(cursor.getColumnIndex("U_Tel")));
             user.setAddress(cursor.getString(cursor.getColumnIndex("Address")));
             user.setQuXian(cursor.getString(cursor.getColumnIndex("NewName")));
             user.setDepartmentNameA(cursor.getString(cursor.getColumnIndex("DepartmentNameA")));
+            if (!users.contains(user)) {
+                users.add(user);
+            }
         }
-        return user;
+        L.i(users.size());
+        return users;
     }
 
     public User queryUserById(int id) {
@@ -228,8 +236,13 @@ public class DBManager {
             user.setKind2(cursor.getInt(cursor.getColumnIndex("Kind2")));
             user.setKind3(cursor.getInt(cursor.getColumnIndex("Kind3")));
             user.setDepartmentNameA(cursor.getString(cursor.getColumnIndex("DepartmentNameA")));
-//            L.i(user.getUserName());
+
             user.setUnitName(user.getDepartmentNameA());
+            //去重
+           /* if (users.contains(user)) {
+                L.i(user.getUserName());
+                continue;
+            }*/
             users.add(user);
         }
         return users;

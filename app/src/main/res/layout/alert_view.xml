@@ -102,6 +102,8 @@
             app:sLeftTextSize="16sp"
             app:sLeftTextString="所属部门"
             app:sRightTextString="徐汇区"
+            app:sRightTopMaxEms="16"
+            app:sRightMaxEms="16"
             app:sRightViewGravity="right_center" />
 
         <com.allen.library.SuperTextView
@@ -168,6 +170,8 @@
             app:sLeftTextSize="16sp"
             app:sLeftTextString="单位地址"
             app:sRightTextString="宛平南路80号"
+            app:sRightTopMaxEms="18"
+            app:sRightMaxEms="18"
             app:sRightViewGravity="right_center"
             app:sUseRipple="false" />
     </LinearLayout>
